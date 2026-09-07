@@ -1,0 +1,405 @@
+<div id="credit-scratch-card-wrapper" class="credit-scratch-wrapper" data-shop="{{ shop.permanent_domain }}">
+  <!-- Floating launcher bubble -->
+  <button id="credit-scratch-launcher" class="credit-scratch-launcher" aria-label="Open Mystery Credit Scratch Card">
+    <span class="credit-scratch-icon">🎰</span>
+    <span class="credit-scratch-launcher-text">{{ block.settings.launcher_text | default: 'Win Up to $50 Credit!' }}</span>
+  </button>
+
+  <!-- Modal backdrop -->
+  <div id="credit-scratch-modal" class="credit-scratch-modal-backdrop" style="display: none;">
+    <div class="credit-scratch-modal-card">
+      <button id="credit-scratch-close" class="credit-scratch-close" aria-label="Close">&times;</button>
+      
+      <div id="credit-scratch-game-view">
+        <div class="credit-scratch-header">
+          <span class="credit-scratch-badge">🎁 MYSTERY REWARD</span>
+          <h3 class="credit-scratch-title">{{ block.settings.title | default: 'Scratch to Reveal Your Store Credit!' }}</h3>
+          <p class="credit-scratch-subtitle">{{ block.settings.subtitle | default: 'Rub the card below to win up to $50.00 instantly!' }}</p>
+        </div>
+
+        <div class="credit-scratch-canvas-container">
+          <!-- Prize reveal background -->
+          <div id="credit-scratch-prize" class="credit-scratch-prize-bg">
+            <span class="credit-scratch-prize-label">YOU WON</span>
+            <span id="credit-scratch-prize-amount" class="credit-scratch-prize-val">$10.00</span>
+            <span class="credit-scratch-prize-sub">STORE CREDIT</span>
+          </div>
+          <!-- Scratch canvas overlay -->
+          <canvas id="credit-scratch-canvas" width="280" height="150"></canvas>
+        </div>
+
+        <p id="credit-scratch-hint" class="credit-scratch-hint">👆 Use your mouse or finger to scratch off the foil</p>
+
+        <!-- Claim form -->
+        <div id="credit-scratch-claim-section" style="display: none; margin-top: 15px;">
+          <form id="credit-scratch-form">
+            <input type="text" id="credit-scratch-name" placeholder="Your First Name" required class="credit-scratch-input" />
+            <input type="email" id="credit-scratch-email" placeholder="Enter your email to deposit credit" required class="credit-scratch-input" />
+            <button type="submit" id="credit-scratch-claim-btn" class="credit-scratch-claim-btn">
+              ⚡ Deposit Credit to My Wallet
+            </button>
+          </form>
+          <p id="credit-scratch-status" class="credit-scratch-status"></p>
+        </div>
+      </div>
+
+      <!-- Success celebration view -->
+      <div id="credit-scratch-success-view" style="display: none; text-align: center; padding: 20px 10px;">
+        <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
+        <h3 style="margin: 0 0 8px 0; color: #0f172a; font-size: 22px;">Credit Deposited!</h3>
+        <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">
+          We added <strong id="credit-scratch-awarded-amount" style="color: #10b981;">$10.00</strong> to your store credit account. It will automatically apply at checkout!
+        </p>
+        <button id="credit-scratch-shop-now-btn" class="credit-scratch-claim-btn">
+          Shop Now with My Credit →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .credit-scratch-launcher {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 99998;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 9999px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .credit-scratch-launcher:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.6);
+  }
+  .credit-scratch-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .credit-scratch-modal-card {
+    background: #ffffff;
+    border-radius: 20px;
+    max-width: 380px;
+    width: 100%;
+    padding: 24px;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .credit-scratch-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #94a3b8;
+  }
+  .credit-scratch-badge {
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+  }
+  .credit-scratch-title {
+    margin: 10px 0 4px 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .credit-scratch-subtitle {
+    margin: 0 0 16px 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+  .credit-scratch-canvas-container {
+    position: relative;
+    width: 280px;
+    height: 150px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  .credit-scratch-prize-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+  .credit-scratch-prize-label {
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.9;
+    letter-spacing: 1px;
+  }
+  .credit-scratch-prize-val {
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+  .credit-scratch-prize-sub {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    opacity: 0.9;
+  }
+  #credit-scratch-canvas {
+    position: absolute;
+    inset: 0;
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .credit-scratch-hint {
+    margin: 10px 0 0 0;
+    font-size: 12px;
+    color: #64748b;
+  }
+  .credit-scratch-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .credit-scratch-claim-btn {
+    width: 100%;
+    padding: 12px;
+    background: #4f46e5;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .credit-scratch-claim-btn:hover {
+    background: #4338ca;
+  }
+  .credit-scratch-status {
+    margin: 8px 0 0 0;
+    font-size: 12px;
+  }
+</style>
+
+<script>
+  (function() {
+    var launcher = document.getElementById("credit-scratch-launcher");
+    var modal = document.getElementById("credit-scratch-modal");
+    var closeBtn = document.getElementById("credit-scratch-close");
+    var canvas = document.getElementById("credit-scratch-canvas");
+    var claimSection = document.getElementById("credit-scratch-claim-section");
+    var hint = document.getElementById("credit-scratch-hint");
+    var form = document.getElementById("credit-scratch-form");
+    var status = document.getElementById("credit-scratch-status");
+    var prizeValEl = document.getElementById("credit-scratch-prize-amount");
+    var gameView = document.getElementById("credit-scratch-game-view");
+    var successView = document.getElementById("credit-scratch-success-view");
+    var awardedAmountEl = document.getElementById("credit-scratch-awarded-amount");
+    var shopNowBtn = document.getElementById("credit-scratch-shop-now-btn");
+
+    if (!canvas) return;
+
+    var ctx = canvas.getContext("2d");
+    var isDrawing = false;
+    var scratchedPixels = 0;
+    var totalPixels = canvas.width * canvas.height;
+    var revealed = false;
+
+    // Pick randomized prize tier
+    var rand = Math.random();
+    var prize = 10;
+    if (rand < 0.05) prize = 50;
+    else if (rand < 0.20) prize = 25;
+    else if (rand < 0.65) prize = 10;
+    else prize = 5;
+
+    prizeValEl.textContent = "$" + prize.toFixed(2);
+
+    function initCanvas() {
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 16px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("SCRATCH HERE", canvas.width / 2, canvas.height / 2 + 6);
+    }
+
+    initCanvas();
+
+    function scratch(x, y) {
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.beginPath();
+      ctx.arc(x, y, 18, 0, Math.PI * 2, false);
+      ctx.fill();
+
+      checkScratched();
+    }
+
+    function checkScratched() {
+      if (revealed) return;
+      var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var count = 0;
+      for (var i = 3; i < imageData.data.length; i += 16) {
+        if (imageData.data[i] === 0) count++;
+      }
+      var percent = (count / (imageData.data.length / 16)) * 100;
+      if (percent > 40) {
+        revealed = true;
+        canvas.style.display = "none";
+        hint.style.display = "none";
+        claimSection.style.display = "block";
+      }
+    }
+
+    function getPos(e) {
+      var rect = canvas.getBoundingClientRect();
+      var clientX = e.clientX || (e.touches && e.touches[0].clientX);
+      var clientY = e.clientY || (e.touches && e.touches[0].clientY);
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    canvas.addEventListener("mousedown", function(e) {
+      isDrawing = true;
+      var p = getPos(e);
+      scratch(p.x, p.y);
+    });
+
+    window.addEventListener("mousemove", function(e) {
+      if (!isDrawing) return;
+      var p = getPos(e);
+      scratch(p.x, p.y);
+    });
+
+    window.addEventListener("mouseup", function() {
+      isDrawing = false;
+    });
+
+    canvas.addEventListener("touchstart", function(e) {
+      isDrawing = true;
+      var p = getPos(e);
+      scratch(p.x, p.y);
+    }, { passive: true });
+
+    canvas.addEventListener("touchmove", function(e) {
+      if (!isDrawing) return;
+      var p = getPos(e);
+      scratch(p.x, p.y);
+    }, { passive: true });
+
+    canvas.addEventListener("touchend", function() {
+      isDrawing = false;
+    });
+
+    launcher.addEventListener("click", function() {
+      modal.style.display = "flex";
+    });
+
+    closeBtn.addEventListener("click", function() {
+      modal.style.display = "none";
+    });
+
+    if (shopNowBtn) {
+      shopNowBtn.addEventListener("click", function() {
+        modal.style.display = "none";
+      });
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      var name = document.getElementById("credit-scratch-name").value.trim();
+      var email = document.getElementById("credit-scratch-email").value.trim();
+      var shop = document.getElementById("credit-scratch-card-wrapper").getAttribute("data-shop");
+
+      status.textContent = "Depositing credit to your wallet...";
+      status.style.color = "#4f46e5";
+
+      fetch("/apps/credit-rewards/api/storefront/scratch-card", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shop: shop,
+          name: name,
+          email: email,
+          prizeAmount: prize
+        })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.success) {
+          awardedAmountEl.textContent = "$" + prize.toFixed(2);
+          gameView.style.display = "none";
+          successView.style.display = "block";
+        } else {
+          status.textContent = data.error || "Failed to deposit credit.";
+          status.style.color = "#dc2626";
+        }
+      })
+      .catch(function(err) {
+        status.textContent = "Network error. Please try again.";
+        status.style.color = "#dc2626";
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Scratch & Win Credit",
+  "target": "body",
+  "settings": [
+    {
+      "type": "text",
+      "id": "launcher_text",
+      "label": "Floating Button Text",
+      "default": "Win Up to $50 Credit!"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Modal Title",
+      "default": "Scratch to Reveal Your Store Credit!"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Modal Subtitle",
+      "default": "Rub the card below to win up to $50.00 instantly!"
+    }
+  ]
+}
+{% endschema %}

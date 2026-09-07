@@ -1,0 +1,9 @@
+{
+  "name": "credit-admin-block",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@shopify/ui-extensions-react": "^2025.7.3",
+    "react": "^18.2.0"
+  }
+}

@@ -1,0 +1,22 @@
+api_version = "2026-07"
+
+[[extensions]]
+name = "Store Credit & VIP Pixel"
+handle = "credit-pixel"
+type = "web_pixel_extension"
+runtime_context = "strict"
+
+[customer_privacy]
+analytics = true
+marketing = true
+preferences = false
+sale_of_data = "enabled"
+
+[settings]
+type = "object"
+
+[[settings.fields]]
+key = "accountID"
+name = "Store Credit Account ID"
+description = "Internal identifier for tracking rewards telemetry"
+type = "single_line_text_field"

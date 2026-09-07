@@ -1,0 +1,15 @@
+api_version = "2026-07"
+
+[[extensions]]
+type = "ui_extension"
+name = "Store Credit Quick-Redeem"
+handle = "credit-checkout"
+uid = "9dda8722-974d-d97e-c7fc-17c786c703e1c3bee8bb"
+
+  [[extensions.targeting]]
+  target = "purchase.checkout.block.render"
+  module = "./src/Checkout.jsx"
+
+[extensions.capabilities]
+api_access = true
+network_access = true

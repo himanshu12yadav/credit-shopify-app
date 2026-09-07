@@ -1,0 +1,166 @@
+{{ 'credit-storefront.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'credit-storefront.js' | asset_url }}" defer="defer"></script>
+
+<div
+  class="credit-referral-card"
+  style="
+    max-width: 680px;
+    margin: 24px auto;
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  "
+>
+  <div class="credit-referral-header" style="margin-bottom: 20px;">
+    <div style="display: inline-block; padding: 4px 10px; border-radius: 9999px; background: #eff6ff; color: #3b82f6; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">
+      Referral Rewards
+    </div>
+    <h3 style="font-size: 22px; font-weight: 800; color: #0f172a; margin: 0 0 6px 0;">
+      {{ block.settings.title }}
+    </h3>
+    <p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.5;">
+      {{ block.settings.description }}
+    </p>
+  </div>
+
+  <!-- 3-Step How It Works Guide -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;">
+    <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 10px; padding: 14px; text-align: center;">
+      <div style="font-size: 24px; margin-bottom: 6px;">🔗</div>
+      <div style="font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">1. Send Invite</div>
+      <div style="font-size: 11px; color: #64748b;">Share your unique link with friends</div>
+    </div>
+    <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 10px; padding: 14px; text-align: center;">
+      <div style="font-size: 24px; margin-bottom: 6px;">🛍️</div>
+      <div style="font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">2. Friend Purchases</div>
+      <div style="font-size: 11px; color: #64748b;">They get ${{ block.settings.friend_reward }} off their order</div>
+    </div>
+    <div style="background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 10px; padding: 14px; text-align: center;">
+      <div style="font-size: 24px; margin-bottom: 6px;">💰</div>
+      <div style="font-size: 12px; font-weight: 700; color: #166534; margin-bottom: 2px;">3. You Get ${{ block.settings.advocate_reward }}</div>
+      <div style="font-size: 11px; color: #15803d;">Instant Store Credit deposited</div>
+    </div>
+  </div>
+
+  {% if customer %}
+    {% assign referral_code = 'REF-' | append: customer.id | slice: 0, 12 | upcase %}
+    {% assign share_url = shop.url | append: '?ref=' | append: referral_code %}
+    {% assign share_text = 'Get ' | append: cart.currency.symbol | append: block.settings.friend_reward | append: ' off your order using my store link: ' | append: share_url %}
+
+    <div>
+      <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+        Your Personal Shareable Link:
+      </label>
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <input
+          type="text"
+          id="credit-referral-link"
+          value="{{ share_url }}"
+          readonly
+          style="
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            font-size: 13px;
+            font-family: monospace;
+            color: #0f172a;
+          "
+        />
+        <button
+          type="button"
+          class="credit-copy-btn"
+          data-credit-copy-btn
+          data-target="#credit-referral-link"
+          style="
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: #4f46e5;
+            color: #ffffff;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+          "
+        >
+          Copy Link
+        </button>
+      </div>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <a
+          href="https://api.whatsapp.com/send?text={{ share_text | url_encode }}"
+          target="_blank"
+          rel="noopener"
+          style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; background: #25d366; color: #ffffff; text-decoration: none; font-size: 12px; font-weight: 700;"
+        >
+          💬 Share via WhatsApp
+        </a>
+        <a
+          href="mailto:?subject=Store Credit Gift for you&body={{ share_text | url_encode }}"
+          style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; background: #f1f5f9; color: #334155; text-decoration: none; font-size: 12px; font-weight: 600; border: 1px solid #e2e8f0;"
+        >
+          ✉️ Share via Email
+        </a>
+        <a
+          href="https://twitter.com/intent/tweet?text={{ share_text | url_encode }}"
+          target="_blank"
+          rel="noopener"
+          style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; background: #0f172a; color: #ffffff; text-decoration: none; font-size: 12px; font-weight: 600;"
+        >
+          🐦 Post to X
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div style="background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px dashed #cbd5e1; text-align: center;">
+      <p style="margin: 0 0 12px 0; font-size: 14px; color: #475569;">
+        Please log in to your account to get your personal referral link and start earning rewards!
+      </p>
+      <a
+        href="{{ routes.account_login_url }}"
+        style="display: inline-block; padding: 10px 20px; background: #4f46e5; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 13px;"
+      >
+        Sign In / Register &rarr;
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Referral Rewards Program",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Headline",
+      "default": "🎁 Give $10, Get $10"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Program Description",
+      "default": "Share your referral link with friends. They receive $10 store credit on their first order, and you get $10 bonus store credit when they purchase!"
+    },
+    {
+      "type": "number",
+      "id": "friend_reward",
+      "label": "Friend Reward ($)",
+      "default": 10
+    },
+    {
+      "type": "number",
+      "id": "advocate_reward",
+      "label": "Advocate Reward ($)",
+      "default": 10
+    }
+  ]
+}
+{% endschema %}

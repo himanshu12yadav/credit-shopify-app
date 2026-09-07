@@ -1,0 +1,487 @@
+{% comment %}
+  Digital Gift Card & Store Credit Gifting Block
+  Allows shoppers to purchase or send store credit directly to friends/family.
+{% endcomment %}
+
+<div class="gift-credit-container" id="giftCreditWidget">
+  <div class="gift-credit-card-preview-wrapper">
+    <!-- Live Card Visualizer -->
+    <div class="gift-card-visual" id="giftCardVisual" data-skin="emerald">
+      <div class="gift-card-header">
+        <span class="gift-card-brand">{{ shop.name | upcase }}</span>
+        <span class="gift-card-badge">DIGITAL STORE CREDIT</span>
+      </div>
+      <div class="gift-card-chip">
+        <div class="chip-line"></div>
+        <div class="chip-line"></div>
+      </div>
+      <div class="gift-card-amount" id="previewAmount">$50.00</div>
+      <div class="gift-card-footer">
+        <div class="gift-card-recipient-info">
+          <span class="gift-card-label">FOR</span>
+          <span class="gift-card-name" id="previewRecipient">Valued Friend</span>
+        </div>
+        <div class="gift-card-logo">🎁</div>
+      </div>
+    </div>
+
+    <!-- Skin / Theme Palette Selector -->
+    <div class="gift-skin-picker">
+      <span class="gift-picker-label">Card Style:</span>
+      <div class="gift-skin-options">
+        <button type="button" class="skin-circle skin-emerald active" data-skin="emerald" title="Emerald Luxury"></button>
+        <button type="button" class="skin-circle skin-midnight" data-skin="midnight" title="Midnight Obsidian"></button>
+        <button type="button" class="skin-circle skin-rose" data-skin="rose" title="Rose Gold Celebration"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Gifting Form -->
+  <div class="gift-form-wrapper">
+    <h3 class="gift-form-title">Send Store Credit as a Gift</h3>
+    <p class="gift-form-subtitle">Recipient receives an instant digital credit notification redeemable immediately at checkout.</p>
+
+    <div class="gift-form-field">
+      <label class="gift-label">Select Amount</label>
+      <div class="gift-amount-pills">
+        <button type="button" class="amount-pill" data-val="25">$25</button>
+        <button type="button" class="amount-pill active" data-val="50">$50</button>
+        <button type="button" class="amount-pill" data-val="100">$100</button>
+        <button type="button" class="amount-pill" data-val="custom">Custom</button>
+      </div>
+      <div class="custom-amount-box" id="customAmountBox" style="display: none; margin-top: 8px;">
+        <input type="number" id="customAmountInput" class="gift-input" placeholder="Enter amount (e.g. 75)" min="5" step="1">
+      </div>
+    </div>
+
+    <div class="gift-grid-two">
+      <div class="gift-form-field">
+        <label class="gift-label" for="giftSenderName">Your Name</label>
+        <input type="text" id="giftSenderName" class="gift-input" placeholder="e.g. Alex" value="{% if customer %}{{ customer.name }}{% endif %}">
+      </div>
+      <div class="gift-form-field">
+        <label class="gift-label" for="giftRecipientName">Recipient Name</label>
+        <input type="text" id="giftRecipientName" class="gift-input" placeholder="e.g. Sarah">
+      </div>
+    </div>
+
+    <div class="gift-form-field">
+      <label class="gift-label" for="giftRecipientEmail">Recipient Email Address *</label>
+      <input type="email" id="giftRecipientEmail" class="gift-input" placeholder="friend@example.com" required>
+    </div>
+
+    <div class="gift-form-field">
+      <label class="gift-label" for="giftMessage">Personal Note / Greeting</label>
+      <textarea id="giftMessage" class="gift-textarea" rows="2" placeholder="Happy Birthday! Treat yourself to something special ✨"></textarea>
+    </div>
+
+    <button type="button" class="gift-submit-btn" id="sendGiftCardBtn">
+      <span>🎁</span>
+      <span id="submitBtnText">Send $50.00 Digital Gift Card</span>
+    </button>
+
+    <div id="giftStatusMessage" class="gift-status-msg" style="display: none;"></div>
+  </div>
+</div>
+
+<style>
+  .gift-credit-container {
+    max-width: 900px;
+    margin: 32px auto;
+    padding: 28px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 36px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #0f172a;
+  }
+
+  @media (max-width: 768px) {
+    .gift-credit-container {
+      grid-template-columns: 1fr;
+      padding: 20px;
+      gap: 24px;
+    }
+  }
+
+  /* Card Visualizer */
+  .gift-credit-card-preview-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .gift-card-visual {
+    width: 100%;
+    height: 215px;
+    border-radius: 14px;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .gift-card-visual[data-skin="emerald"] {
+    background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
+  }
+  .gift-card-visual[data-skin="midnight"] {
+    background: linear-gradient(135deg, #090d16 0%, #1e293b 60%, #334155 100%);
+  }
+  .gift-card-visual[data-skin="rose"] {
+    background: linear-gradient(135deg, #881337 0%, #be123c 60%, #fb7185 100%);
+  }
+
+  .gift-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .gift-card-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 3px 8px;
+    border-radius: 9999px;
+    font-size: 9px;
+    backdrop-filter: blur(4px);
+  }
+
+  .gift-card-chip {
+    width: 36px;
+    height: 26px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 3px;
+    box-sizing: border-box;
+  }
+  .chip-line {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .gift-card-amount {
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .gift-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .gift-card-label {
+    font-size: 9px;
+    opacity: 0.8;
+    display: block;
+    letter-spacing: 0.05em;
+  }
+  .gift-card-name {
+    font-size: 13px;
+    font-weight: 700;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  .gift-card-logo {
+    font-size: 24px;
+  }
+
+  /* Skin Picker */
+  .gift-skin-picker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .gift-picker-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 600;
+  }
+  .gift-skin-options {
+    display: flex;
+    gap: 8px;
+  }
+  .skin-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .skin-circle:hover {
+    transform: scale(1.1);
+  }
+  .skin-circle.active {
+    outline: 2px solid #0f172a;
+    outline-offset: 2px;
+  }
+  .skin-emerald { background: #047857; }
+  .skin-midnight { background: #0f172a; }
+  .skin-rose { background: #be123c; }
+
+  /* Form */
+  .gift-form-title {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .gift-form-subtitle {
+    margin: 0 0 20px 0;
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.4;
+  }
+
+  .gift-form-field {
+    margin-bottom: 14px;
+  }
+  .gift-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+
+  .gift-amount-pills {
+    display: flex;
+    gap: 8px;
+  }
+  .amount-pill {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .amount-pill:hover {
+    border-color: #047857;
+    background: #f0fdf4;
+  }
+  .amount-pill.active {
+    background: #047857;
+    border-color: #047857;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(4, 120, 87, 0.3);
+  }
+
+  .gift-grid-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .gift-input, .gift-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .gift-input:focus, .gift-textarea:focus {
+    border-color: #047857;
+    box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+  }
+
+  .gift-submit-btn {
+    width: 100%;
+    margin-top: 6px;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    background: #047857;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+    transition: all 0.2s;
+  }
+  .gift-submit-btn:hover {
+    background: #065f46;
+    transform: translateY(-1px);
+  }
+  .gift-submit-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .gift-status-msg {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .gift-status-msg.success {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+  }
+  .gift-status-msg.error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+</style>
+
+<script>
+  (function() {
+    let currentAmount = 50.0;
+    let currentSkin = "emerald";
+
+    const previewAmount = document.getElementById("previewAmount");
+    const previewRecipient = document.getElementById("previewRecipient");
+    const giftCardVisual = document.getElementById("giftCardVisual");
+    const submitBtnText = document.getElementById("submitBtnText");
+    const customAmountBox = document.getElementById("customAmountBox");
+    const customAmountInput = document.getElementById("customAmountInput");
+    const sendGiftCardBtn = document.getElementById("sendGiftCardBtn");
+    const giftStatusMessage = document.getElementById("giftStatusMessage");
+
+    // Skin Picker
+    document.querySelectorAll(".skin-circle").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".skin-circle").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentSkin = btn.getAttribute("data-skin");
+        giftCardVisual.setAttribute("data-skin", currentSkin);
+      });
+    });
+
+    // Amount Pills
+    document.querySelectorAll(".amount-pill").forEach(pill => {
+      pill.addEventListener("click", () => {
+        document.querySelectorAll(".amount-pill").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        const val = pill.getAttribute("data-val");
+        if (val === "custom") {
+          customAmountBox.style.display = "block";
+          currentAmount = parseFloat(customAmountInput.value) || 25.0;
+        } else {
+          customAmountBox.style.display = "none";
+          currentAmount = parseFloat(val);
+        }
+        updateAmountDisplay();
+      });
+    });
+
+    customAmountInput.addEventListener("input", (e) => {
+      const val = parseFloat(e.target.value);
+      if (!isNaN(val) && val > 0) {
+        currentAmount = val;
+        updateAmountDisplay();
+      }
+    });
+
+    function updateAmountDisplay() {
+      previewAmount.textContent = "$" + currentAmount.toFixed(2);
+      submitBtnText.textContent = "Send $" + currentAmount.toFixed(2) + " Digital Gift Card";
+    }
+
+    // Recipient Name dynamic preview
+    const recipientInput = document.getElementById("giftRecipientName");
+    recipientInput.addEventListener("input", (e) => {
+      previewRecipient.textContent = e.target.value.trim() || "Valued Friend";
+    });
+
+    // Submit handler
+    sendGiftCardBtn.addEventListener("click", async () => {
+      const recipientEmail = document.getElementById("giftRecipientEmail").value.trim();
+      const senderName = document.getElementById("giftSenderName").value.trim() || "A Friend";
+      const recipientName = recipientInput.value.trim() || "Valued Friend";
+      const message = document.getElementById("giftMessage").value.trim() || "Enjoy your store credit gift!";
+
+      if (!recipientEmail || !recipientEmail.includes("@")) {
+        alert("Please provide a valid recipient email address.");
+        return;
+      }
+
+      sendGiftCardBtn.disabled = true;
+      submitBtnText.textContent = "Processing Gift Card...";
+      giftStatusMessage.style.display = "none";
+
+      try {
+        const resp = await fetch("/apps/credit/api/storefront/gift-credit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            shop: window.Shopify ? window.Shopify.shop : location.hostname,
+            senderName,
+            recipientName,
+            recipientEmail,
+            amount: currentAmount,
+            message,
+            skin: currentSkin
+          })
+        });
+
+        const data = await resp.json();
+        if (data.success) {
+          giftStatusMessage.className = "gift-status-msg success";
+          giftStatusMessage.innerHTML = "🎉 " + data.message;
+          giftStatusMessage.style.display = "block";
+          submitBtnText.textContent = "✓ Sent Successfully!";
+        } else {
+          throw new Error(data.error || "Failed to process gift credit.");
+        }
+      } catch (err) {
+        giftStatusMessage.className = "gift-status-msg error";
+        giftStatusMessage.textContent = "Error: " + err.message;
+        giftStatusMessage.style.display = "block";
+        sendGiftCardBtn.disabled = false;
+        submitBtnText.textContent = "Try Again";
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Digital Gift Card Credit",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Send Store Credit as a Gift"
+    }
+  ]
+}
+{% endschema %}

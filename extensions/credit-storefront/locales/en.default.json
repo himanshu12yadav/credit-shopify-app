@@ -1,0 +1,15 @@
+{
+  "credit": {
+    "badge": {
+      "prefix": "Earn",
+      "suffix": "in Store Credit"
+    },
+    "cart": {
+      "headline": "Order Reward Unlocked!"
+    },
+    "referral": {
+      "copy": "Copy Link",
+      "copied": "Copied!"
+    }
+  }
+}

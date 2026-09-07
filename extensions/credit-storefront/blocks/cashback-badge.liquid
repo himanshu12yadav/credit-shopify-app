@@ -1,0 +1,103 @@
+{{ 'credit-storefront.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'credit-storefront.js' | asset_url }}" defer="defer"></script>
+
+{% assign variant = product.selected_or_first_available_variant %}
+{% assign price_dollars = variant.price | divided_by: 100.0 %}
+{% assign rate_decimal = block.settings.cashback_percent | divided_by: 100.0 %}
+{% assign credit_earned = price_dollars | times: rate_decimal | plus: block.settings.fixed_bonus %}
+
+<div
+  class="credit-cashback-badge"
+  data-credit-cashback-badge
+  data-rate="{{ block.settings.cashback_percent }}"
+  data-fixed="{{ block.settings.fixed_bonus }}"
+  data-currency="{{ cart.currency.symbol }}"
+  style="
+    --credit-badge-bg: {{ block.settings.bg_color }};
+    --credit-badge-text: {{ block.settings.text_color }};
+    --credit-badge-border: {{ block.settings.border_color }};
+    --credit-badge-radius: {{ block.settings.border_radius }}px;
+  "
+>
+  {% if block.settings.show_icon %}
+    <span class="credit-badge-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z"/>
+      </svg>
+    </span>
+  {% endif %}
+
+  <span>
+    {{ block.settings.prefix_text }}
+    <span class="credit-amount-highlight">{{ cart.currency.symbol }}{{ credit_earned | round: 2 }}</span>
+    {{ block.settings.suffix_text }}
+  </span>
+</div>
+
+{% schema %}
+{
+  "name": "Earn Store Credit",
+  "target": "section",
+  "templates": ["product"],
+  "settings": [
+    {
+      "type": "number",
+      "id": "cashback_percent",
+      "label": "Cashback Rate (%)",
+      "default": 5
+    },
+    {
+      "type": "number",
+      "id": "fixed_bonus",
+      "label": "Extra Fixed Bonus ($)",
+      "default": 0
+    },
+    {
+      "type": "text",
+      "id": "prefix_text",
+      "label": "Prefix Text",
+      "default": "⚡ Earn up to"
+    },
+    {
+      "type": "text",
+      "id": "suffix_text",
+      "label": "Suffix Text",
+      "default": "in Store Credit"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Display Reward Icon",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#f0fdf4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#166534"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#bbf7d0"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Corner Radius",
+      "default": 8
+    }
+  ]
+}
+{% endschema %}

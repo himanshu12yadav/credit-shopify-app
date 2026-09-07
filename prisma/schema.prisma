@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
+// enough when changing adapters.
+// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+model CreditRule {
+  id           String   @id @default(cuid())
+  shop         String
+  title        String
+  description  String?
+  trigger      String   @default("ORDER_PAID") // ORDER_PAID, FIRST_ORDER, SPEND_THRESHOLD, CUSTOMER_TAG, MANUAL
+  creditType   String   @default("PERCENTAGE") // PERCENTAGE, FIXED
+  creditValue  Float    @default(5.0)
+  minSpend     Float    @default(0.0)
+  maxCredit    Float?
+  customerTag  String?
+  expiryDays   Int      @default(90)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CreditLedger {
+  id                  String    @id @default(cuid())
+  shop                String
+  customerId          String
+  customerEmail       String?
+  customerName        String?
+  orderId             String?
+  amount              Float
+  currency            String    @default("USD")
+  action              String    @default("CREDIT") // CREDIT, DEBIT
+  source              String    @default("CASHBACK") // CASHBACK, RULE_AWARD, REFUND_CREDIT, REFERRAL, CAMPAIGN, MANUAL
+  ruleId              String?
+  shopifyTransactionId String?
+  note                String?
+  expiresAt           DateTime?
+  status              String    @default("COMPLETED") // COMPLETED, FAILED, EXPIRED
+  metadata            String?   // JSON object for gifts, appeasement reasons, etc.
+  createdAt           DateTime  @default(now())
+}
+
+model Campaign {
+  id                String    @id @default(cuid())
+  shop              String
+  name              String
+  description       String?
+  type              String    @default("EVENT") // "EVENT" (bonus multiplier/spend rules), "CREDIT_DROP" (direct bulk credit drop)
+  targetSegment     String?   // "ALL", "VIP_GOLD", "VIP_SILVER", "VIP_PLATINUM", "DORMANT_60D"
+  dropAmount        Float?    @default(0.0)
+  expiryDays        Int?      @default(30)
+  recipientCount    Int?      @default(0)
+  totalDisbursed    Float?    @default(0.0)
+  bonusMultiplier   Float     @default(1.0)
+  bonusFixedAmount  Float     @default(0.0)
+  minSpend          Float     @default(0.0)
+  startDate         DateTime
+  endDate           DateTime
+  isActive          Boolean   @default(true)
+  status            String    @default("ACTIVE") // "ACTIVE", "SCHEDULED", "COMPLETED"
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Referral {
+  id                   String   @id @default(cuid())
+  shop                 String
+  referrerCustomerId   String
+  referrerEmail        String?
+  referralCode         String   @unique
+  advocateRewardAmount Float    @default(10.0)
+  friendRewardAmount   Float    @default(10.0)
+  claimsCount          Int      @default(0)
+  status               String   @default("ACTIVE")
+  createdAt            DateTime @default(now())
+}
+
+model CreditSettings {
+  id                       String   @id @default(cuid())
+  shop                     String   @unique
+  defaultCurrency          String   @default("USD")
+  defaultExpiryDays        Int      @default(90)
+  autoNotifyCustomer       Boolean  @default(true)
+  cashbackEnabled          Boolean  @default(true)
+  cashbackRate             Float    @default(5.0)
+  returnCreditBonusPercent Float    @default(10.0)
+  referralsEnabled         Boolean  @default(true)
+  welcomeBonusEnabled      Boolean  @default(true)
+  welcomeBonusAmount       Float    @default(10.0)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
+
+model VipTier {
+  id              String   @id @default(cuid())
+  shop            String
+  name            String   // Bronze, Silver, Gold, Platinum
+  minSpend        Float    @default(0.0)
+  cashbackRate    Float    @default(5.0)
+  perks           String?
+  badgeColor      String   @default("#6b7280")
+  orderIndex      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+

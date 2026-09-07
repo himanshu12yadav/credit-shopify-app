@@ -1,0 +1,9 @@
+{
+  "name": "Store Credit & VIP",
+  "tile_subtitle": "Balances, VIP tiers & cart credit",
+  "search_placeholder": "Search customer or scan wallet pass...",
+  "apply_to_cart": "Apply Credit to Cart",
+  "issue_credit": "Issue In-Store Credit",
+  "balance": "Store Credit Balance",
+  "vip_tier": "VIP Loyalty Tier"
+}

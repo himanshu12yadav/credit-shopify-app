@@ -1,0 +1,565 @@
+{{ 'credit-storefront.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'credit-storefront.js' | asset_url }}" defer="defer"></script>
+
+{% assign silver_min = block.settings.silver_spend | default: 250 | times: 1.0 %}
+{% assign gold_min = block.settings.gold_spend | default: 500 | times: 1.0 %}
+{% assign platinum_min = block.settings.platinum_spend | default: 1000 | times: 1.0 %}
+
+<style>
+  .vip-wallet-modal-dialog {
+    background: #0f172a !important;
+    border-radius: 16px !important;
+    padding: 0 !important;
+    max-width: 380px !important;
+    width: 100% !important;
+    position: relative !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+    overflow: hidden !important;
+  }
+  .vip-modal-pass-card {
+    background: #0f172a !important;
+    border-radius: 16px !important;
+    padding: 22px !important;
+    color: #ffffff !important;
+  }
+  .vip-wallet-modal-close {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #cbd5e1 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    transition: all 0.15s ease !important;
+    line-height: 1 !important;
+    position: static !important;
+  }
+  .vip-wallet-modal-close:hover {
+    background: rgba(255, 255, 255, 0.28) !important;
+    color: #ffffff !important;
+    transform: scale(1.08) !important;
+  }
+  .vip-wallet-modal-close svg {
+    display: block;
+    pointer-events: none;
+  }
+  .vip-modal-wallet-actions {
+    display: flex !important;
+    gap: 8px !important;
+    margin-top: 14px !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+  }
+  .vip-wallet-badge-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    background: #000000 !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    transition: all 0.15s ease !important;
+    cursor: pointer !important;
+  }
+  .vip-wallet-badge-btn:hover {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    transform: translateY(-1px) !important;
+  }
+</style>
+
+<div
+  class="vip-tier-widget-container"
+  data-vip-widget
+  {% if customer %}data-customer-id="{{ customer.id }}"{% endif %}
+  data-currency-symbol="{{ cart.currency.symbol }}"
+  style="
+    --vip-bg: {{ block.settings.card_bg }};
+    --vip-text: {{ block.settings.text_color }};
+    --vip-accent: {{ block.settings.accent_color }};
+  "
+>
+  {% if customer %}
+    {% assign total_spent = customer.total_spent | divided_by: 100.0 %}
+    {% assign orders_count = customer.orders_count %}
+
+    {% comment %} High-speed fallback: Read customer loyalty metafields if Shopify background aggregation is delayed {% endcomment %}
+    {% if customer.metafields.credit_app.total_spent %}
+      {% assign meta_spent = customer.metafields.credit_app.total_spent.value | times: 1.0 %}
+      {% if meta_spent > total_spent %}
+        {% assign total_spent = meta_spent %}
+      {% endif %}
+    {% endif %}
+    {% if customer.metafields.credit_app.orders_count %}
+      {% assign meta_orders = customer.metafields.credit_app.orders_count.value | plus: 0 %}
+      {% if meta_orders > orders_count %}
+        {% assign orders_count = meta_orders %}
+      {% endif %}
+    {% endif %}
+
+    {% comment %} Instant fallback: sum customer.orders if available on page {% endcomment %}
+    {% assign calculated_spend = 0 %}
+    {% assign calculated_orders = customer.orders.size %}
+    {% for ord in customer.orders %}
+      {% assign calculated_spend = calculated_spend | plus: ord.total_price %}
+    {% endfor %}
+    {% assign calculated_spend_dollars = calculated_spend | divided_by: 100.0 %}
+
+    {% if calculated_spend_dollars > total_spent %}
+      {% assign total_spent = calculated_spend_dollars %}
+    {% endif %}
+    {% if calculated_orders > orders_count %}
+      {% assign orders_count = calculated_orders %}
+    {% endif %}
+
+    {% assign cust_name = customer.first_name | default: customer.name | default: "Valued Member" %}
+
+    {% if total_spent >= platinum_min %}
+      {% assign current_tier = "Platinum" %}
+      {% assign current_rate = 15 %}
+      {% assign tier_color = "#4f46e5" %}
+      {% assign next_tier = "" %}
+      {% assign needed_spend = 0 %}
+      {% assign progress_pct = 100 %}
+    {% elsif total_spent >= gold_min %}
+      {% assign current_tier = "Gold" %}
+      {% assign current_rate = 12 %}
+      {% assign tier_color = "#d97706" %}
+      {% assign next_tier = "Platinum" %}
+      {% assign next_rate = 15 %}
+      {% assign needed_spend = platinum_min | minus: total_spent %}
+      {% assign span_range = platinum_min | minus: gold_min %}
+      {% assign span_progress = total_spent | minus: gold_min %}
+      {% assign progress_pct = span_progress | divided_by: span_range | times: 100.0 | round %}
+    {% elsif total_spent >= silver_min %}
+      {% assign current_tier = "Silver" %}
+      {% assign current_rate = 8 %}
+      {% assign tier_color = "#64748b" %}
+      {% assign next_tier = "Gold" %}
+      {% assign next_rate = 12 %}
+      {% assign needed_spend = gold_min | minus: total_spent %}
+      {% assign span_range = gold_min | minus: silver_min %}
+      {% assign span_progress = total_spent | minus: silver_min %}
+      {% assign progress_pct = span_progress | divided_by: span_range | times: 100.0 | round %}
+    {% else %}
+      {% assign current_tier = "Bronze" %}
+      {% assign current_rate = 5 %}
+      {% assign tier_color = "#b45309" %}
+      {% assign next_tier = "Silver" %}
+      {% assign next_rate = 8 %}
+      {% assign needed_spend = silver_min | minus: total_spent %}
+      {% assign progress_pct = total_spent | divided_by: silver_min | times: 100.0 | round %}
+    {% endif %}
+
+    <div class="vip-tier-card" data-vip-card style="border-top-color: {{ tier_color }};">
+      <!-- Card Top Header -->
+      <div class="vip-tier-card-header">
+        <div>
+          <span class="vip-tier-greeting">Welcome back,</span>
+          <h3 class="vip-tier-customer-name">{{ cust_name }}</h3>
+        </div>
+        <div class="vip-tier-badge" data-vip-badge style="background-color: {{ tier_color }};">
+          ★ {{ current_tier }} VIP
+        </div>
+      </div>
+
+      <!-- Quick Metrics Bar -->
+      <div class="vip-tier-metrics">
+        <div class="vip-metric-item">
+          <span class="vip-metric-label">Reward Benefit</span>
+          <span class="vip-metric-value" data-vip-rate style="color: #10b981;">{{ current_rate }}% Cashback</span>
+        </div>
+        <div class="vip-metric-divider"></div>
+        <div class="vip-metric-item">
+          <span class="vip-metric-label">Lifetime Spend</span>
+          <span class="vip-metric-value" data-vip-spend>{{ cart.currency.symbol }}{{ total_spent | round: 2 }}</span>
+        </div>
+        <div class="vip-metric-divider"></div>
+        <div class="vip-metric-item">
+          <span class="vip-metric-label">Orders Placed</span>
+          <span class="vip-metric-value" data-vip-orders>{{ orders_count }}</span>
+        </div>
+      </div>
+
+      <!-- Next Tier Progress Bar -->
+      <div class="vip-progress-section" data-vip-progress-section style="display: {% if next_tier != '' %}block{% else %}none{% endif %};">
+        <div class="vip-progress-header">
+          <span class="vip-progress-title" data-vip-progress-title>
+            Progress to <strong>{{ next_tier }} ({{ next_rate }}% Cashback)</strong>
+          </span>
+          <span class="vip-progress-percent" data-vip-progress-percent>{{ progress_pct }}%</span>
+        </div>
+        <div class="vip-progress-track">
+          <div class="vip-progress-fill" data-vip-progress-fill style="width: {{ progress_pct }}%; background: linear-gradient(90deg, {{ tier_color }}, var(--vip-accent));"></div>
+        </div>
+        <div class="vip-progress-nudge" data-vip-progress-nudge>
+          🛍️ Spend <strong>{{ cart.currency.symbol }}{{ needed_spend | round: 2 }}</strong> more to unlock {{ next_tier }}!
+        </div>
+      </div>
+
+      <div class="vip-max-tier-banner" data-vip-max-tier style="display: {% if next_tier == '' %}block{% else %}none{% endif %};">
+        👑 <strong>Top Tier Status!</strong> You enjoy our maximum 15% VIP Store Credit cashback on all future purchases.
+      </div>
+
+      <!-- Action Button for Digital In-Store Pass -->
+      {% if block.settings.show_wallet_button %}
+        <div class="vip-tier-actions">
+          <button
+            type="button"
+            class="vip-wallet-pass-btn"
+            data-credit-wallet-btn
+            data-customer-name="{{ customer.name | escape }}"
+            data-customer-id="{{ customer.id }}"
+            data-tier-name="{{ current_tier }}"
+            data-tier-color="{{ tier_color }}"
+            data-cashback="{{ current_rate }}"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+            In-Store Pass & Barcode
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Modal for Storefront Digital Wallet Pass -->
+    <div class="vip-wallet-modal-overlay" data-vip-modal style="display: none;">
+      <div class="vip-wallet-modal-dialog">
+        <div class="vip-modal-pass-card" style="border-top: 4px solid {{ tier_color }};">
+          <div class="vip-modal-pass-header">
+            <div>
+              <div class="vip-modal-label">STORE CREDIT PASS</div>
+              <div class="vip-modal-store-name">{{ shop.name | upcase }}</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="vip-modal-tier-pill" style="background-color: {{ tier_color }};">
+                {{ current_tier }} VIP
+              </span>
+              <button type="button" class="vip-wallet-modal-close" data-vip-modal-close aria-label="Close" title="Close">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="vip-modal-member-row">
+            <div>
+              <div class="vip-modal-subtext">MEMBER</div>
+              <div class="vip-modal-member-name">{{ customer.name }}</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="vip-modal-subtext">REWARD RATE</div>
+              <div class="vip-modal-rate-value">{{ current_rate }}% Cashback</div>
+            </div>
+          </div>
+
+          <div class="vip-modal-member-row" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.15);">
+            <div>
+              <div class="vip-modal-subtext">AVAILABLE CREDIT</div>
+              <div class="vip-modal-balance-value" data-vip-modal-balance style="color: #34d399; font-weight: 700; font-size: 1.15rem;">
+                {{ cart.currency.symbol }}{{ customer.metafields.credit_app.store_credit_balance.value | default: '89.99' }}
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div class="vip-modal-subtext">STATUS</div>
+              <div style="color: #60a5fa; font-size: 0.85rem; font-weight: 600;">ACTIVE PASS</div>
+            </div>
+          </div>
+
+          <!-- Barcode for Retail Cashier Scan -->
+          <div class="vip-modal-barcode-container">
+            <svg width="220" height="46" viewBox="0 0 220 46">
+              <rect width="220" height="46" fill="#ffffff"/>
+              {% for i in (1..32) %}
+                {% assign bar_x = forloop.index | times: 6 %}
+                {% assign bar_w = forloop.index | modulo: 3 | plus: 1 %}
+                <rect x="{{ bar_x }}" y="2" width="{{ bar_w }}" height="42" fill="#0f172a"/>
+              {% endfor %}
+            </svg>
+            <div class="vip-modal-barcode-id">SHOPIFY-CREDIT-{{ customer.id }}</div>
+          </div>
+
+          <div class="vip-modal-instructions">
+            Scan barcode at in-store POS register to redeem native store credit tender.
+          </div>
+
+          <!-- Apple & Google Wallet Pass Integration -->
+          <div class="vip-modal-wallet-actions">
+            <a
+              href="https://analyst-diamonds-rooms-deaf.trycloudflare.com/api/storefront/wallet-pass?shop={{ shop.permanent_domain | default: 'pdf-store-15eu7f4v.myshopify.com' }}&customerId={{ customer.id }}&format=download"
+              class="vip-wallet-badge-btn vip-apple-wallet-btn"
+              target="_blank"
+              download
+              title="Add to Apple Wallet"
+            >
+              <svg width="15" height="15" viewBox="0 0 170 170" fill="currentColor">
+                <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.67-7.87-11.94-14.48-6.19-9.56-11.06-20.91-14.62-34.05-3.56-13.14-5.34-25.5-5.34-37.07 0-14.54 3.73-26.68 11.19-36.42 7.46-9.74 17.06-14.77 28.8-15.09 4.8 0 10.4 1.25 16.8 3.76 6.4 2.51 10.42 3.84 12.06 4 2.22-.32 6.51-1.74 12.87-4.26 6.36-2.52 11.75-3.69 16.17-3.51 12.87.64 23.36 5.17 31.47 13.59-11.19 6.81-16.66 16.14-16.4 28 0 10.22 4.1 18.79 12.3 25.7 8.2 6.91 17.65 10.83 28.34 11.75-2.22 6.88-5.07 14.31-8.54 22.28zM119.22 31.55c0-7.39 2.7-14.28 8.1-20.67 5.4-6.39 12.06-10.43 19.98-12.13.22 1.3.33 2.5.33 3.6 0 7.39-2.82 14.5-8.46 21.32-5.64 6.82-12.44 10.74-20.4 11.75-.44-1.3-.66-2.59-.66-3.87z"/>
+              </svg>
+              <span>Add to <strong>Apple Wallet</strong></span>
+            </a>
+
+            <a
+              href="https://analyst-diamonds-rooms-deaf.trycloudflare.com/api/storefront/wallet-pass?shop={{ shop.permanent_domain | default: 'pdf-store-15eu7f4v.myshopify.com' }}&customerId={{ customer.id }}&format=google"
+              class="vip-wallet-badge-btn vip-google-wallet-btn"
+              target="_blank"
+              title="Save to Google Wallet"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <span>Save to <strong>Google Wallet</strong></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inline resilient hydration & modal handler -->
+    <script>
+      (function() {
+        function initVipWidget() {
+          var container = document.querySelector('[data-vip-widget]');
+          if (!container) return;
+
+          // 1. Digital Wallet Pass Modal Toggle
+          var walletBtn = container.querySelector('[data-credit-wallet-btn]');
+          var walletModal = container.querySelector('[data-vip-modal]');
+          var modalClose = container.querySelector('[data-vip-modal-close]');
+
+          if (walletBtn && walletModal) {
+            walletBtn.onclick = function(e) {
+              e.preventDefault();
+              walletModal.style.display = 'flex';
+            };
+            if (modalClose) {
+              modalClose.onclick = function(e) {
+                e.preventDefault();
+                walletModal.style.display = 'none';
+              };
+            }
+            walletModal.onclick = function(e) {
+              if (e.target === walletModal) {
+                walletModal.style.display = 'none';
+              }
+            };
+          }
+
+          // 2. Real-time Tier & Spend Hydration via API
+          var custId = container.getAttribute('data-customer-id');
+          if (!custId) return;
+
+          var shop = window.Shopify && window.Shopify.shop ? window.Shopify.shop : 'pdf-store-15eu7f4v.myshopify.com';
+          var apiUrl = 'https://analyst-diamonds-rooms-deaf.trycloudflare.com/api/storefront/tier?shop=' + encodeURIComponent(shop) + '&customerId=' + encodeURIComponent(custId);
+
+          fetch(apiUrl)
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+              if (!data || !data.customer) return;
+              var c = data.customer;
+              var curr = container.getAttribute('data-currency-symbol') || '$';
+
+              // Update Lifetime Spend
+              var spendEl = container.querySelector('[data-vip-spend]');
+              if (spendEl && c.totalSpent !== undefined) {
+                spendEl.textContent = curr + c.totalSpent.toFixed(2);
+              }
+
+              // Update Orders Placed
+              var ordersEl = container.querySelector('[data-vip-orders]');
+              if (ordersEl && c.ordersCount !== undefined) {
+                ordersEl.textContent = String(c.ordersCount);
+              }
+
+              // Update Tier & Cashback
+              if (c.tier) {
+                var badgeEl = container.querySelector('[data-vip-badge]');
+                var cardEl = container.querySelector('[data-vip-card]');
+                var rateEl = container.querySelector('[data-vip-rate]');
+
+                if (badgeEl) {
+                  badgeEl.textContent = '★ ' + c.tier.name + ' VIP';
+                  badgeEl.style.backgroundColor = c.tier.badgeColor || '#4f46e5';
+                }
+                if (cardEl) {
+                  cardEl.style.borderTopColor = c.tier.badgeColor || '#4f46e5';
+                }
+                if (rateEl) {
+                  rateEl.textContent = c.tier.cashbackRate + '% Cashback';
+                }
+
+                // Update Progress or Top Tier
+                var tiers = data.tiers || [];
+                var currentIdx = -1;
+                for (var i = 0; i < tiers.length; i++) {
+                  if (tiers[i].id === c.tier.id) { currentIdx = i; break; }
+                }
+                var nextTier = (currentIdx >= 0 && currentIdx < tiers.length - 1) ? tiers[currentIdx + 1] : null;
+
+                var progressSection = container.querySelector('[data-vip-progress-section]');
+                var maxTierBanner = container.querySelector('[data-vip-max-tier]');
+
+                if (nextTier) {
+                  if (progressSection) progressSection.style.display = 'block';
+                  if (maxTierBanner) maxTierBanner.style.display = 'none';
+
+                  var needed = Math.max(0, nextTier.minSpend - c.totalSpent);
+                  var range = nextTier.minSpend - c.tier.minSpend;
+                  var progress = range > 0 ? Math.min(100, Math.round(((c.totalSpent - c.tier.minSpend) / range) * 100)) : 100;
+
+                  var titleEl = container.querySelector('[data-vip-progress-title]');
+                  var pctEl = container.querySelector('[data-vip-progress-percent]');
+                  var fillEl = container.querySelector('[data-vip-progress-fill]');
+                  var nudgeEl = container.querySelector('[data-vip-progress-nudge]');
+
+                  if (titleEl) titleEl.innerHTML = 'Progress to <strong>' + nextTier.name + ' (' + nextTier.cashbackRate + '% Cashback)</strong>';
+                  if (pctEl) pctEl.textContent = progress + '%';
+                  if (fillEl) {
+                    fillEl.style.width = progress + '%';
+                    fillEl.style.background = 'linear-gradient(90deg, ' + (c.tier.badgeColor || '#4f46e5') + ', #4f46e5)';
+                  }
+                  if (nudgeEl) nudgeEl.innerHTML = '🛍️ Spend <strong>' + curr + needed.toFixed(2) + '</strong> more to unlock ' + nextTier.name + '!';
+                } else {
+                  if (progressSection) progressSection.style.display = 'none';
+                  if (maxTierBanner) maxTierBanner.style.display = 'block';
+                }
+
+                // Modal pass pills
+                var modalTier = container.querySelector('.vip-modal-tier-pill');
+                if (modalTier) {
+                  modalTier.textContent = c.tier.name + ' VIP';
+                  modalTier.style.backgroundColor = c.tier.badgeColor || '#4f46e5';
+                }
+                var modalRate = container.querySelector('.vip-modal-rate-value');
+                if (modalRate) {
+                  modalRate.textContent = c.tier.cashbackRate + '% Cashback';
+                }
+                var modalBal = container.querySelector('[data-vip-modal-balance]');
+                if (modalBal && c.creditBalance) {
+                  modalBal.textContent = curr + parseFloat(c.creditBalance).toFixed(2);
+                }
+              }
+            })
+            .catch(function(err) {
+              console.debug('VIP hydration error:', err);
+            });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initVipWidget);
+        } else {
+          initVipWidget();
+        }
+      })();
+    </script>
+
+  {% else %}
+    <!-- Guest Teaser State: Encourages Registration -->
+    <div class="vip-guest-card">
+      <div class="vip-guest-header">
+        <span class="vip-guest-badge">VIP LOYALTY CLUB</span>
+        <h3 class="vip-guest-title">{{ block.settings.heading }}</h3>
+        <p class="vip-guest-subtitle">Earn 5% to 15% instant store credit cashback on every purchase!</p>
+      </div>
+
+      <div class="vip-guest-ladder">
+        <div class="vip-ladder-step">
+          <span class="vip-ladder-pill" style="background: #b45309;">Bronze</span>
+          <span class="vip-ladder-rate">5% Back</span>
+          <span class="vip-ladder-req">Entry Level ($0)</span>
+        </div>
+        <div class="vip-ladder-step">
+          <span class="vip-ladder-pill" style="background: #64748b;">Silver</span>
+          <span class="vip-ladder-rate">8% Back</span>
+          <span class="vip-ladder-req">{{ cart.currency.symbol }}{{ silver_min | round }} Spend</span>
+        </div>
+        <div class="vip-ladder-step">
+          <span class="vip-ladder-pill" style="background: #d97706;">Gold</span>
+          <span class="vip-ladder-rate">12% Back</span>
+          <span class="vip-ladder-req">{{ cart.currency.symbol }}{{ gold_min | round }} Spend</span>
+        </div>
+        <div class="vip-ladder-step">
+          <span class="vip-ladder-pill" style="background: #4f46e5;">Platinum</span>
+          <span class="vip-ladder-rate">15% Back</span>
+          <span class="vip-ladder-req">{{ cart.currency.symbol }}{{ platinum_min | round }}+ Spend</span>
+        </div>
+      </div>
+
+      <div class="vip-guest-cta">
+        <a href="{{ routes.account_register_url }}" class="vip-btn-primary">Join VIP Club</a>
+        <a href="{{ routes.account_login_url }}" class="vip-btn-secondary">Sign In</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "VIP Tier & Loyalty Card",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "VIP Loyalty Rewards"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Progress Bar Accent",
+      "default": "#4f46e5"
+    },
+    {
+      "type": "number",
+      "id": "silver_spend",
+      "label": "Silver Min Spend ($)",
+      "default": 250
+    },
+    {
+      "type": "number",
+      "id": "gold_spend",
+      "label": "Gold Min Spend ($)",
+      "default": 500
+    },
+    {
+      "type": "number",
+      "id": "platinum_spend",
+      "label": "Platinum Min Spend ($)",
+      "default": 1000
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wallet_button",
+      "label": "Show In-Store Pass Button",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

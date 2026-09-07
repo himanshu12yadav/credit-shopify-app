@@ -1,0 +1,15 @@
+api_version = "2026-07"
+
+[[extensions]]
+name = "Store Credit & VIP Action"
+handle = "credit-admin"
+uid = "70b22b93-1c46-7496-23b3-2248fb777d89ee0fa5c3"
+type = "ui_extension"
+
+  [[extensions.targeting]]
+  module = "./src/CustomerAction.jsx"
+  target = "admin.customer-details.action.render"
+
+[extensions.capabilities]
+api_access = true
+network_access = true

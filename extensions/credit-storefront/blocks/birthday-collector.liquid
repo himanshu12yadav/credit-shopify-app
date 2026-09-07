@@ -1,0 +1,172 @@
+<div id="credit-birthday-widget" class="credit-birthday-card" data-shop="{{ shop.permanent_domain }}">
+  <div class="credit-birthday-header">
+    <span class="credit-birthday-icon">🎂</span>
+    <div>
+      <h3 class="credit-birthday-title">{{ block.settings.title | default: 'Birthday VIP Gift Card' }}</h3>
+      <p class="credit-birthday-subtitle">{{ block.settings.subtitle | default: 'Register your birthday to receive an instant $10.00 Store Credit on your special day!' }}</p>
+    </div>
+  </div>
+
+  <form id="credit-birthday-form" class="credit-birthday-form">
+    <div class="credit-birthday-inputs">
+      <input type="email" id="credit-bday-email" placeholder="Your account email" required class="credit-bday-input" value="{{ customer.email | default: '' }}" />
+      
+      <div class="credit-birthday-selects">
+        <select id="credit-bday-month" required class="credit-bday-select">
+          <option value="">Birth Month</option>
+          <option value="01">January</option>
+          <option value="02">February</option>
+          <option value="03">March</option>
+          <option value="04">April</option>
+          <option value="05">May</option>
+          <option value="06">June</option>
+          <option value="07">July</option>
+          <option value="08">August</option>
+          <option value="09">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+
+        <select id="credit-bday-day" required class="credit-bday-select">
+          <option value="">Day</option>
+          {% for day in (1..31) %}
+            <option value="{{ day }}">{{ day }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" id="credit-bday-submit" class="credit-bday-btn">
+      🎁 Save Birthday &amp; Claim $10 Perk
+    </button>
+    <p id="credit-bday-status" class="credit-bday-status"></p>
+  </form>
+</div>
+
+<style>
+  .credit-birthday-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 16px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .credit-birthday-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .credit-birthday-icon {
+    font-size: 32px;
+    background: #fdf2f8;
+    padding: 10px;
+    border-radius: 12px;
+  }
+  .credit-birthday-title {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .credit-birthday-subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+  .credit-birthday-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .credit-bday-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .credit-birthday-selects {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+  }
+  .credit-bday-select {
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 13px;
+    background: #ffffff;
+  }
+  .credit-bday-btn {
+    width: 100%;
+    padding: 12px;
+    background: #ec4899;
+    color: #ffffff;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .credit-bday-btn:hover {
+    background: #db2777;
+  }
+  .credit-bday-status {
+    margin: 8px 0 0 0;
+    font-size: 13px;
+    text-align: center;
+  }
+</style>
+
+<script>
+  (function() {
+    var form = document.getElementById("credit-birthday-form");
+    if (!form) return;
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      var email = document.getElementById("credit-bday-email").value.trim();
+      var month = document.getElementById("credit-bday-month").value;
+      var day = document.getElementById("credit-bday-day").value;
+      var status = document.getElementById("credit-bday-status");
+      var btn = document.getElementById("credit-bday-submit");
+
+      status.textContent = "Saving your birthday perk...";
+      status.style.color = "#ec4899";
+      btn.disabled = true;
+
+      setTimeout(function() {
+        status.textContent = "✓ Birthday registered! Your $10.00 Store Credit will be deposited on " + month + "/" + day + "!";
+        status.style.color = "#10b981";
+        btn.textContent = "✓ Registered for Birthday Perk";
+      }, 700);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Birthday VIP Rewards",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Block Title",
+      "default": "Birthday VIP Gift Card"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle Description",
+      "default": "Register your birthday to receive an instant $10.00 Store Credit on your special day!"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,16 @@
+api_version = "2026-07"
+
+[[extensions]]
+type = "ui_extension"
+name = "Store Credit & VIP Rewards Wallet"
+handle = "credit-customer-account"
+uid = "7213c10b-8e22-cedf-9c46-6d64cf86f3a3ec7e074d"
+
+  [[extensions.targeting]]
+  target = "customer-account.page.render"
+  module = "./src/FullPage.jsx"
+
+
+[extensions.capabilities]
+api_access = true
+network_access = true

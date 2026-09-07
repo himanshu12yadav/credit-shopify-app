@@ -1,0 +1,118 @@
+<div id="credit-multiplier-banner" class="credit-multiplier-bar" data-shop="{{ shop.permanent_domain }}">
+  <div class="credit-multiplier-content">
+    <span class="credit-multiplier-badge">🔥 {{ block.settings.badge_text | default: '2X BONUS CREDIT' }}</span>
+    <span class="credit-multiplier-message">
+      {{ block.settings.headline | default: 'Double Cashback Weekend: Earn 2X Store Credit on all orders!' }}
+    </span>
+    <div class="credit-multiplier-timer">
+      <span class="credit-timer-label">Ends in:</span>
+      <span id="credit-mult-countdown" class="credit-timer-digits">23h 59m 40s</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .credit-multiplier-bar {
+    background: linear-gradient(90deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+    color: #ffffff;
+    padding: 10px 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .credit-multiplier-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    text-align: center;
+  }
+  .credit-multiplier-badge {
+    background: #f59e0b;
+    color: #000000;
+    font-weight: 800;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .credit-multiplier-message {
+    font-weight: 600;
+  }
+  .credit-multiplier-timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 13px;
+  }
+  .credit-timer-label {
+    color: #cbd5e1;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .credit-timer-digits {
+    color: #34d399;
+    font-weight: 700;
+  }
+</style>
+
+<script>
+  (function() {
+    var countdownEl = document.getElementById("credit-mult-countdown");
+    if (!countdownEl) return;
+
+    // Default to midnight tonight
+    var now = new Date();
+    var end = new Date(now);
+    end.setHours(23, 59, 59, 999);
+
+    function update() {
+      var current = new Date();
+      var diff = end - current;
+      if (diff <= 0) {
+        countdownEl.textContent = "00h 00m 00s";
+        return;
+      }
+      var hours = Math.floor(diff / (1000 * 60 * 60));
+      var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      countdownEl.textContent =
+        (hours < 10 ? "0" : "") + hours + "h " +
+        (minutes < 10 ? "0" : "") + minutes + "m " +
+        (seconds < 10 ? "0" : "") + seconds + "s";
+    }
+
+    update();
+    setInterval(update, 1000);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Multiplier Flash Banner",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge Text",
+      "default": "2X BONUS CREDIT"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Promotion Headline",
+      "default": "Double Cashback Weekend: Earn 2X Store Credit on all orders!"
+    }
+  ]
+}
+{% endschema %}

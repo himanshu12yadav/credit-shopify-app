@@ -1,0 +1,136 @@
+{{ 'credit-storefront.css' | asset_url | stylesheet_tag }}
+
+{% assign cart_dollars = cart.total_price | divided_by: 100.0 %}
+{% assign rate_decimal = block.settings.cashback_percent | divided_by: 100.0 %}
+
+{% comment %} Read customer loyalty metafields if available {% endcomment %}
+{% assign customer_credit = customer.metafields.credit_app.store_credit_balance.value | default: '0.00' %}
+{% assign customer_tier = customer.metafields.credit_app.vip_tier.value | default: 'VIP Member' %}
+
+{% if customer_tier == 'Platinum' %}
+  {% assign rate_decimal = 0.15 %}
+  {% assign badge_color = '#4f46e5' %}
+{% elsif customer_tier == 'Gold' %}
+  {% assign rate_decimal = 0.12 %}
+  {% assign badge_color = '#d97706' %}
+{% elsif customer_tier == 'Silver' %}
+  {% assign rate_decimal = 0.08 %}
+  {% assign badge_color = '#64748b' %}
+{% else %}
+  {% assign rate_decimal = 0.05 %}
+  {% assign badge_color = '#b45309' %}
+{% endif %}
+
+{% assign cart_credit = cart_dollars | times: rate_decimal %}
+
+{% if cart.item_count > 0 %}
+  <div
+    class="credit-cart-teaser"
+    data-cart-credit-teaser
+    {% if customer %}data-customer-id="{{ customer.id }}"{% endif %}
+    style="
+      --credit-cart-bg: {{ block.settings.bg_color }};
+      --credit-cart-text: {{ block.settings.text_color }};
+      --credit-cart-border: {{ block.settings.border_color }};
+      --credit-cart-radius: {{ block.settings.border_radius }}px;
+      margin: 14px 0;
+      padding: 14px 16px;
+      border-radius: var(--credit-cart-radius);
+      background: var(--credit-cart-bg);
+      border: 1px solid var(--credit-cart-border);
+      color: var(--credit-cart-text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    "
+  >
+    {% if customer %}
+      <!-- Logged-in Customer: Active Credit Balance + Dynamic Cashback -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; background: #10b981; color: #ffffff;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+          </span>
+          <span style="font-size: 13px; font-weight: 700; color: #0f172a;">
+            Available Store Credit: <span data-cart-available-credit style="color: #059669;">{{ cart.currency.symbol }}{{ customer_credit }}</span>
+          </span>
+        </div>
+        <span style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; background: {{ badge_color }}; color: #ffffff; text-transform: uppercase;">
+          {{ customer_tier }}
+        </span>
+      </div>
+
+      <div style="font-size: 12px; line-height: 1.5; color: #334155; margin-bottom: 6px;">
+        🛍️ Place this order to earn <strong style="color: #059669;">+{{ cart.currency.symbol }}{{ cart_credit | round: 2 }}</strong> ({{ rate_decimal | times: 100 | round }}% VIP Cashback) directly into your account.
+      </div>
+      <div style="font-size: 11px; color: #64748b;">
+        💡 Native Shopify Store Credit applies automatically at checkout with 1 click.
+      </div>
+
+    {% else %}
+      <!-- Guest Customer: Value Teaser & Sign-in Link -->
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <span style="font-size: 20px; line-height: 1;">🎁</span>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">
+            Earn {{ cart.currency.symbol }}{{ cart_credit | round: 2 }} Store Credit on this order!
+          </div>
+          <div style="font-size: 12px; color: #475569;">
+            <a href="{{ routes.account_login_url }}" style="color: #4f46e5; font-weight: 600; text-decoration: underline;">Sign in</a> or
+            <a href="{{ routes.account_register_url }}" style="color: #4f46e5; font-weight: 600; text-decoration: underline;">join loyalty club</a> to receive instant cashback.
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Cart Store Credit & VIP",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Store Credit Loyalty Rewards"
+    },
+    {
+      "type": "number",
+      "id": "cashback_percent",
+      "label": "Default Cashback Rate (%)",
+      "default": 5
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#f0fdf4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#bbf7d0"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Corner Radius",
+      "default": 10
+    }
+  ]
+}
+{% endschema %}

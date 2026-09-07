@@ -1,22 +1,40 @@
+# Native Shopify Web Pixel extension for the Store Credit & Rewards app.
+# Runs inside Shopify's sandboxed Web Worker (runtime_context = "strict"), so it
+# adds zero latency to storefront/checkout page loads and works on both standard
+# and Shopify Plus checkouts without any theme JavaScript injection.
 api_version = "2026-07"
 
 [[extensions]]
-name = "Store Credit & VIP Pixel"
+name = "Store Credit & Rewards Pixel"
 handle = "credit-pixel"
+uid = "6ae0463c-8ecb-daff-8e7d-59ba9334d13de28e4001"
 type = "web_pixel_extension"
 runtime_context = "strict"
 
-[customer_privacy]
+# Privacy declaration surfaced to Shopify's consent/cookie-banner manager.
+# This pixel is first-party conversion analytics only: it is not used for
+# advertising and never sells or shares customer data.
+[extensions.customer_privacy]
 analytics = true
-marketing = true
+marketing = false
 preferences = false
-sale_of_data = "enabled"
+sale_of_data = "disabled"
 
-[settings]
+# Merchant-configurable settings. `type` MUST be "object"; each field is a
+# single_line_text_field (the only type web pixels support). Written
+# automatically by webPixelCreate/webPixelUpdate — see app/services/pixel.server.js.
+[extensions.settings]
 type = "object"
 
-[[settings.fields]]
-key = "accountID"
-name = "Store Credit Account ID"
-description = "Internal identifier for tracking rewards telemetry"
+[[extensions.settings.fields]]
+key = "appUrl"
+name = "App ingestion URL"
+description = "Base URL of the Store Credit app that receives pixel telemetry, e.g. https://your-app.example.com"
+type = "single_line_text_field"
+validations = [ { name = "min", value = "1" } ]
+
+[[extensions.settings.fields]]
+key = "pixelEnabled"
+name = "Pixel enabled"
+description = "Set to \"true\" to transmit telemetry, or \"false\" to pause tracking."
 type = "single_line_text_field"

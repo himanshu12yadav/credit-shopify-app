@@ -134,3 +134,35 @@ model VipTier {
   updatedAt       DateTime @updatedAt
 }
 
+// Raw telemetry beacons received from the native Shopify Web Pixel extension
+// (extensions/credit-pixel). One row per customer-journey event. All merchant
+// analytics on the /app/analytics screen are aggregated from this table.
+model PixelEvent {
+  id                String   @id @default(cuid())
+  shop              String
+  eventName         String   // checkout_completed, checkout_started, cart_updated, product_viewed, or a credit_app:* custom event
+  eventType         String   @default("standard") // standard | custom
+  shopifyEventId    String?  // event.id from the pixel runtime
+  clientId          String?  // Shopify client-side visitor id (event.clientId)
+  occurredAt        DateTime @default(now())
+  url               String?
+
+  // Commerce / attribution fields (populated for checkout + cart events)
+  orderId           String?
+  checkoutToken     String?
+  currency          String?
+  value             Float?   // order total / cart total / product price, in `currency`
+  subtotal          Float?
+  lineItemsCount    Int      @default(0)
+  discountCodes     String?  // JSON array of applied discount codes/titles
+  hasStoreCredit    Boolean  @default(false) // a store-credit discount was applied at checkout
+  storeCreditAmount Float?   // value of the store-credit discount, when resolvable
+
+  raw               String   // full JSON beacon body, for replay / debugging
+  createdAt         DateTime @default(now())
+
+  @@index([shop, eventName])
+  @@index([shop, createdAt])
+  @@index([shop, checkoutToken])
+}
+

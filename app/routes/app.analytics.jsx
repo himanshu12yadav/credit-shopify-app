@@ -1,10 +1,46 @@
 import { useState } from "react";
-import { useLoaderData } from "react-router";
+import {
+  useActionData,
+  useLoaderData,
+  useNavigation,
+  useSubmit,
+} from "react-router";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import {
+  getWebPixelStatus,
+  activateWebPixel,
+  buildPixelSettings,
+  getPixelAnalytics,
+} from "../services/pixel.server";
+
+export const action = async ({ request }) => {
+  const { admin } = await authenticate.admin(request);
+  const formData = await request.formData();
+
+  if (formData.get("intent") === "activate-pixel") {
+    const result = await activateWebPixel(admin, {});
+    if (!result.ok) {
+      return {
+        ok: false,
+        error:
+          result.userErrors?.map((e) => e.message).join("; ") ||
+          "Failed to activate the web pixel.",
+      };
+    }
+    return {
+      ok: true,
+      message: result.updated
+        ? "Web pixel settings refreshed — telemetry endpoint is current."
+        : "Web pixel activated. Storefront and checkout events are now tracked.",
+    };
+  }
+
+  return { ok: false, error: "Unknown action." };
+};
 
 export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
   const shop = session.shop;
 
   const entries = await prisma.creditLedger.findMany({
@@ -76,8 +112,23 @@ export const loader = async ({ request }) => {
     pointOfSale: { active: 1, label: "Shopify POS Extension", desc: "Smart Grid tile & cashier cart credit application" },
   };
 
+  // Native Shopify Web Pixel — live activation status + attributed telemetry.
+  let pixelStatus = { active: false, error: null, settings: {} };
+  try {
+    const status = await getWebPixelStatus(admin);
+    pixelStatus = { active: status.active, settings: status.settings, error: null };
+  } catch (err) {
+    pixelStatus = { active: false, settings: {}, error: err.message };
+  }
+  const pixelAnalytics = await getPixelAnalytics(shop, { days: 30 });
+
   return {
     shop,
+    pixel: {
+      status: pixelStatus,
+      analytics: pixelAnalytics,
+      appUrl: buildPixelSettings().appUrl,
+    },
     metrics: {
       totalIssued: totalIssued.toFixed(2),
       totalRedeemed: totalRedeemed.toFixed(2),
@@ -99,8 +150,21 @@ export const loader = async ({ request }) => {
 };
 
 export default function AnalyticsPage() {
-  const { metrics, sourceBreakdown, channelStats } = useLoaderData();
+  const { metrics, sourceBreakdown, channelStats, pixel } = useLoaderData();
+  const actionData = useActionData();
+  const navigation = useNavigation();
+  const submit = useSubmit();
   const [copied, setCopied] = useState(false);
+
+  const pixelBusy =
+    navigation.state !== "idle" &&
+    navigation.formData?.get("intent") === "activate-pixel";
+  const pixelActive = pixel?.status?.active;
+  const pixelError = pixel?.status?.error;
+  const pa = pixel?.analytics || {};
+
+  const activatePixel = () =>
+    submit({ intent: "activate-pixel" }, { method: "post" });
 
   const handleExportCsv = () => {
     const csvRows = [
@@ -146,6 +210,153 @@ export default function AnalyticsPage() {
           <s-banner tone="success">
             <strong>Omnichannel Store Credit Engine Active:</strong> Powering online storefront 2.0 blocks, passwordless customer account portals, checkout extensibility, and retail POS cash registers.
           </s-banner>
+
+          {/* Native Web Pixel — Live Conversion Tracking */}
+          {actionData?.ok && (
+            <s-banner tone="success">{actionData.message}</s-banner>
+          )}
+          {actionData && actionData.ok === false && (
+            <s-banner tone="critical">{actionData.error}</s-banner>
+          )}
+
+          <s-card>
+            <s-block-stack gap="400">
+              <s-inline-stack align="space-between" block-align="center">
+                <s-block-stack gap="100">
+                  <s-text variant="headingMd" as="h2">
+                    Native Web Pixel — Zero-Latency Conversion Tracking
+                  </s-text>
+                  <s-text tone="subdued">
+                    Runs in Shopify&apos;s sandboxed Web Worker, off the storefront
+                    main thread — no theme speed impact. Covers standard and
+                    Shopify Plus checkouts with no theme code.
+                  </s-text>
+                </s-block-stack>
+                {pixelActive ? (
+                  <s-badge tone="success">Active &amp; Tracking</s-badge>
+                ) : pixelError ? (
+                  <s-badge tone="critical">Status Check Failed</s-badge>
+                ) : (
+                  <s-badge tone="attention">Not Activated</s-badge>
+                )}
+              </s-inline-stack>
+
+              {pixelError && (
+                <s-banner tone="warning">
+                  Could not read web pixel status from Shopify: {pixelError}
+                </s-banner>
+              )}
+
+              {!pixel?.appUrl && (
+                <s-banner tone="warning">
+                  <code>SHOPIFY_APP_URL</code> is not set, so the pixel has no
+                  endpoint to send telemetry to. Set it before activating.
+                </s-banner>
+              )}
+
+              <s-inline-stack gap="300" block-align="center">
+                <s-button
+                  variant="primary"
+                  disabled={pixelBusy || !pixel?.appUrl}
+                  onClick={activatePixel}
+                >
+                  {pixelBusy
+                    ? "Working…"
+                    : pixelActive
+                      ? "Re-sync Pixel Settings"
+                      : "Activate Web Pixel"}
+                </s-button>
+                {pixel?.appUrl && (
+                  <s-text tone="subdued">
+                    Ingesting to <code>{pixel.appUrl}/api/pixel/events</code>
+                  </s-text>
+                )}
+              </s-inline-stack>
+
+              <s-divider></s-divider>
+
+              <s-grid columns="repeat(auto-fit, minmax(200px, 1fr))" gap="300">
+                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
+                  <s-text tone="subdued">STORE CREDIT ASSISTED CONVERSIONS</s-text>
+                  <s-text variant="headingXl" as="p" tone="success">
+                    {pa.assistedConversions ?? 0}
+                  </s-text>
+                  <s-text tone="subdued">
+                    of {pa.checkoutCompleted ?? 0} tracked checkouts (30d)
+                  </s-text>
+                </s-box>
+
+                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
+                  <s-text tone="subdued">ASSISTED REVENUE</s-text>
+                  <s-text variant="headingXl" as="p" tone="success">
+                    ${(pa.assistedRevenue ?? 0).toFixed(2)}
+                  </s-text>
+                  <s-text tone="subdued">Orders where store credit was applied</s-text>
+                </s-box>
+
+                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
+                  <s-text tone="subdued">AOV LIFT (ASSISTED vs REST)</s-text>
+                  <s-text variant="headingXl" as="p">
+                    {pa.liftPercent == null
+                      ? "—"
+                      : `${pa.liftPercent > 0 ? "+" : ""}${pa.liftPercent}%`}
+                  </s-text>
+                  <s-text tone="subdued">
+                    ${(pa.aovAssisted ?? 0).toFixed(2)} vs $
+                    {(pa.aovNonAssisted ?? 0).toFixed(2)}
+                  </s-text>
+                </s-box>
+
+                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
+                  <s-text tone="subdued">PIXEL EVENTS PROCESSED (30D)</s-text>
+                  <s-text variant="headingXl" as="p">{pa.totalEvents ?? 0}</s-text>
+                  <s-text tone="subdued">
+                    {Object.entries(pa.byEvent || {})
+                      .map(([k, v]) => `${k}: ${v}`)
+                      .join(" · ") || "No events yet"}
+                  </s-text>
+                </s-box>
+              </s-grid>
+
+              {pa.recentEvents?.length > 0 && (
+                <s-block-stack gap="200">
+                  <s-text variant="headingSm" as="h3">Recent Pixel Events</s-text>
+                  <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
+                        <th style={{ padding: "8px" }}>Event</th>
+                        <th style={{ padding: "8px" }}>Value</th>
+                        <th style={{ padding: "8px" }}>Store Credit</th>
+                        <th style={{ padding: "8px" }}>When</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pa.recentEvents.slice(0, 8).map((ev) => (
+                        <tr key={ev.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                          <td style={{ padding: "8px", fontWeight: "600" }}>{ev.event}</td>
+                          <td style={{ padding: "8px" }}>
+                            {ev.value != null
+                              ? `${ev.currency || ""} ${ev.value.toFixed(2)}`.trim()
+                              : "—"}
+                          </td>
+                          <td style={{ padding: "8px" }}>
+                            {ev.hasStoreCredit ? (
+                              <s-badge tone="success">Yes</s-badge>
+                            ) : (
+                              <s-badge tone="neutral">No</s-badge>
+                            )}
+                          </td>
+                          <td style={{ padding: "8px", color: "#64748b" }}>
+                            {new Date(ev.occurredAt).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </s-block-stack>
+              )}
+            </s-block-stack>
+          </s-card>
 
           {/* Top Financial KPI Row */}
           <s-grid columns="repeat(auto-fit, minmax(220px, 1fr))" gap="400">

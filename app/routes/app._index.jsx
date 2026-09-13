@@ -4,6 +4,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { getStoreCreditAnalytics, getCustomerAccountVersion } from "../services/store-credit.server";
 import { getWebPixelStatus } from "../services/pixel.server";
+import { getThemeAppEmbedStatus } from "../services/theme.server";
 import prisma from "../db.server";
 
 // Lightweight in-memory TTL cache for external GraphQL queries to ensure sub-100ms loader response
@@ -30,7 +31,7 @@ export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
   const shop = session.shop;
 
-  const [analytics, activeRules, settings, customerAccountVersion, pixelStatus, posCount, themeResponse, storefrontCount] = await Promise.all([
+  const [analytics, activeRules, settings, customerAccountVersion, pixelStatus, posCount, themeResponse, storefrontCount, themeEmbedStatus] = await Promise.all([
     getStoreCreditAnalytics({ shop }),
     prisma.creditRule.findMany({
       where: { shop, isActive: true },
@@ -58,6 +59,9 @@ export const loader = async ({ request }) => {
     prisma.creditLedger.count({
       where: { shop, source: { in: ["SCRATCH_CARD", "GIFT_CARD", "STOREFRONT"] } },
     }),
+    getCachedAdminData(`${shop}:themeEmbedStatus`, () =>
+      getThemeAppEmbedStatus({ admin, session }).catch(() => ({ active: false }))
+    ),
   ]);
 
   const campaignsCount = analytics.activeCampaignsCount || 0;
@@ -66,7 +70,7 @@ export const loader = async ({ request }) => {
   const isCashbackRulesActive = activeRules.length > 0;
   const isCustomerWalletActive = Boolean(settings?.cashbackEnabled !== false);
   const isPixelActive = Boolean(pixelStatus?.active);
-  const isAppEmbedActive = Boolean(settings?.appEmbedVerified) || storefrontCount > 0;
+  const isAppEmbedActive = Boolean(themeEmbedStatus?.active) || Boolean(settings?.appEmbedVerified) || storefrontCount > 0;
 
   const completedSteps = [isNewAccountsActive, isCashbackRulesActive, isCustomerWalletActive, isPixelActive, isAppEmbedActive].filter(Boolean).length;
   const totalSteps = 5;

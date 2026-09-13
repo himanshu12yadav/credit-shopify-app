@@ -16,7 +16,12 @@ import prisma from "../db.server";
 // Keys here MUST match [settings.fields] in
 // extensions/credit-pixel/shopify.extension.toml.
 export function buildPixelSettings(appUrl) {
-  const base = String(appUrl || process.env.SHOPIFY_APP_URL || "")
+  const base = String(
+    appUrl ||
+    process.env.SHOPIFY_APP_URL ||
+    process.env.RENDER_EXTERNAL_URL ||
+    ""
+  )
     .trim()
     .replace(/\/+$/, "");
   return { appUrl: base, pixelEnabled: "true" };

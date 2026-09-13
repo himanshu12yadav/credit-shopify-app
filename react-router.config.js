@@ -6,6 +6,8 @@ export default {
     "admin.shopify.com",
     "*.myshopify.com",
     "*.shopify.com",
+    "*.onrender.com",
+    "credit-shopify-app.onrender.com",
     "*.trycloudflare.com",
     "*.spin.dev",
     "localhost:*",

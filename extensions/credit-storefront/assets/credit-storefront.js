@@ -46,7 +46,7 @@
       const currency = vipWidget.dataset.currencySymbol || '$';
 
       // Perform background silent re-validation without blocking FCP/LCP
-      fetch(`https://ending-equation-str-gazette.trycloudflare.com/api/storefront/tier?shop=${encodeURIComponent(shop)}&customerId=${encodeURIComponent(customerId)}`)
+      fetch(`https://credit-shopify-app.onrender.com/api/storefront/tier?shop=${encodeURIComponent(shop)}&customerId=${encodeURIComponent(customerId)}`)
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
           if (!data || !data.customer) return;

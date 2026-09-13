@@ -633,3 +633,967 @@
 .vip-btn-secondary:hover {
   background-color: #e2e8f0;
 }
+
+/* ==========================================================================
+   Multiplier Banner Styles
+   ========================================================================== */
+.credit-multiplier-bar {
+  background: linear-gradient(90deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+  color: #ffffff;
+  padding: 10px 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.credit-multiplier-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  text-align: center;
+}
+.credit-multiplier-badge {
+  background: #f59e0b;
+  color: #000000;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+.credit-multiplier-message {
+  font-weight: 600;
+}
+.credit-multiplier-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 13px;
+}
+.credit-timer-label {
+  color: #cbd5e1;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.credit-timer-digits {
+  color: #34d399;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Scratch Card Mystery Modal Styles
+   ========================================================================== */
+.credit-scratch-launcher {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 99998;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  will-change: transform;
+}
+.credit-scratch-launcher:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.6);
+}
+.credit-scratch-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.credit-scratch-modal-card {
+  background: #ffffff;
+  border-radius: 20px;
+  max-width: 380px;
+  width: 100%;
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.credit-scratch-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #94a3b8;
+}
+.credit-scratch-badge {
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+.credit-scratch-title {
+  margin: 10px 0 4px 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.credit-scratch-subtitle {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  color: #64748b;
+}
+.credit-scratch-canvas-container {
+  position: relative;
+  width: 280px;
+  height: 150px;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.credit-scratch-prize-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.credit-scratch-prize-label {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.9;
+  letter-spacing: 1px;
+}
+.credit-scratch-prize-val {
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.credit-scratch-prize-sub {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+#credit-scratch-canvas {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+  touch-action: none;
+}
+.credit-scratch-hint {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+.credit-scratch-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.credit-scratch-claim-btn {
+  width: 100%;
+  padding: 12px;
+  background: #4f46e5;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.credit-scratch-claim-btn:hover {
+  background: #4338ca;
+}
+.credit-scratch-status {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   Birthday Collector Card Styles
+   ========================================================================== */
+.credit-birthday-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.credit-birthday-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.credit-birthday-icon {
+  font-size: 32px;
+  background: #fdf2f8;
+  padding: 10px;
+  border-radius: 12px;
+}
+.credit-birthday-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.credit-birthday-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+.credit-birthday-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.credit-bday-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.credit-birthday-selects {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 10px;
+}
+.credit-bday-select {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  background: #ffffff;
+}
+.credit-bday-btn {
+  width: 100%;
+  padding: 12px;
+  background: #ec4899;
+  color: #ffffff;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.credit-bday-btn:hover {
+  background: #db2777;
+}
+.credit-bday-status {
+  margin: 8px 0 0 0;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Return Incentive Bonus Card Styles
+   ========================================================================== */
+.return-incentive-container {
+  max-width: 780px;
+  margin: 28px auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #0f172a;
+}
+.return-incentive-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.incentive-pill {
+  display: inline-block;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.incentive-title {
+  margin: 0 0 6px 0;
+  font-size: 19px;
+  font-weight: 800;
+}
+.incentive-sub {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+  max-width: 540px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.4;
+}
+.return-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 18px;
+  align-items: stretch;
+}
+@media (max-width: 650px) {
+  .return-options-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.return-option-card {
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.standard-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+.bonus-card {
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+  border: 2px solid #10b981;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+  position: relative;
+}
+.option-tag {
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+.recommended-tag {
+  color: #15803d;
+}
+.option-name {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+.option-amount {
+  font-size: 28px;
+  font-weight: 900;
+  color: #334155;
+  margin-bottom: 14px;
+}
+.bonus-amount {
+  color: #15803d;
+}
+.option-perks {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #475569;
+}
+.option-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.secondary-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+}
+.secondary-btn:hover {
+  background: #f1f5f9;
+}
+.primary-bonus-btn {
+  background: #047857;
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(4, 120, 87, 0.3);
+}
+.primary-bonus-btn:hover {
+  background: #065f46;
+}
+
+/* ==========================================================================
+   Post-Purchase Booster Styles
+   ========================================================================== */
+.post-purchase-booster-card {
+  max-width: 720px;
+  margin: 24px auto;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #10b981;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #0f172a;
+}
+.booster-badge-row {
+  background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+  color: #ffffff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.booster-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  animation: boosterPulse 1.5s infinite;
+  display: inline-block;
+  margin-right: 6px;
+}
+@keyframes boosterPulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+}
+.booster-timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-family: monospace;
+  font-size: 12px;
+}
+.booster-main-content {
+  padding: 24px;
+}
+.booster-reward-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+.booster-icon {
+  font-size: 28px;
+}
+.booster-reward-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #166534;
+}
+.booster-cashback-amount {
+  color: #15803d;
+  background: #dcfce7;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.booster-reward-sub {
+  font-size: 12px;
+  color: #475569;
+  margin-top: 2px;
+}
+.booster-product-card {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 20px;
+  align-items: center;
+}
+@media (max-width: 600px) {
+  .booster-product-card {
+    grid-template-columns: 1fr;
+  }
+}
+.booster-product-img-box {
+  width: 140px;
+  height: 140px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.booster-placeholder-img {
+  font-size: 54px;
+}
+.booster-product-title {
+  margin: 0 0 4px 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.booster-product-desc {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #64748b;
+}
+.booster-pricing-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.booster-original-price {
+  font-size: 14px;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+.booster-deal-price {
+  font-size: 20px;
+  font-weight: 900;
+  color: #0f172a;
+}
+.booster-credit-applied {
+  font-size: 13px;
+  font-weight: 700;
+  color: #15803d;
+}
+.booster-savings-tag {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.booster-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.booster-claim-btn {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.booster-claim-btn:hover {
+  background: #047857;
+  transform: translateY(-1px);
+}
+.btn-subtext {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+.booster-skip-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   VIP Exclusive Product Lock Styles
+   ========================================================================== */
+.credit-vip-lock-card {
+  margin: 16px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.credit-vip-unlocked-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 16px;
+  color: #065f46;
+}
+.credit-vip-unlocked-icon {
+  font-size: 28px;
+}
+.credit-vip-unlocked-title {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+.credit-vip-unlocked-desc {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.9;
+}
+.credit-vip-locked-banner {
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 20px;
+}
+.credit-vip-lock-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.credit-vip-lock-icon {
+  font-size: 28px;
+  background: #e2e8f0;
+  padding: 8px;
+  border-radius: 10px;
+}
+.credit-vip-locked-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.credit-vip-locked-desc {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+.credit-vip-lock-progress-wrap {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px;
+}
+.credit-vip-lock-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+.credit-vip-lock-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.credit-vip-lock-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+  border-radius: 999px;
+}
+.credit-vip-lock-hint {
+  margin: 0;
+  font-size: 12px;
+  color: #b45309;
+  font-weight: 600;
+  text-align: center;
+}
+
+body:has(#credit-vip-exclusive-lock.is-locked) form[action*="/cart/add"] button[type="submit"],
+body:has(#credit-vip-exclusive-lock.is-locked) .shopify-payment-button {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Digital Gift Card Styles
+   ========================================================================== */
+.gift-credit-container {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 28px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 36px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #0f172a;
+}
+@media (max-width: 768px) {
+  .gift-credit-container {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 24px;
+  }
+}
+.gift-credit-card-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.gift-card-visual {
+  width: 100%;
+  height: 215px;
+  border-radius: 14px;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+.gift-card-visual[data-skin="emerald"] {
+  background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
+}
+.gift-card-visual[data-skin="midnight"] {
+  background: linear-gradient(135deg, #090d16 0%, #1e293b 60%, #334155 100%);
+}
+.gift-card-visual[data-skin="rose"] {
+  background: linear-gradient(135deg, #881337 0%, #be123c 60%, #fb7185 100%);
+}
+.gift-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.gift-card-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 9px;
+  backdrop-filter: blur(4px);
+}
+.gift-card-chip {
+  width: 36px;
+  height: 26px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 3px;
+  box-sizing: border-box;
+}
+.chip-line {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.2);
+}
+.gift-card-amount {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.gift-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.gift-card-label {
+  font-size: 9px;
+  opacity: 0.8;
+  display: block;
+  letter-spacing: 0.05em;
+}
+.gift-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.gift-card-logo {
+  font-size: 24px;
+}
+.gift-skin-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.gift-picker-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+.gift-skin-options {
+  display: flex;
+  gap: 8px;
+}
+.skin-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.skin-circle:hover {
+  transform: scale(1.1);
+}
+.skin-circle.active {
+  outline: 2px solid #0f172a;
+  outline-offset: 2px;
+}
+.skin-emerald { background: #047857; }
+.skin-midnight { background: #0f172a; }
+.skin-rose { background: #be123c; }
+.gift-form-title {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+.gift-form-subtitle {
+  margin: 0 0 20px 0;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.4;
+}
+.gift-form-field {
+  margin-bottom: 14px;
+}
+.gift-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 6px;
+}
+.gift-amount-pills {
+  display: flex;
+  gap: 8px;
+}
+.amount-pill {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.amount-pill:hover {
+  border-color: #047857;
+  background: #f0fdf4;
+}
+.amount-pill.active {
+  background: #047857;
+  border-color: #047857;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(4, 120, 87, 0.3);
+}
+.gift-grid-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.gift-input, .gift-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.gift-input:focus, .gift-textarea:focus {
+  border-color: #047857;
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+}
+.gift-submit-btn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #047857;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+  transition: all 0.2s;
+}
+.gift-submit-btn:hover {
+  background: #065f46;
+  transform: translateY(-1px);
+}
+.gift-submit-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.gift-status-msg {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.gift-status-msg.success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+.gift-status-msg.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}

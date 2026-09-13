@@ -318,6 +318,10 @@ export async function getCustomerCredit({ admin, customerId }) {
 /**
  * Search customers in the merchant's store
  */
+// In-memory short TTL cache for customer searches (30s) to avoid Shopify GraphQL cost throttling
+const CUSTOMER_SEARCH_CACHE = new Map();
+const SEARCH_CACHE_TTL_MS = 30 * 1000;
+
 export async function searchCustomers(arg1, arg2 = "") {
   let admin;
   let query = "";
@@ -329,6 +333,13 @@ export async function searchCustomers(arg1, arg2 = "") {
     query = typeof arg2 === "string" ? arg2 : "";
   }
 
+  const cacheKey = query.trim().toLowerCase();
+  const cached = CUSTOMER_SEARCH_CACHE.get(cacheKey);
+  const now = Date.now();
+  if (cached && cached.expiresAt > now) {
+    return cached.data;
+  }
+
   try {
     const response = await admin.graphql(SEARCH_CUSTOMERS_QUERY, {
       variables: { query: query.trim() },
@@ -336,7 +347,7 @@ export async function searchCustomers(arg1, arg2 = "") {
     const json = await response.json();
     const rawCustomers = json.data?.customers?.edges?.map((e) => e.node) || [];
 
-    return rawCustomers.map((c) => {
+    const mapped = rawCustomers.map((c) => {
       const accounts = c.storeCreditAccounts?.edges?.map((edge) => edge.node) || [];
       const primaryAccount = accounts[0] || null;
       const primaryBalance = primaryAccount
@@ -354,8 +365,12 @@ export async function searchCustomers(arg1, arg2 = "") {
         accounts,
       };
     });
+
+    CUSTOMER_SEARCH_CACHE.set(cacheKey, { data: mapped, expiresAt: now + SEARCH_CACHE_TTL_MS });
+    return mapped;
   } catch (err) {
     console.error("Error searching customers:", err);
+    if (cached) return cached.data;
     return [];
   }
 }

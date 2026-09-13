@@ -1,3 +1,5 @@
+{{ 'credit-storefront.css' | asset_url | stylesheet_tag }}
+
 {% assign customer_tier = customer.metafields.credit_app.vip_tier.value | default: 'Bronze VIP' %}
 {% assign customer_spend = customer.metafields.credit_app.total_spent.value | default: 0 | times: 1.0 %}
 {% assign required_tier = block.settings.required_tier | default: 'Gold VIP' %}
@@ -21,7 +23,7 @@
   {% assign spend_remaining = 0 %}
 {% endif %}
 
-<div id="credit-vip-exclusive-lock" class="credit-vip-lock-card">
+<div id="credit-vip-exclusive-lock" class="credit-vip-lock-card {% unless is_unlocked %}is-locked{% endunless %}">
   {% if is_unlocked %}
     <div class="credit-vip-unlocked-banner">
       <span class="credit-vip-unlocked-icon">👑</span>
@@ -58,109 +60,9 @@
           Spend <strong>${{ spend_remaining | round: 2 }}</strong> more to immediately unlock this exclusive product!
         </p>
       </div>
-
-      <style>
-        /* Hide buy buttons when locked */
-        form[action*="/cart/add"] button[type="submit"],
-        .shopify-payment-button {
-          display: none !important;
-        }
-      </style>
     </div>
   {% endif %}
 </div>
-
-<style>
-  .credit-vip-lock-card {
-    margin: 16px 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  }
-  .credit-vip-unlocked-banner {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    border-radius: 12px;
-    padding: 16px;
-    color: #065f46;
-  }
-  .credit-vip-unlocked-icon {
-    font-size: 28px;
-  }
-  .credit-vip-unlocked-title {
-    margin: 0 0 4px 0;
-    font-size: 15px;
-    font-weight: 700;
-  }
-  .credit-vip-unlocked-desc {
-    margin: 0;
-    font-size: 13px;
-    opacity: 0.9;
-  }
-  .credit-vip-locked-banner {
-    background: #f8fafc;
-    border: 2px dashed #cbd5e1;
-    border-radius: 16px;
-    padding: 20px;
-  }
-  .credit-vip-lock-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  .credit-vip-lock-icon {
-    font-size: 28px;
-    background: #e2e8f0;
-    padding: 8px;
-    border-radius: 10px;
-  }
-  .credit-vip-locked-title {
-    margin: 0 0 4px 0;
-    font-size: 16px;
-    font-weight: 800;
-    color: #0f172a;
-  }
-  .credit-vip-locked-desc {
-    margin: 0;
-    font-size: 13px;
-    color: #64748b;
-  }
-  .credit-vip-lock-progress-wrap {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 14px;
-  }
-  .credit-vip-lock-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    font-weight: 600;
-    color: #475569;
-    margin-bottom: 8px;
-  }
-  .credit-vip-lock-bar {
-    height: 8px;
-    background: #e2e8f0;
-    border-radius: 999px;
-    overflow: hidden;
-    margin-bottom: 8px;
-  }
-  .credit-vip-lock-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
-    border-radius: 999px;
-  }
-  .credit-vip-lock-hint {
-    margin: 0;
-    font-size: 12px;
-    color: #b45309;
-    font-weight: 600;
-    text-align: center;
-  }
-</style>
 
 {% schema %}
 {

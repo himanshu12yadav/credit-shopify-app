@@ -27,25 +27,25 @@ export const loader = async ({ request }) => {
     ];
   }
 
-  const [ledgerEntries, totalCount, allEntries] = await Promise.all([
+  const [ledgerEntries, totalCount, creditAgg, debitAgg] = await Promise.all([
     prisma.creditLedger.findMany({
       where,
       orderBy: { createdAt: "desc" },
       take: 50,
     }),
     prisma.creditLedger.count({ where }),
-    prisma.creditLedger.findMany({
-      where: { shop },
-      select: { amount: true, action: true },
+    prisma.creditLedger.aggregate({
+      where: { shop, action: "CREDIT" },
+      _sum: { amount: true },
+    }),
+    prisma.creditLedger.aggregate({
+      where: { shop, action: "DEBIT" },
+      _sum: { amount: true },
     }),
   ]);
 
-  let totalCredit = 0;
-  let totalDebit = 0;
-  allEntries.forEach((e) => {
-    if (e.action === "CREDIT") totalCredit += e.amount;
-    else if (e.action === "DEBIT") totalDebit += e.amount;
-  });
+  const totalCredit = creditAgg._sum?.amount || 0;
+  const totalDebit = debitAgg._sum?.amount || 0;
 
   return {
     shop,

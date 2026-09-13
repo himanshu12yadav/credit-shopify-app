@@ -1,3 +1,5 @@
+{{ 'credit-storefront.css' | asset_url | stylesheet_tag }}
+
 <div id="credit-multiplier-banner" class="credit-multiplier-bar" data-shop="{{ shop.permanent_domain }}">
   <div class="credit-multiplier-content">
     <span class="credit-multiplier-badge">🔥 {{ block.settings.badge_text | default: '2X BONUS CREDIT' }}</span>
@@ -10,59 +12,6 @@
     </div>
   </div>
 </div>
-
-<style>
-  .credit-multiplier-bar {
-    background: linear-gradient(90deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
-    color: #ffffff;
-    padding: 10px 16px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 13px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  .credit-multiplier-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    text-align: center;
-  }
-  .credit-multiplier-badge {
-    background: #f59e0b;
-    color: #000000;
-    font-weight: 800;
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    letter-spacing: 0.5px;
-  }
-  .credit-multiplier-message {
-    font-weight: 600;
-  }
-  .credit-multiplier-timer {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-family: monospace;
-    font-size: 13px;
-  }
-  .credit-timer-label {
-    color: #cbd5e1;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 11px;
-    text-transform: uppercase;
-  }
-  .credit-timer-digits {
-    color: #34d399;
-    font-weight: 700;
-  }
-</style>
 
 <script>
   (function() {

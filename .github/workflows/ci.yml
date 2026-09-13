@@ -10,6 +10,14 @@ jobs:
   validate-and-build:
     name: Lint & Build Validation
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://ci_user:ci_pass@localhost:5432/ci_db"
+      DATABASE_URL_UNPOOLED: "postgresql://ci_user:ci_pass@localhost:5432/ci_db"
+      DATABASE_URL_REPLICA: "postgresql://ci_user:ci_pass@localhost:5432/ci_db"
+      SHOPIFY_API_KEY: "ci_dummy_key"
+      SHOPIFY_API_SECRET: "ci_dummy_secret"
+      SCOPES: "read_themes,write_store_credit"
+      NODE_ENV: "production"
 
     steps:
       - name: Checkout repository

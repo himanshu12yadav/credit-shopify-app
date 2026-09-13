@@ -1,8 +1,11 @@
 name: Deploy Production
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
     branches: [ main ]
+    types:
+      - completed
   workflow_dispatch:
 
 concurrency:
@@ -13,6 +16,7 @@ jobs:
   deploy-trigger:
     name: Deploy Trigger.dev Workers
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,6 +44,7 @@ jobs:
   trigger-render-deploy:
     name: Trigger Render Web App Deploy
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Call Render Deploy Hook (if configured)
         env:

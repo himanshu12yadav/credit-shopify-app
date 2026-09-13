@@ -30,6 +30,22 @@ export default function App() {
         />
         <Meta />
         <Links />
+        <style dangerouslySetInnerHTML={{ __html: `
+          s-banner {
+            display: block;
+            margin-top: 18px !important;
+            margin-bottom: 22px !important;
+          }
+          s-section {
+            display: block;
+            margin-top: 24px !important;
+            margin-bottom: 24px !important;
+          }
+          s-page {
+            display: block;
+            padding-bottom: 60px !important;
+          }
+        ` }} />
       </head>
       <body>
         <Outlet />

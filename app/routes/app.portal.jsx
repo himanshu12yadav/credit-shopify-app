@@ -31,14 +31,17 @@ export default function CustomerPortalSettings() {
         Manage Account Settings in Admin ↗
       </s-button>
 
-      <s-banner tone="info" heading="Dedicated Passwordless Customer Account Rewards Portal">
-        <s-paragraph>
-          Shoppers who log in via <strong>New Customer Accounts</strong> access their dedicated native rewards portal. They can view real-time store credit balances, monitor VIP progression, and export digital Apple/Google wallet passes.
-        </s-paragraph>
-      </s-banner>
+      <div style={{ marginTop: "20px", marginBottom: "24px" }}>
+        <s-banner tone="info" heading="Dedicated Passwordless Customer Account Rewards Portal">
+          <s-paragraph>
+            Shoppers who log in via <strong>New Customer Accounts</strong> access their dedicated native rewards portal. They can view real-time store credit balances, monitor VIP progression, and export digital Apple/Google wallet passes.
+          </s-paragraph>
+        </s-banner>
+      </div>
 
       {/* KPI Section */}
-      <s-section heading="Portal Usage & Extensibility Status">
+      <div style={{ marginBottom: "28px" }}>
+        <s-section heading="Portal Usage & Extensibility Status">
         <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
           <s-box padding="base" background="subdued" borderradius="base">
             <s-stack direction="block" gap="small">
@@ -65,6 +68,7 @@ export default function CustomerPortalSettings() {
           </s-box>
         </s-grid>
       </s-section>
+      </div>
 
       {/* Configuration & Preview Section */}
       <s-section heading="Customer View Preview">

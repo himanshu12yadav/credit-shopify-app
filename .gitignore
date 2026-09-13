@@ -15,10 +15,7 @@ database.sqlite
 
 .env
 .env.*
-
-
-
-
+!.env.example
 
 /extensions/*/dist
 

@@ -2,7 +2,7 @@
 
 client_id = "e57de15ea2ff48f8d05917790c2eecc2"
 name = "Native Store Credit & Rewards"
-application_url = "https://ending-equation-str-gazette.trycloudflare.com"
+application_url = "https://credit-shopify-app.onrender.com"
 embedded = true
 
 [access_scopes]
@@ -53,7 +53,10 @@ api_version = "2026-10"
   topics = [ "refunds/create" ]
 
 [auth]
-redirect_urls = [ "https://ending-equation-str-gazette.trycloudflare.com/api/auth" ]
+redirect_urls = [
+  "https://credit-shopify-app.onrender.com/api/auth",
+  "https://credit-shopify-app.onrender.com/auth/callback"
+]
 
 [build]
 automatically_update_urls_on_dev = true

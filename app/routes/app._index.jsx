@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useLoaderData, useFetcher, Link } from "react-router";
+import { useState, useEffect, useRef } from "react";
+import { useLoaderData, useFetcher, useRevalidator, Link } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { getStoreCreditAnalytics, getCustomerAccountVersion } from "../services/store-credit.server";
@@ -11,7 +11,7 @@ import prisma from "../db.server";
 const ADMIN_CACHE = new Map();
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-async function getCachedAdminData(key, fetcher) {
+async function getCachedAdminData(key, fetcher, ttlMs = CACHE_TTL_MS) {
   const cached = ADMIN_CACHE.get(key);
   const now = Date.now();
   if (cached && cached.expiresAt > now) {
@@ -19,7 +19,9 @@ async function getCachedAdminData(key, fetcher) {
   }
   try {
     const data = await fetcher();
-    ADMIN_CACHE.set(key, { data, expiresAt: now + CACHE_TTL_MS });
+    // If checking theme embed and it's not active yet, cache for only 1 second so tab switch checks fresh
+    const effectiveTtl = (data && typeof data === "object" && data.active === false) ? 1000 : ttlMs;
+    ADMIN_CACHE.set(key, { data, expiresAt: now + effectiveTtl });
     return data;
   } catch (err) {
     if (cached) return cached.data;
@@ -219,7 +221,36 @@ export default function OverviewIndex() {
 
   const fetcher = useFetcher();
   const shopify = useAppBridge();
+  const revalidator = useRevalidator();
+  const lastCheckRef = useRef(0);
   const [matrixOpen, setMatrixOpen] = useState(false);
+
+  // Automatically detect theme changes whenever the merchant switches back to this browser tab
+  useEffect(() => {
+    const handleRevalidate = () => {
+      const now = Date.now();
+      // Debounce slightly to prevent redundant calls within 1.5 seconds
+      if (now - lastCheckRef.current < 1500) return;
+      lastCheckRef.current = now;
+      if (revalidator.state === "idle") {
+        revalidator.revalidate();
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        handleRevalidate();
+      }
+    };
+
+    window.addEventListener("focus", handleRevalidate);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("focus", handleRevalidate);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [revalidator]);
 
   const themeEditorUrl = `https://admin.shopify.com/store/${storeSlug}/themes/current/editor?context=apps`;
 

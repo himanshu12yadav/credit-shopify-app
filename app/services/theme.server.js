@@ -93,6 +93,44 @@ export async function getThemeAppEmbedStatus({ admin, session }) {
       }
     }
 
+    // 5. Check templates/product.json for Product page app blocks (e.g. Earn Store Credit)
+    try {
+      const productTemplateUrl = `https://${session.shop}/admin/api/2026-01/themes/${numericThemeId}/assets.json?asset[key]=templates/product.json`;
+      const prodRes = await fetch(productTemplateUrl, {
+        headers: {
+          "X-Shopify-Access-Token": session.accessToken,
+          "Content-Type": "application/json",
+        },
+      });
+      if (prodRes.ok) {
+        const prodData = await prodRes.json();
+        const prodRaw = prodData?.asset?.value;
+        if (prodRaw) {
+          const prodJson = JSON.parse(prodRaw);
+          const pSections = prodJson?.sections || {};
+          for (const sKey of Object.keys(pSections)) {
+            const pBlocks = pSections[sKey]?.blocks || {};
+            for (const pbId of Object.keys(pBlocks)) {
+              const pb = pBlocks[pbId];
+              const pbType = typeof pb?.type === "string" ? pb.type : "";
+              if (
+                pbType.includes("cashback-badge") ||
+                pbType.includes("scratch-card-modal") ||
+                pbType.includes("credit-storefront") ||
+                pbType.includes("native-store-credit")
+              ) {
+                if (!pb.disabled) {
+                  return { active: true, themeName: mainTheme.name, source: "PRODUCT_TEMPLATE", blockType: pbType };
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch {
+      // ignore product template fetch error
+    }
+
     return { active: false, themeName: mainTheme.name };
   } catch (err) {
     console.warn("Theme app embed check failed:", err.message);

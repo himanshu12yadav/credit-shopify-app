@@ -490,6 +490,41 @@
   line-height: 1.4;
 }
 
+.vip-modal-wallet-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.vip-wallet-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #000000;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  will-change: transform;
+}
+
+.vip-wallet-badge-btn:hover {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.vip-wallet-badge-btn svg {
+  flex-shrink: 0;
+}
+
 /* Guest State Card */
 .vip-guest-card {
   background: #ffffff;

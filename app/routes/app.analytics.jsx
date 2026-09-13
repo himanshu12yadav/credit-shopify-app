@@ -43,15 +43,40 @@ export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
   const shop = session.shop;
 
-  const entries = await prisma.creditLedger.findMany({
-    where: { shop },
-    orderBy: { createdAt: "desc" },
-  });
+  const [
+    totalEntriesCount,
+    creditAgg,
+    debitAgg,
+    expiredAgg,
+    sourceGroups,
+  ] = await Promise.all([
+    prisma.creditLedger.count({ where: { shop } }),
+    prisma.creditLedger.aggregate({
+      where: { shop, action: "CREDIT" },
+      _sum: { amount: true },
+    }),
+    prisma.creditLedger.aggregate({
+      where: { shop, action: "DEBIT" },
+      _sum: { amount: true },
+    }),
+    prisma.creditLedger.aggregate({
+      where: {
+        shop,
+        OR: [{ action: "EXPIRED" }, { status: "EXPIRED" }],
+      },
+      _sum: { amount: true },
+    }),
+    prisma.creditLedger.groupBy({
+      by: ["source"],
+      where: { shop, action: "CREDIT" },
+      _count: { _all: true },
+      _sum: { amount: true },
+    }),
+  ]);
 
-  // Financial aggregates
-  let totalIssued = 0;
-  let totalRedeemed = 0;
-  let totalExpired = 0;
+  const totalIssued = creditAgg._sum?.amount || 0;
+  const totalRedeemed = debitAgg._sum?.amount || 0;
+  const totalExpired = expiredAgg._sum?.amount || 0;
   let totalCashSavedReturns = 0;
 
   const sourceBreakdown = {
@@ -70,23 +95,18 @@ export const loader = async ({ request }) => {
     MANUAL: { count: 0, amount: 0, label: "Admin Manual Adjustments", purpose: "Merchant account adjustments and audit reconciliations" },
   };
 
-  entries.forEach((e) => {
-    if (e.action === "CREDIT") {
-      totalIssued += e.amount;
-      const src = e.source || "MANUAL";
-      if (!sourceBreakdown[src]) {
-        sourceBreakdown[src] = { count: 0, amount: 0, label: src, purpose: "Automated reward" };
-      }
-      sourceBreakdown[src].count += 1;
-      sourceBreakdown[src].amount += e.amount;
+  sourceGroups.forEach((g) => {
+    const src = g.source || "MANUAL";
+    const amt = g._sum?.amount || 0;
+    const cnt = g._count?._all || 0;
+    if (!sourceBreakdown[src]) {
+      sourceBreakdown[src] = { count: 0, amount: 0, label: src, purpose: "Automated reward" };
+    }
+    sourceBreakdown[src].count = cnt;
+    sourceBreakdown[src].amount = amt;
 
-      if (src === "RETURN_BONUS") {
-        totalCashSavedReturns += (e.amount / 1.2);
-      }
-    } else if (e.action === "DEBIT") {
-      totalRedeemed += e.amount;
-    } else if (e.action === "EXPIRED" || e.status === "EXPIRED") {
-      totalExpired += e.amount;
+    if (src === "RETURN_BONUS") {
+      totalCashSavedReturns += (amt / 1.2);
     }
   });
 
@@ -138,7 +158,7 @@ export const loader = async ({ request }) => {
       avgOrderValueStandard: avgOrderValueStandard.toFixed(2),
       daysToRepeatWithCredit,
       daysToRepeatWithoutCredit,
-      totalEntriesCount: entries.length,
+      totalEntriesCount,
     },
     sourceBreakdown,
     channelStats,

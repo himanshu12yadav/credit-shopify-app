@@ -6,11 +6,31 @@ import { getStoreCreditAnalytics, getCustomerAccountVersion } from "../services/
 import { getWebPixelStatus } from "../services/pixel.server";
 import prisma from "../db.server";
 
+// Lightweight in-memory TTL cache for external GraphQL queries to ensure sub-100ms loader response
+const ADMIN_CACHE = new Map();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+async function getCachedAdminData(key, fetcher) {
+  const cached = ADMIN_CACHE.get(key);
+  const now = Date.now();
+  if (cached && cached.expiresAt > now) {
+    return cached.data;
+  }
+  try {
+    const data = await fetcher();
+    ADMIN_CACHE.set(key, { data, expiresAt: now + CACHE_TTL_MS });
+    return data;
+  } catch (err) {
+    if (cached) return cached.data;
+    throw err;
+  }
+}
+
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
   const shop = session.shop;
 
-  const [analytics, activeRules, settings, customerAccountVersion, campaignsCount, pixelStatus, posCount, themeResponse, storefrontCount] = await Promise.all([
+  const [analytics, activeRules, settings, customerAccountVersion, pixelStatus, posCount, themeResponse, storefrontCount] = await Promise.all([
     getStoreCreditAnalytics({ shop }),
     prisma.creditRule.findMany({
       where: { shop, isActive: true },
@@ -19,27 +39,28 @@ export const loader = async ({ request }) => {
     prisma.creditSettings.findUnique({
       where: { shop },
     }),
-    getCustomerAccountVersion(admin),
-    prisma.campaign.count({
-      where: { shop, isActive: true },
-    }),
-    getWebPixelStatus(admin).catch(() => ({ active: false })),
+    getCachedAdminData(`${shop}:customerAccountVersion`, () => getCustomerAccountVersion(admin)),
+    getCachedAdminData(`${shop}:pixelStatus`, () => getWebPixelStatus(admin).catch(() => ({ active: false }))),
     prisma.creditLedger.count({
       where: { shop, source: { in: ["POS", "POS_CREDIT"] } },
     }),
-    admin.graphql(`
-      query getActiveTheme {
-        themes(first: 1, roles: [MAIN]) {
-          nodes {
-            name
+    getCachedAdminData(`${shop}:activeTheme`, () =>
+      admin.graphql(`
+        query getActiveTheme {
+          themes(first: 1, roles: [MAIN]) {
+            nodes {
+              name
+            }
           }
         }
-      }
-    `).then((res) => res.json()).catch(() => null),
+      `).then((res) => res.json()).catch(() => null)
+    ),
     prisma.creditLedger.count({
       where: { shop, source: { in: ["SCRATCH_CARD", "GIFT_CARD", "STOREFRONT"] } },
     }),
   ]);
+
+  const campaignsCount = analytics.activeCampaignsCount || 0;
 
   const isNewAccountsActive = customerAccountVersion === "NEW_CUSTOMER_ACCOUNTS";
   const isCashbackRulesActive = activeRules.length > 0;

@@ -31,6 +31,8 @@ model Session {
   emailVerified Boolean?  @default(false)
   refreshToken        String?
   refreshTokenExpires DateTime?
+
+  @@index([shop])
 }
 
 model CreditRule {
@@ -48,6 +50,9 @@ model CreditRule {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([shop, isActive])
+  @@index([shop, trigger])
 }
 
 model CreditLedger {
@@ -68,6 +73,12 @@ model CreditLedger {
   status              String    @default("COMPLETED") // COMPLETED, FAILED, EXPIRED
   metadata            String?   // JSON object for gifts, appeasement reasons, etc.
   createdAt           DateTime  @default(now())
+
+  @@index([shop, createdAt])
+  @@index([shop, action])
+  @@index([shop, customerId])
+  @@index([shop, source])
+  @@index([shop, orderId])
 }
 
 model Campaign {
@@ -90,6 +101,9 @@ model Campaign {
   status            String    @default("ACTIVE") // "ACTIVE", "SCHEDULED", "COMPLETED"
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+
+  @@index([shop, isActive])
+  @@index([shop, status])
 }
 
 model Referral {
@@ -103,6 +117,8 @@ model Referral {
   claimsCount          Int      @default(0)
   status               String   @default("ACTIVE")
   createdAt            DateTime @default(now())
+
+  @@index([shop, referrerCustomerId])
 }
 
 model CreditSettings {
@@ -132,6 +148,8 @@ model VipTier {
   orderIndex      Int      @default(0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([shop, orderIndex])
 }
 
 // Raw telemetry beacons received from the native Shopify Web Pixel extension

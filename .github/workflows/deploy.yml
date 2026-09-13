@@ -1,0 +1,55 @@
+name: Deploy Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy-trigger:
+    name: Deploy Trigger.dev Workers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Deploy to Trigger.dev Cloud
+        env:
+          TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$TRIGGER_ACCESS_TOKEN" ]; then
+            echo "TRIGGER_ACCESS_TOKEN secret is not set. Skipping Trigger.dev automated deployment."
+            echo "To enable, add TRIGGER_ACCESS_TOKEN to GitHub repository secrets."
+          else
+            npm run trigger:deploy
+          fi
+
+  trigger-render-deploy:
+    name: Trigger Render Web App Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Render Deploy Hook (if configured)
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "RENDER_DEPLOY_HOOK_URL secret not set."
+            echo "Render will auto-deploy via GitHub integration if Auto-Deploy is enabled in Render Settings."
+          else
+            echo "Triggering Render deployment via deploy hook..."
+            curl -s -X POST "$RENDER_DEPLOY_HOOK_URL"
+            echo "Render deploy hook triggered successfully."
+          fi

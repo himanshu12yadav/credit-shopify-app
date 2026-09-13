@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useLoaderData, useFetcher } from "react-router";
+import { useLoaderData, useFetcher, useRouteError } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
+import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 
@@ -91,14 +92,19 @@ export const action = async ({ request }) => {
 };
 
 export default function ReferralsPage() {
-  const { settings, referrals, topAdvocates, stats, shop } = useLoaderData();
+  const { settings, referrals = [], topAdvocates = [], stats = {}, shop = "" } = useLoaderData();
   const fetcher = useFetcher();
   const shopify = useAppBridge();
 
-  const [referralsEnabled, setReferralsEnabled] = useState(settings.referralsEnabled);
+  const [referralsEnabled, setReferralsEnabled] = useState(Boolean(settings?.referralsEnabled));
   const [friendReward, setFriendReward] = useState("10.00");
   const [advocateReward, setAdvocateReward] = useState("10.00");
   const [advocateEmail, setAdvocateEmail] = useState("");
+
+  const totalAdvocates = stats.totalAdvocates || referrals.length || 0;
+  const totalClaimsCount = stats.totalClaimsCount || 0;
+  const totalRewardsPaid = stats.totalRewardsPaid || 0;
+  const totalRevenueGenerated = stats.totalRevenueGenerated || 0;
 
   const handleSaveSettings = (e) => {
     e.preventDefault();
@@ -129,18 +135,14 @@ export default function ReferralsPage() {
   };
 
   return (
-    <div style={{ maxWidth: 1080, margin: "0 auto", padding: "28px 20px", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", margin: "0 0 4px 0" }}>
-            Advocate Referral Program ("Give $10, Get $10")
-          </h1>
-          <p style={{ margin: 0, color: "#64748b", fontSize: 13 }}>
-            Turn your loyal customers into brand advocates. Friends get an instant store credit discount on their first purchase, and advocates receive bonus store credit.
+    <s-page heading="Advocate Referral Program">
+      <div style={{ maxWidth: 1080, margin: "0 auto", padding: "10px 0 28px 0", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+        {/* Subtitle banner */}
+        <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 12, padding: "14px 18px", marginBottom: 20 }}>
+          <p style={{ margin: 0, color: "#475569", fontSize: 13, lineHeight: 1.5 }}>
+            <strong>Give $10, Get $10:</strong> Turn your loyal customers into brand advocates. Friends get an instant store credit discount on their first purchase, and advocates receive bonus store credit.
           </p>
         </div>
-      </div>
 
       {/* KPI Metrics */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
@@ -149,7 +151,7 @@ export default function ReferralsPage() {
             Active Advocates
           </div>
           <div style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", marginTop: 4 }}>
-            {stats.totalAdvocates}
+            {totalAdvocates}
           </div>
           <div style={{ fontSize: 11, color: "#4f46e5", marginTop: 2, fontWeight: 600 }}>
             Registered referrers
@@ -161,7 +163,7 @@ export default function ReferralsPage() {
             Successful Referrals
           </div>
           <div style={{ fontSize: 22, fontWeight: 800, color: "#16a34a", marginTop: 4 }}>
-            {stats.totalClaimsCount}
+            {totalClaimsCount}
           </div>
           <div style={{ fontSize: 11, color: "#166534", marginTop: 2, fontWeight: 600 }}>
             New customers acquired
@@ -173,7 +175,7 @@ export default function ReferralsPage() {
             Rewards Disbursed
           </div>
           <div style={{ fontSize: 22, fontWeight: 800, color: "#2563eb", marginTop: 4 }}>
-            ${stats.totalRewardsPaid.toFixed(2)}
+            ${totalRewardsPaid.toFixed(2)}
           </div>
           <div style={{ fontSize: 11, color: "#1e40af", marginTop: 2, fontWeight: 600 }}>
             Native store credit awarded
@@ -185,7 +187,7 @@ export default function ReferralsPage() {
             Est. Referral Revenue
           </div>
           <div style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", marginTop: 4 }}>
-            ${stats.totalRevenueGenerated.toFixed(2)}
+            ${totalRevenueGenerated.toFixed(2)}
           </div>
           <div style={{ fontSize: 11, color: "#059669", marginTop: 2, fontWeight: 600 }}>
             Attributed new orders
@@ -381,5 +383,14 @@ export default function ReferralsPage() {
         </table>
       </div>
     </div>
+    </s-page>
   );
 }
+
+export function ErrorBoundary() {
+  return boundary.error(useRouteError());
+}
+
+export const headers = (headersArgs) => {
+  return boundary.headers(headersArgs);
+};

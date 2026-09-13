@@ -26,15 +26,13 @@ sale_of_data = "disabled"
 [extensions.settings]
 type = "object"
 
-[[extensions.settings.fields]]
-key = "appUrl"
+[extensions.settings.fields.appUrl]
 name = "App ingestion URL"
 description = "Base URL of the Store Credit app that receives pixel telemetry, e.g. https://your-app.example.com"
 type = "single_line_text_field"
 validations = [ { name = "min", value = "1" } ]
 
-[[extensions.settings.fields]]
-key = "pixelEnabled"
+[extensions.settings.fields.pixelEnabled]
 name = "Pixel enabled"
 description = "Set to \"true\" to transmit telemetry, or \"false\" to pause tracking."
 type = "single_line_text_field"

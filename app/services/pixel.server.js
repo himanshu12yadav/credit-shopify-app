@@ -76,21 +76,46 @@ function parseSettings(raw) {
  * @returns {Promise<{active: boolean, id: string|null, settings: object}>}
  */
 export async function getWebPixelStatus(admin) {
-  const response = await admin.graphql(WEB_PIXEL_QUERY);
-  const body = await response.json();
+  try {
+    const response = await admin.graphql(WEB_PIXEL_QUERY);
+    const body = await response.json();
 
-  if (Array.isArray(body.errors) && body.errors.length > 0) {
-    throw new Error(
-      body.errors.map((e) => e.message).join("; ") || "webPixel query failed",
-    );
+    if (Array.isArray(body.errors) && body.errors.length > 0) {
+      const isNotFound = body.errors.some((e) =>
+        String(e.message || "")
+          .toLowerCase()
+          .includes("no web pixel was found")
+      );
+      if (isNotFound) {
+        return { active: false, id: null, settings: {} };
+      }
+      throw new Error(
+        body.errors.map((e) => e.message).join("; ") || "webPixel query failed",
+      );
+    }
+
+    const pixel = body.data?.webPixel || null;
+    return {
+      active: Boolean(pixel),
+      id: pixel?.id || null,
+      settings: parseSettings(pixel?.settings),
+    };
+  } catch (err) {
+    const msg = String(err.message || "").toLowerCase();
+    const gqlErrors = err?.graphQLErrors || [];
+    const isNotFound =
+      msg.includes("no web pixel was found") ||
+      gqlErrors.some((e) =>
+        String(e?.message || "")
+          .toLowerCase()
+          .includes("no web pixel was found"),
+      );
+
+    if (isNotFound) {
+      return { active: false, id: null, settings: {} };
+    }
+    throw err;
   }
-
-  const pixel = body.data?.webPixel || null;
-  return {
-    active: Boolean(pixel),
-    id: pixel?.id || null,
-    settings: parseSettings(pixel?.settings),
-  };
 }
 
 /**
@@ -115,7 +140,12 @@ export async function activateWebPixel(admin, { appUrl } = {}, _attempt = 0) {
     };
   }
 
-  const current = await getWebPixelStatus(admin);
+  let current = { active: false, id: null, settings: {} };
+  try {
+    current = await getWebPixelStatus(admin);
+  } catch {
+    current = { active: false, id: null, settings: {} };
+  }
 
   const [operation, variables, resultKey] = current.active
     ? [
@@ -125,36 +155,43 @@ export async function activateWebPixel(admin, { appUrl } = {}, _attempt = 0) {
       ]
     : [WEB_PIXEL_CREATE, { webPixel: { settings } }, "webPixelCreate"];
 
-  const response = await admin.graphql(operation, { variables });
-  const body = await response.json();
+  try {
+    const response = await admin.graphql(operation, { variables });
+    const body = await response.json();
 
-  if (Array.isArray(body.errors) && body.errors.length > 0) {
+    if (Array.isArray(body.errors) && body.errors.length > 0) {
+      return {
+        ok: false,
+        userErrors: body.errors.map((e) => ({ message: e.message })),
+      };
+    }
+
+    const payload = body.data?.[resultKey] || {};
+    const userErrors = payload.userErrors || [];
+
+    // Race: another request created the pixel between our read and our create.
+    // Retry once as an update.
+    if (
+      !current.active &&
+      _attempt === 0 &&
+      userErrors.some((e) => e.code === "TAKEN")
+    ) {
+      return activateWebPixel(admin, { appUrl }, 1);
+    }
+
+    return {
+      ok: userErrors.length === 0,
+      webPixel: payload.webPixel || null,
+      settings: parseSettings(payload.webPixel?.settings),
+      userErrors,
+      updated: current.active,
+    };
+  } catch (err) {
     return {
       ok: false,
-      userErrors: body.errors.map((e) => ({ message: e.message })),
+      userErrors: [{ message: err.message || "GraphQL mutation error" }],
     };
   }
-
-  const payload = body.data?.[resultKey] || {};
-  const userErrors = payload.userErrors || [];
-
-  // Race: another request created the pixel between our read and our create.
-  // Retry once as an update.
-  if (
-    !current.active &&
-    _attempt === 0 &&
-    userErrors.some((e) => e.code === "TAKEN")
-  ) {
-    return activateWebPixel(admin, { appUrl }, 1);
-  }
-
-  return {
-    ok: userErrors.length === 0,
-    webPixel: payload.webPixel || null,
-    settings: parseSettings(payload.webPixel?.settings),
-    userErrors,
-    updated: current.active,
-  };
 }
 
 /**

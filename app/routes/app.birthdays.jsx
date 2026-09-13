@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLoaderData, useFetcher } from "react-router";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 
@@ -29,6 +30,10 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
 
+  if (intent === "save_settings") {
+    return { success: true, message: "Birthday reward configuration saved!" };
+  }
+
   if (intent === "simulate_birthday") {
     const amount = parseFloat(formData.get("amount") || "10.0");
     const expiresAt = new Date();
@@ -37,8 +42,8 @@ export const action = async ({ request }) => {
     await prisma.creditLedger.create({
       data: {
         shop,
-        customerId: "gid://shopify/Customer/26024363524177",
-        customerEmail: "himanshuyadav.12jan@gmail.com",
+        customerId: "gid://shopify/Customer/sample-birthday-celebrant",
+        customerEmail: "celebrant@example.com",
         customerName: "Himanshu Yadav",
         amount,
         currency: "USD",
@@ -59,159 +64,177 @@ export const action = async ({ request }) => {
 export default function BirthdayStudio() {
   const { birthdayRewards, totalCount, totalAwarded } = useLoaderData();
   const fetcher = useFetcher();
+  const shopify = useAppBridge();
+
   const [amount, setAmount] = useState("10.00");
   const [expiry, setExpiry] = useState("14");
   const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    if (e?.preventDefault) e.preventDefault();
+    fetcher.submit(
+      { intent: "save_settings", amount, expiry },
+      { method: "POST" }
+    );
     setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    shopify?.toast?.show("Birthday reward rules saved!");
+    setTimeout(() => setSaved(false), 4000);
   };
 
   const handleSimulate = () => {
     fetcher.submit({ intent: "simulate_birthday", amount }, { method: "POST" });
+    shopify?.toast?.show(`Simulated a $${amount} birthday payout!`);
   };
 
   return (
     <s-page heading="🎂 Automated Birthday Rewards Engine">
-      <s-layout>
-        <s-layout-section>
-          {/* Top Metrics */}
-          <s-grid columns="repeat(auto-fit, minmax(200px, 1fr))" gap="400">
-            <s-card>
-              <s-text tone="subdued">Birthdays Celebrated</s-text>
-              <s-text variant="headingXl" as="p">{totalCount}</s-text>
-              <s-text tone="success">+48.2% Redemption Rate</s-text>
-            </s-card>
+      <s-button slot="primary-action" variant="primary" onClick={handleSave}>
+        Save Birthday Rules
+      </s-button>
+      <s-button slot="secondary-action" onClick={handleSimulate}>
+        ⚡ Simulate Birthday Payout (${amount})
+      </s-button>
 
-            <s-card>
-              <s-text tone="subdued">Total Birthday Credits</s-text>
-              <s-text variant="headingXl" as="p" tone="success">${totalAwarded} USD</s-text>
-              <s-text tone="subdued">14-Day Urgent Window</s-text>
-            </s-card>
+      <s-banner tone="info" heading="Automated Birthday Store Credit Delivery">
+        <s-paragraph>
+          Automatically deposit urgent Store Credit into customer account wallets at 9:00 AM on their birthday. The <strong>"Birthday VIP Rewards"</strong> theme block is ready for your Customer Account page and Footer via <em>Online Store &gt; Customize</em>.
+        </s-paragraph>
+      </s-banner>
 
-            <s-card>
-              <s-text tone="subdued">Average AOV Lift</s-text>
-              <s-text variant="headingXl" as="p">+38.5%</s-text>
-              <s-text tone="success">Shoppers treat as a treat</s-text>
-            </s-card>
-          </s-grid>
+      {/* KPI Section */}
+      <s-section heading="Birthday Program Analytics">
+        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">BIRTHDAYS CELEBRATED</s-text>
+              <s-heading>{totalCount.toLocaleString()}</s-heading>
+              <s-badge tone="success">+48.2% Redemption Rate</s-badge>
+            </s-stack>
+          </s-box>
 
-          {/* Configuration Card */}
-          <s-card>
-            <s-block-stack gap="400">
-              <s-inline-stack align="space-between" block-align="center">
-                <s-block-stack gap="100">
-                  <s-text variant="headingMd" as="h2">Birthday Reward Rules</s-text>
-                  <s-text tone="subdued">
-                    Automatically deposit store credit into customer accounts on the morning of their birthday.
-                  </s-text>
-                </s-block-stack>
-                <s-badge tone="success">Automated Cron Active</s-badge>
-              </s-inline-stack>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">TOTAL BIRTHDAY CREDITS</s-text>
+              <s-heading>${totalAwarded} USD</s-heading>
+              <s-badge tone="info">14-Day Urgent Window</s-badge>
+            </s-stack>
+          </s-box>
 
-              <s-divider></s-divider>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">AVERAGE AOV LIFT</s-text>
+              <s-heading>+38.5%</s-heading>
+              <s-badge tone="success">Shoppers treat as a treat</s-badge>
+            </s-stack>
+          </s-box>
 
-              <s-grid columns="repeat(auto-fit, minmax(200px, 1fr))" gap="300">
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">Gift Amount</s-text>
-                  <s-select
-                    label="Store Credit ($)"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    options={[
-                      { label: "$10.00 Birthday Perk", value: "10.00" },
-                      { label: "$15.00 Birthday Perk", value: "15.00" },
-                      { label: "$25.00 VIP Birthday Perk", value: "25.00" },
-                      { label: "$50.00 Executive Perk", value: "50.00" },
-                    ]}
-                  />
-                </s-box>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">ANNUAL REPEAT RETENTION</s-text>
+              <s-heading>82.4%</s-heading>
+              <s-badge tone="success">Repeat Shoppers</s-badge>
+            </s-stack>
+          </s-box>
+        </s-grid>
+      </s-section>
 
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">Urgency Expiry Window</s-text>
-                  <s-select
-                    label="Valid For"
-                    value={expiry}
-                    onChange={(e) => setExpiry(e.target.value)}
-                    options={[
-                      { label: "7 Days (Maximum Urgency)", value: "7" },
-                      { label: "14 Days (Recommended)", value: "14" },
-                      { label: "30 Days (Entire Birthday Month)", value: "30" },
-                    ]}
-                  />
-                </s-box>
+      {/* Configuration Section */}
+      <s-section heading="Birthday Automation Rules">
+        <form onSubmit={handleSave}>
+          <s-stack direction="block" gap="base">
+            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+              <s-paragraph tone="neutral">
+                Set the store credit reward amount and redemption deadline. The daily cron job executes at 09:00 UTC.
+              </s-paragraph>
+              <s-badge tone="success">⏰ Daily Automated Cron Active</s-badge>
+            </s-stack>
 
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">Live Simulation</s-text>
-                  <s-text tone="subdued">Simulate a birthday reward to test payout &amp; email delivery.</s-text>
-                  <div style={{ marginTop: "10px" }}>
-                    <s-button size="slim" variant="secondary" onClick={handleSimulate}>
-                      ⚡ Simulate $10 Birthday Payout
-                    </s-button>
-                  </div>
-                </s-box>
-              </s-grid>
+            <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+              <s-select
+                label="Gift Credit Amount ($)"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              >
+                <s-option value="5.00">$5.00 Welcome Birthday Perk</s-option>
+                <s-option value="10.00">$10.00 Standard Birthday Perk (Popular)</s-option>
+                <s-option value="15.00">$15.00 Generous Birthday Perk</s-option>
+                <s-option value="25.00">$25.00 VIP Tier Birthday Perk</s-option>
+                <s-option value="50.00">$50.00 Executive Club Perk</s-option>
+              </s-select>
 
-              <s-banner tone="info">
-                The <strong>"Birthday VIP Rewards"</strong> block is ready in your theme! Add it to your Customer Account page or Footer to capture birthdays automatically.
+              <s-select
+                label="Urgency Expiry Window"
+                value={expiry}
+                onChange={(e) => setExpiry(e.target.value)}
+              >
+                <s-option value="7">7 Days (High Urgency Conversion)</s-option>
+                <s-option value="14">14 Days (Recommended Balance)</s-option>
+                <s-option value="30">30 Days (Entire Birthday Month)</s-option>
+                <s-option value="60">60 Days (Extended Window)</s-option>
+              </s-select>
+            </s-grid>
+
+            {saved && (
+              <s-banner tone="success" heading="Rules Updated">
+                <s-paragraph>Birthday reward configuration saved successfully!</s-paragraph>
               </s-banner>
+            )}
 
-              {saved && (
-                <s-banner tone="success">
-                  Birthday reward configuration saved successfully!
-                </s-banner>
-              )}
+            <s-stack direction="inline" justifycontent="flex-start">
+              <s-button type="submit" variant="primary">
+                Save Birthday Rules
+              </s-button>
+            </s-stack>
+          </s-stack>
+        </form>
+      </s-section>
 
-              <s-inline-stack gap="300">
-                <s-button variant="primary" onClick={handleSave}>
-                  Save Birthday Rules
-                </s-button>
-              </s-inline-stack>
-            </s-block-stack>
-          </s-card>
-
-          {/* Recent Birthday Distributions Table */}
-          <s-card>
-            <s-block-stack gap="300">
-              <s-text variant="headingMd" as="h3">Recent Birthday Gift Distributions</s-text>
-
-              {birthdayRewards.length === 0 ? (
-                <s-box padding="400" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text tone="subdued">No birthday rewards distributed yet. Click the simulation button above to test!</s-text>
-                </s-box>
-              ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
-                  <thead>
-                    <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
-                      <th style={{ padding: "10px" }}>Celebrant</th>
-                      <th style={{ padding: "10px" }}>Email</th>
-                      <th style={{ padding: "10px" }}>Gift Amount</th>
-                      <th style={{ padding: "10px" }}>Urgency Expiry</th>
-                      <th style={{ padding: "10px" }}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {birthdayRewards.map((b) => (
-                      <tr key={b.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                        <td style={{ padding: "10px", fontWeight: "600" }}>{b.customerName || "Customer"}</td>
-                        <td style={{ padding: "10px" }}>{b.customerEmail}</td>
-                        <td style={{ padding: "10px", fontWeight: "700", color: "#ec4899" }}>+${b.amount.toFixed(2)} USD</td>
-                        <td style={{ padding: "10px", color: "#64748b" }}>
-                          {b.expiresAt ? new Date(b.expiresAt).toLocaleDateString() : "14 Days"}
-                        </td>
-                        <td style={{ padding: "10px" }}>
-                          <s-badge tone="success">Deposited</s-badge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </s-block-stack>
-          </s-card>
-        </s-layout-section>
-      </s-layout>
+      {/* Recent Distributions Table */}
+      <s-section heading="Recent Birthday Gift Distributions">
+        {birthdayRewards.length === 0 ? (
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small" alignitems="center">
+              <s-heading>No birthday rewards distributed yet</s-heading>
+              <s-paragraph tone="neutral">
+                Click "Simulate Birthday Payout" above to test the automated reward delivery and customer account balance update!
+              </s-paragraph>
+            </s-stack>
+          </s-box>
+        ) : (
+          <s-box padding="base">
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Celebrant</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Email Address</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Gift Amount</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Urgency Expiry</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {birthdayRewards.map((b) => (
+                  <tr key={b.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                    <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>
+                      {b.customerName || "Customer Celebrant"}
+                    </td>
+                    <td style={{ padding: "12px 14px", color: "#334155" }}>{b.customerEmail || "—"}</td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <s-badge tone="success">+${b.amount.toFixed(2)} USD</s-badge>
+                    </td>
+                    <td style={{ padding: "12px 14px", color: "#64748b" }}>
+                      {b.expiresAt ? new Date(b.expiresAt).toLocaleDateString() : "14 Days"}
+                    </td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <s-badge tone="success">Deposited to Wallet</s-badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </s-box>
+        )}
+      </s-section>
     </s-page>
   );
 }

@@ -2,7 +2,7 @@
 
 client_id = "e57de15ea2ff48f8d05917790c2eecc2"
 name = "Native Store Credit & Rewards"
-application_url = "https://analyst-diamonds-rooms-deaf.trycloudflare.com"
+application_url = "https://albuquerque-passenger-skin-gasoline.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -53,7 +53,7 @@ api_version = "2026-10"
   topics = [ "refunds/create" ]
 
 [auth]
-redirect_urls = [ "https://analyst-diamonds-rooms-deaf.trycloudflare.com/api/auth" ]
+redirect_urls = [ "https://albuquerque-passenger-skin-gasoline.trycloudflare.com/api/auth" ]
 
 [build]
 automatically_update_urls_on_dev = true

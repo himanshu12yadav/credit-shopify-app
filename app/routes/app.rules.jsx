@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLoaderData, useFetcher } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
@@ -106,7 +106,63 @@ export const action = async ({ request }) => {
       },
     });
 
-    return { success: true, message: "Settings updated" };
+    // 1. Sync Universal Order Cashback into CreditRule
+    const existingCashbackRule = await prisma.creditRule.findFirst({
+      where: { shop, trigger: "ORDER_PAID", title: "Universal Order Cashback" },
+    });
+    if (existingCashbackRule) {
+      await prisma.creditRule.update({
+        where: { id: existingCashbackRule.id },
+        data: {
+          creditValue: cashbackRate,
+          isActive: cashbackEnabled,
+        },
+      });
+    } else if (cashbackEnabled) {
+      await prisma.creditRule.create({
+        data: {
+          shop,
+          title: "Universal Order Cashback",
+          description: "Automatically awards store credit to shoppers on every paid order",
+          trigger: "ORDER_PAID",
+          creditType: "PERCENTAGE",
+          creditValue: cashbackRate,
+          minSpend: 0,
+          expiryDays: 90,
+          isActive: true,
+        },
+      });
+    }
+
+    // 2. Sync First Purchase Welcome Bonus into CreditRule
+    const existingWelcomeRule = await prisma.creditRule.findFirst({
+      where: { shop, trigger: "FIRST_ORDER", title: "First Purchase Welcome Bonus" },
+    });
+    if (existingWelcomeRule) {
+      await prisma.creditRule.update({
+        where: { id: existingWelcomeRule.id },
+        data: {
+          creditValue: welcomeBonusAmount,
+          isActive: welcomeBonusEnabled,
+        },
+      });
+    } else if (welcomeBonusEnabled) {
+      await prisma.creditRule.create({
+        data: {
+          shop,
+          title: "First Purchase Welcome Bonus",
+          description: "Bonus store credit granted on a customer's first completed purchase",
+          trigger: "FIRST_ORDER",
+          creditType: "FIXED",
+          creditValue: welcomeBonusAmount,
+          minSpend: 0,
+          expiryDays: 90,
+          isActive: true,
+        },
+      });
+    }
+
+    return { success: true, message: "Baseline cashback settings saved & rules activated!" };
   }
 
   return { success: false };
@@ -132,19 +188,35 @@ export default function RulesPage() {
   const [welcomeBonusEnabled, setWelcomeBonusEnabled] = useState(settings.welcomeBonusEnabled);
   const [welcomeBonusAmount, setWelcomeBonusAmount] = useState(String(settings.welcomeBonusAmount));
 
+  const isSavingBaseline = fetcher.state !== "idle" && fetcher.formData?.get("intent") === "update_cashback_settings";
+
+  useEffect(() => {
+    if (fetcher.data?.message) {
+      shopify.toast.show(fetcher.data.message);
+    }
+  }, [fetcher.data, shopify]);
+
+  useEffect(() => {
+    if (settings) {
+      setCashbackEnabled(settings.cashbackEnabled);
+      setCashbackRate(String(settings.cashbackRate));
+      setWelcomeBonusEnabled(settings.welcomeBonusEnabled);
+      setWelcomeBonusAmount(String(settings.welcomeBonusAmount));
+    }
+  }, [settings]);
+
   const handleSaveBaseline = (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     fetcher.submit(
       {
         intent: "update_cashback_settings",
         cashbackEnabled: String(cashbackEnabled),
-        cashbackRate,
+        cashbackRate: String(cashbackRate),
         welcomeBonusEnabled: String(welcomeBonusEnabled),
-        welcomeBonusAmount,
+        welcomeBonusAmount: String(welcomeBonusAmount),
       },
       { method: "POST" }
     );
-    shopify.toast.show("Baseline cashback settings saved!");
   };
 
   const handleCreateRule = (e) => {
@@ -197,7 +269,14 @@ export default function RulesPage() {
                 <s-checkbox
                   label="Universal Order Cashback"
                   checked={cashbackEnabled}
-                  onChange={(e) => setCashbackEnabled(e.target.checked)}
+                  onChange={(e) => {
+                    const val = e.target.checked !== undefined ? e.target.checked : e.detail?.checked;
+                    setCashbackEnabled(Boolean(val));
+                  }}
+                  onInput={(e) => {
+                    const val = e.target.checked !== undefined ? e.target.checked : e.detail?.checked;
+                    setCashbackEnabled(Boolean(val));
+                  }}
                 />
                 <s-paragraph tone="neutral">
                   Automatically awards store credit to shoppers on every paid order.
@@ -209,7 +288,8 @@ export default function RulesPage() {
                   step="0.5"
                   min="0"
                   max="100"
-                  onInput={(e) => setCashbackRate(e.target.value)}
+                  onChange={(e) => setCashbackRate(String(e.target.value ?? e.detail?.value ?? ""))}
+                  onInput={(e) => setCashbackRate(String(e.target.value ?? e.detail?.value ?? ""))}
                 />
               </s-stack>
 
@@ -217,7 +297,14 @@ export default function RulesPage() {
                 <s-checkbox
                   label="First Purchase Welcome Bonus"
                   checked={welcomeBonusEnabled}
-                  onChange={(e) => setWelcomeBonusEnabled(e.target.checked)}
+                  onChange={(e) => {
+                    const val = e.target.checked !== undefined ? e.target.checked : e.detail?.checked;
+                    setWelcomeBonusEnabled(Boolean(val));
+                  }}
+                  onInput={(e) => {
+                    const val = e.target.checked !== undefined ? e.target.checked : e.detail?.checked;
+                    setWelcomeBonusEnabled(Boolean(val));
+                  }}
                 />
                 <s-paragraph tone="neutral">
                   Bonus store credit granted on a customer's first completed purchase.
@@ -228,13 +315,21 @@ export default function RulesPage() {
                   value={welcomeBonusAmount}
                   step="1"
                   min="0"
-                  onInput={(e) => setWelcomeBonusAmount(e.target.value)}
+                  onChange={(e) => setWelcomeBonusAmount(String(e.target.value ?? e.detail?.value ?? ""))}
+                  onInput={(e) => setWelcomeBonusAmount(String(e.target.value ?? e.detail?.value ?? ""))}
                 />
               </s-stack>
             </s-grid>
 
             <s-stack direction="inline" justifycontent="flex-end">
-              <s-button type="submit" variant="secondary">Save Baseline Settings</s-button>
+              <s-button
+                type="button"
+                variant="secondary"
+                onClick={handleSaveBaseline}
+                {...(isSavingBaseline ? { loading: true } : {})}
+              >
+                Save Baseline Settings
+              </s-button>
             </s-stack>
           </s-stack>
         </form>
@@ -328,7 +423,7 @@ export default function RulesPage() {
       <s-section padding="none">
         <s-box padding="base">
           <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-            <s-heading>Active Custom Rules ({rules.length})</s-heading>
+            <s-heading>Active Store Rules &amp; Automations ({rules.length})</s-heading>
             {rules.length > 0 && (
               <s-button variant="secondary" onClick={() => setShowBuilder(true)}>+ New Rule</s-button>
             )}
@@ -339,7 +434,7 @@ export default function RulesPage() {
         {rules.length === 0 ? (
           <s-box padding="base">
             <s-stack direction="block" gap="base">
-              <s-paragraph tone="neutral">No custom automation rules yet.</s-paragraph>
+              <s-paragraph tone="neutral">No active automation rules yet. Click "Save Baseline Settings" above or create a custom rule.</s-paragraph>
               <s-button variant="primary" onClick={() => setShowBuilder(true)}>Create First Rule</s-button>
             </s-stack>
           </s-box>

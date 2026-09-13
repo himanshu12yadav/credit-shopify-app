@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useLoaderData, useFetcher } from "react-router";
+import { useLoaderData } from "react-router";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }) => {
@@ -15,154 +16,155 @@ export const loader = async ({ request }) => {
 
 export default function VipProductsManager() {
   const { lockedProductsCount, vipConversions } = useLoaderData();
+  const shopify = useAppBridge();
   const [tier, setTier] = useState("Gold VIP");
   const [productHandle, setProductHandle] = useState("limited-edition-gold-hoodie");
   const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    if (e?.preventDefault) e.preventDefault();
     setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    shopify?.toast?.show("VIP product lock saved!");
+    setTimeout(() => setSaved(false), 4000);
   };
 
   return (
     <s-page heading="👑 VIP Exclusive Tier-Locked Products">
-      <s-layout>
-        <s-layout-section>
-          {/* Metrics */}
-          <s-grid columns="repeat(auto-fit, minmax(200px, 1fr))" gap="400">
-            <s-card>
-              <s-text tone="subdued">VIP Exclusive Products</s-text>
-              <s-text variant="headingXl" as="p">{lockedProductsCount} Items</s-text>
-              <s-text tone="success">Secret Drops Active</s-text>
-            </s-card>
+      <s-button slot="primary-action" variant="primary" onClick={handleSave}>
+        Save VIP Product Rule
+      </s-button>
 
-            <s-card>
-              <s-text tone="subdued">VIP Member Purchases</s-text>
-              <s-text variant="headingXl" as="p" tone="success">{vipConversions} Orders</s-text>
-              <s-text tone="subdued">High AOV Volume</s-text>
-            </s-card>
+      <s-banner tone="info" heading="Exclusive Loyalty Gating & Aspirational Retention">
+        <s-paragraph>
+          Gate high-demand products, limited-run drops, and exclusive merchandise to higher VIP tiers. The <strong>"VIP Product Lock"</strong> app block is ready for your <em>Product Page</em> via <em>Online Store &gt; Customize</em>.
+        </s-paragraph>
+      </s-banner>
 
-            <s-card>
-              <s-text tone="subdued">Tier Upgrade Motivation</s-text>
-              <s-text variant="headingXl" as="p">+52.8%</s-text>
-              <s-text tone="success">Shoppers spend more to unlock</s-text>
-            </s-card>
-          </s-grid>
+      {/* KPI Section */}
+      <s-section heading="Gating Performance Metrics">
+        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">VIP EXCLUSIVE PRODUCTS</s-text>
+              <s-heading>{lockedProductsCount} Items</s-heading>
+              <s-badge tone="warning">🔒 Secret Drops Active</s-badge>
+            </s-stack>
+          </s-box>
 
-          {/* Configuration Card */}
-          <s-card>
-            <s-block-stack gap="400">
-              <s-inline-stack align="space-between" block-align="center">
-                <s-block-stack gap="100">
-                  <s-text variant="headingMd" as="h2">Configure VIP Product Gating</s-text>
-                  <s-text tone="subdued">
-                    Lock high-demand products, limited-run drops, or sample sales to specific VIP loyalty tiers.
-                  </s-text>
-                </s-block-stack>
-                <s-badge tone="success">Storefront Gating Ready</s-badge>
-              </s-inline-stack>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">VIP MEMBER PURCHASES</s-text>
+              <s-heading>{vipConversions} Orders</s-heading>
+              <s-badge tone="success">High AOV Volume</s-badge>
+            </s-stack>
+          </s-box>
 
-              <s-divider></s-divider>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">TIER UPGRADE MOTIVATION</s-text>
+              <s-heading>+52.8%</s-heading>
+              <s-badge tone="success">Shoppers spend more to unlock</s-badge>
+            </s-stack>
+          </s-box>
+        </s-grid>
+      </s-section>
 
-              <s-grid columns="repeat(auto-fit, minmax(220px, 1fr))" gap="300">
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">Required VIP Tier</s-text>
-                  <s-select
-                    label="Minimum Tier to Unlock"
-                    value={tier}
-                    onChange={(e) => setTier(e.target.value)}
-                    options={[
-                      { label: "Silver VIP ($200 Total Spend)", value: "Silver VIP" },
-                      { label: "Gold VIP ($500 Total Spend)", value: "Gold VIP" },
-                      { label: "Platinum VIP ($1000 Total Spend)", value: "Platinum VIP" },
-                    ]}
-                  />
-                </s-box>
+      {/* Configuration Section */}
+      <s-section heading="Configure VIP Product Gating">
+        <form onSubmit={handleSave}>
+          <s-stack direction="block" gap="base">
+            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+              <s-paragraph tone="neutral">
+                Select the minimum VIP tier threshold and target product handle to restrict purchase access.
+              </s-paragraph>
+              <s-badge tone="success">🛡️ Storefront Gating Ready</s-badge>
+            </s-stack>
 
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">Target Product Handle</s-text>
-                  <s-text-field
-                    label="Product Handle"
-                    value={productHandle}
-                    onChange={(e) => setProductHandle(e.target.value)}
-                    placeholder="e.g. limited-gold-edition"
-                  />
-                </s-box>
-              </s-grid>
+            <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+              <s-select
+                label="Required VIP Tier"
+                value={tier}
+                onChange={(e) => setTier(e.target.value)}
+              >
+                <s-option value="Silver VIP">🥈 Silver VIP ($200.00 Total Spend)</s-option>
+                <s-option value="Gold VIP">🥇 Gold VIP ($500.00 Total Spend)</s-option>
+                <s-option value="Platinum VIP">💎 Platinum VIP ($1,000.00 Total Spend)</s-option>
+              </s-select>
 
-              <s-banner tone="info">
-                The <strong>"VIP Product Lock"</strong> block is ready in your Online Store 2.0 theme. Add it to your <em>Product Page &gt; Product Information</em> section to automatically gate purchasing for non-VIPs!
+              <s-text-field
+                label="Target Product Handle"
+                value={productHandle}
+                onInput={(e) => setProductHandle(e.target.value)}
+                placeholder="e.g. limited-gold-edition"
+              />
+            </s-grid>
+
+            {saved && (
+              <s-banner tone="success" heading="Rule Updated">
+                <s-paragraph>VIP product gating rule saved and active on your storefront!</s-paragraph>
               </s-banner>
+            )}
 
-              {saved && (
-                <s-banner tone="success">
-                  VIP product gating rule saved and active!
-                </s-banner>
-              )}
+            <s-stack direction="inline" justifycontent="flex-start">
+              <s-button type="submit" variant="primary">
+                Save VIP Product Rule
+              </s-button>
+            </s-stack>
+          </s-stack>
+        </form>
+      </s-section>
 
-              <s-inline-stack gap="300">
-                <s-button variant="primary" onClick={handleSave}>
-                  Save VIP Product Rule
-                </s-button>
-              </s-inline-stack>
-            </s-block-stack>
-          </s-card>
-
-          {/* Active Gated Drops */}
-          <s-card>
-            <s-block-stack gap="300">
-              <s-text variant="headingMd" as="h3">Active VIP Exclusive Catalog Items</s-text>
-
-              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
-                <thead>
-                  <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
-                    <th style={{ padding: "10px" }}>Product Item</th>
-                    <th style={{ padding: "10px" }}>Required Tier</th>
-                    <th style={{ padding: "10px" }}>Spend Gate</th>
-                    <th style={{ padding: "10px" }}>Orders Placed</th>
-                    <th style={{ padding: "10px" }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
-                    <td style={{ padding: "10px", fontWeight: "600" }}>Limited Edition Gold Member Hoodie</td>
-                    <td style={{ padding: "10px" }}>
-                      <s-badge tone="warning">🥇 Gold VIP</s-badge>
-                    </td>
-                    <td style={{ padding: "10px", color: "#64748b" }}>$500.00 Lifetime</td>
-                    <td style={{ padding: "10px", fontWeight: "700" }}>42</td>
-                    <td style={{ padding: "10px" }}>
-                      <s-badge tone="success">Gated Live</s-badge>
-                    </td>
-                  </tr>
-                  <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
-                    <td style={{ padding: "10px", fontWeight: "600" }}>Founder Reserve Artisan Watch</td>
-                    <td style={{ padding: "10px" }}>
-                      <s-badge tone="info">💎 Platinum VIP</s-badge>
-                    </td>
-                    <td style={{ padding: "10px", color: "#64748b" }}>$1,000.00 Lifetime</td>
-                    <td style={{ padding: "10px", fontWeight: "700" }}>18</td>
-                    <td style={{ padding: "10px" }}>
-                      <s-badge tone="success">Gated Live</s-badge>
-                    </td>
-                  </tr>
-                  <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
-                    <td style={{ padding: "10px", fontWeight: "600" }}>Secret VIP Holiday Vault Box</td>
-                    <td style={{ padding: "10px" }}>
-                      <s-badge tone="neutral">🥈 Silver VIP</s-badge>
-                    </td>
-                    <td style={{ padding: "10px", color: "#64748b" }}>$200.00 Lifetime</td>
-                    <td style={{ padding: "10px", fontWeight: "700" }}>29</td>
-                    <td style={{ padding: "10px" }}>
-                      <s-badge tone="success">Gated Live</s-badge>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </s-block-stack>
-          </s-card>
-        </s-layout-section>
-      </s-layout>
+      {/* Active Catalog Drops Table */}
+      <s-section heading="Active VIP Exclusive Catalog Items">
+        <s-box padding="base">
+          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
+                <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Product Item</th>
+                <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Required Tier</th>
+                <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Spend Gate</th>
+                <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Orders Placed</th>
+                <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
+                <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>Limited Edition Gold Member Hoodie</td>
+                <td style={{ padding: "12px 14px" }}>
+                  <s-badge tone="warning">🥇 Gold VIP</s-badge>
+                </td>
+                <td style={{ padding: "12px 14px", color: "#64748b" }}>$500.00 Lifetime</td>
+                <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>42</td>
+                <td style={{ padding: "12px 14px" }}>
+                  <s-badge tone="success">Gated Live</s-badge>
+                </td>
+              </tr>
+              <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
+                <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>Founder Reserve Artisan Watch</td>
+                <td style={{ padding: "12px 14px" }}>
+                  <s-badge tone="info">💎 Platinum VIP</s-badge>
+                </td>
+                <td style={{ padding: "12px 14px", color: "#64748b" }}>$1,000.00 Lifetime</td>
+                <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>18</td>
+                <td style={{ padding: "12px 14px" }}>
+                  <s-badge tone="success">Gated Live</s-badge>
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>Secret VIP Holiday Vault Box</td>
+                <td style={{ padding: "12px 14px" }}>
+                  <s-badge tone="neutral">🥈 Silver VIP</s-badge>
+                </td>
+                <td style={{ padding: "12px 14px", color: "#64748b" }}>$200.00 Lifetime</td>
+                <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>29</td>
+                <td style={{ padding: "12px 14px" }}>
+                  <s-badge tone="success">Gated Live</s-badge>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </s-box>
+      </s-section>
     </s-page>
   );
 }

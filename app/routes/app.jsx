@@ -1,6 +1,7 @@
 import { Outlet, useLoaderData, useRouteError } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { AppProvider } from "@shopify/shopify-app-react-router/react";
+import { NavMenu } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }) => {
@@ -15,36 +16,36 @@ export default function App() {
 
   return (
     <AppProvider embedded apiKey={apiKey}>
-      <s-app-nav>
-        <s-link href="/app">Overview</s-link>
-        <s-link href="/app/customers">Customers & Balances</s-link>
-        <s-link href="/app/rules">Rules & Automation</s-link>
-        <s-link href="/app/tiers">VIP Tiers</s-link>
-        <s-link href="/app/wallet">Digital Wallet</s-link>
-        <s-link href="/app/campaigns">Campaigns & Drops</s-link>
-        <s-link href="/app/upsell">Post-Purchase Booster</s-link>
-        <s-link href="/app/returns">Save-the-Sale Returns</s-link>
-        <s-link href="/app/appeasements">Support Appeasements</s-link>
-        <s-link href="/app/flow">Shopify Flow</s-link>
-        <s-link href="/app/notifications">Notification Studio</s-link>
-        <s-link href="/app/analytics">Analytics & ROI</s-link>
-        <s-link href="/app/referrals">Referrals</s-link>
-        <s-link href="/app/expiry">Expiry & Retention</s-link>
-        <s-link href="/app/migrate">CSV Migration</s-link>
-        <s-link href="/app/simulator">Order Simulator</s-link>
-        <s-link href="/app/ledger">Ledger & Audit</s-link>
-        <s-link href="/app/portal">Account Extensibility</s-link>
-        <s-link href="/app/scratch-card">Scratch Card Leads</s-link>
-        <s-link href="/app/multipliers">Flash Multipliers</s-link>
-        <s-link href="/app/subscriptions">Subscription Perks</s-link>
-        <s-link href="/app/reviews">Review Rewards</s-link>
-        <s-link href="/app/copilot">AI Retention Copilot</s-link>
-        <s-link href="/app/birthdays">Birthday Rewards</s-link>
-        <s-link href="/app/klaviyo">Klaviyo & Omnisend</s-link>
-        <s-link href="/app/vip-products">VIP Secret Drops</s-link>
-        <s-link href="/app/pos">POS Extension</s-link>
-        <s-link href="/app/settings">Settings</s-link>
-      </s-app-nav>
+      <NavMenu>
+        <a href="/app" rel="home">Overview</a>
+        <a href="/app/customers">Customers & Balances</a>
+        <a href="/app/rules">Rules & Automation</a>
+        <a href="/app/tiers">VIP Tiers</a>
+        <a href="/app/wallet">Digital Wallet</a>
+        <a href="/app/campaigns">Campaigns & Drops</a>
+        <a href="/app/upsell">Post-Purchase Booster</a>
+        <a href="/app/returns">Save-the-Sale Returns</a>
+        <a href="/app/appeasements">Support Appeasements</a>
+        <a href="/app/flow">Shopify Flow</a>
+        <a href="/app/notifications">Notification Studio</a>
+        <a href="/app/analytics">Analytics & ROI</a>
+        <a href="/app/referrals">Referrals</a>
+        <a href="/app/expiry">Expiry & Retention</a>
+        <a href="/app/migrate">CSV Migration</a>
+        <a href="/app/simulator">Order Simulator</a>
+        <a href="/app/ledger">Ledger & Audit</a>
+        <a href="/app/portal">Account Extensibility</a>
+        <a href="/app/scratch-card">Scratch Card Leads</a>
+        <a href="/app/multipliers">Flash Multipliers</a>
+        <a href="/app/subscriptions">Subscription Perks</a>
+        <a href="/app/reviews">Review Rewards</a>
+        <a href="/app/copilot">AI Retention Copilot</a>
+        <a href="/app/birthdays">Birthday Rewards</a>
+        <a href="/app/klaviyo">Klaviyo & Omnisend</a>
+        <a href="/app/vip-products">VIP Secret Drops</a>
+        <a href="/app/pos">POS Extension</a>
+        <a href="/app/settings">Settings</a>
+      </NavMenu>
       <Outlet />
     </AppProvider>
   );

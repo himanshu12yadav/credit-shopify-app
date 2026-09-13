@@ -21,7 +21,7 @@
   {% assign badge_color = '#b45309' %}
 {% endif %}
 
-{% assign cart_credit = cart_dollars | times: rate_decimal %}
+{% assign cart_credit_cents = cart.total_price | times: rate_decimal | round %}
 
 {% if cart.item_count > 0 %}
   <div
@@ -62,7 +62,7 @@
       </div>
 
       <div style="font-size: 12px; line-height: 1.5; color: #334155; margin-bottom: 6px;">
-        🛍️ Place this order to earn <strong style="color: #059669;">+{{ cart.currency.symbol }}{{ cart_credit | round: 2 }}</strong> ({{ rate_decimal | times: 100 | round }}% VIP Cashback) directly into your account.
+        🛍️ Place this order to earn <strong style="color: #059669;">+{{ cart_credit_cents | money }}</strong> ({{ rate_decimal | times: 100 | round }}% VIP Cashback) directly into your account.
       </div>
       <div style="font-size: 11px; color: #64748b;">
         💡 Native Shopify Store Credit applies automatically at checkout with 1 click.
@@ -74,7 +74,7 @@
         <span style="font-size: 20px; line-height: 1;">🎁</span>
         <div>
           <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">
-            Earn {{ cart.currency.symbol }}{{ cart_credit | round: 2 }} Store Credit on this order!
+            Earn {{ cart_credit_cents | money }} Store Credit on this order!
           </div>
           <div style="font-size: 12px; color: #475569;">
             <a href="{{ routes.account_login_url }}" style="color: #4f46e5; font-weight: 600; text-decoration: underline;">Sign in</a> or

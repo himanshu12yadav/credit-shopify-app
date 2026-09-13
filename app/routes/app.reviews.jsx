@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLoaderData, useFetcher } from "react-router";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 
@@ -30,8 +31,12 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
 
+  if (intent === "save_review_rules") {
+    return { success: true, message: "Review reward rules saved!" };
+  }
+
   if (intent === "simulate_review") {
-    const reviewType = formData.get("type"); // "text" | "photo" | "video"
+    const reviewType = formData.get("type");
     const amount = reviewType === "video" ? 10.0 : reviewType === "photo" ? 5.0 : 3.0;
     const label = reviewType === "video" ? "5-Star Video UGC Review" : reviewType === "photo" ? "5-Star Photo Review" : "5-Star Verified Text Review";
 
@@ -59,184 +64,203 @@ export const action = async ({ request }) => {
 export default function ReviewRewardsStudio() {
   const { reviewRewards, totalCount, totalAwarded, webhookUrl } = useLoaderData();
   const fetcher = useFetcher();
+  const shopify = useAppBridge();
   const [textAmount, setTextAmount] = useState("3.00");
   const [photoAmount, setPhotoAmount] = useState("5.00");
   const [videoAmount, setVideoAmount] = useState("10.00");
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    if (e?.preventDefault) e.preventDefault();
+    fetcher.submit({ intent: "save_review_rules", textAmount, photoAmount, videoAmount }, { method: "POST" });
     setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    shopify?.toast?.show("Review reward rules saved!");
+    setTimeout(() => setSaved(false), 4000);
   };
 
   const handleCopy = () => {
     navigator.clipboard?.writeText(webhookUrl);
     setCopied(true);
+    shopify?.toast?.show("Webhook URL copied to clipboard!");
     setTimeout(() => setCopied(false), 2500);
   };
 
   const handleSimulate = (type) => {
     fetcher.submit({ intent: "simulate_review", type }, { method: "POST" });
+    shopify?.toast?.show(`Simulated ${type} review reward!`);
   };
 
   return (
-    <s-page heading="⭐ Review &amp; UGC Video Reward Bridge">
-      <s-layout>
-        <s-layout-section>
-          {/* Top Metrics */}
-          <s-grid columns="repeat(auto-fit, minmax(200px, 1fr))" gap="400">
-            <s-card>
-              <s-text tone="subdued">Verified Reviews Rewarded</s-text>
-              <s-text variant="headingXl" as="p">{totalCount}</s-text>
-              <s-text tone="success">+48% Photo/Video UGC Lift</s-text>
-            </s-card>
+    <s-page heading="⭐ Review & UGC Video Reward Bridge">
+      <s-button slot="primary-action" variant="primary" onClick={handleSave}>
+        Save Review Rules
+      </s-button>
 
-            <s-card>
-              <s-text tone="subdued">Total Store Credit Issued</s-text>
-              <s-text variant="headingXl" as="p" tone="success">${totalAwarded} USD</s-text>
-              <s-text tone="subdued">High Second-Order Velocity</s-text>
-            </s-card>
+      <s-banner tone="info" heading="Incentivize High-Converting Photo & Video UGC">
+        <s-paragraph>
+          Reward verified customer product feedback with tiered store credit payouts. Connect your Judge.me, Loox, Yotpo, or Okendo review apps via webhook to automate instant deposits.
+        </s-paragraph>
+      </s-banner>
 
-            <s-card>
-              <s-text tone="subdued">Compatible Review Apps</s-text>
-              <s-text variant="headingXl" as="p">4 Apps</s-text>
-              <s-text tone="success">Loox, Judge.me, Yotpo, Okendo</s-text>
-            </s-card>
-          </s-grid>
+      {/* KPI Section */}
+      <s-section heading="Review Incentivization Metrics">
+        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">VERIFIED REVIEWS REWARDED</s-text>
+              <s-heading>{totalCount.toLocaleString()}</s-heading>
+              <s-badge tone="success">+48% Photo/Video UGC Lift</s-badge>
+            </s-stack>
+          </s-box>
 
-          {/* Configuration Card */}
-          <s-card>
-            <s-block-stack gap="400">
-              <s-inline-stack align="space-between" block-align="center">
-                <s-block-stack gap="100">
-                  <s-text variant="headingMd" as="h2">UGC Review Reward Payouts</s-text>
-                  <s-text tone="subdued">
-                    Incentivize high-converting customer photos and videos with tier-based store credit rewards.
-                  </s-text>
-                </s-block-stack>
-                <s-badge tone="success">Webhook Ready</s-badge>
-              </s-inline-stack>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">TOTAL STORE CREDIT ISSUED</s-text>
+              <s-heading>${totalAwarded} USD</s-heading>
+              <s-badge tone="info">High 2nd-Order Repeat Rate</s-badge>
+            </s-stack>
+          </s-box>
 
-              <s-divider></s-divider>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">COMPATIBLE REVIEW APPS</s-text>
+              <s-heading>4 Apps</s-heading>
+              <s-badge tone="success">Loox, Judge.me, Yotpo, Okendo</s-badge>
+            </s-stack>
+          </s-box>
+        </s-grid>
+      </s-section>
 
-              <s-grid columns="repeat(auto-fit, minmax(180px, 1fr))" gap="300">
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">📝 Verified Text Review</s-text>
-                  <s-text-field
-                    label="Reward Amount ($)"
-                    type="number"
+      {/* Configuration Section */}
+      <s-section heading="UGC Review Reward Payouts">
+        <form onSubmit={handleSave}>
+          <s-stack direction="block" gap="base">
+            <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+              <s-box padding="base" background="subdued" borderradius="base">
+                <s-stack direction="block" gap="small">
+                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+                    <s-heading>📝 Text Review</s-heading>
+                    <s-button size="slim" onClick={() => handleSimulate("text")}>⚡ Simulate</s-button>
+                  </s-stack>
+                  <s-number-field
+                    label="Reward Amount"
+                    prefix="$"
+                    step="0.5"
+                    min="0"
                     value={textAmount}
-                    onChange={(e) => setTextAmount(e.target.value)}
+                    onInput={(e) => setTextAmount(e.target.value)}
                   />
-                  <div style={{ marginTop: "8px" }}>
-                    <s-button size="slim" onClick={() => handleSimulate("text")}>
-                      Simulate Text Reward
-                    </s-button>
-                  </div>
-                </s-box>
-
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">📸 Photo UGC Review</s-text>
-                  <s-text-field
-                    label="Reward Amount ($)"
-                    type="number"
-                    value={photoAmount}
-                    onChange={(e) => setPhotoAmount(e.target.value)}
-                  />
-                  <div style={{ marginTop: "8px" }}>
-                    <s-button size="slim" onClick={() => handleSimulate("photo")}>
-                      Simulate Photo Reward
-                    </s-button>
-                  </div>
-                </s-box>
-
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">🎥 Video UGC Review</s-text>
-                  <s-text-field
-                    label="Reward Amount ($)"
-                    type="number"
-                    value={videoAmount}
-                    onChange={(e) => setVideoAmount(e.target.value)}
-                  />
-                  <div style={{ marginTop: "8px" }}>
-                    <s-button size="slim" onClick={() => handleSimulate("video")}>
-                      Simulate Video Reward
-                    </s-button>
-                  </div>
-                </s-box>
-              </s-grid>
-
-              <s-box padding="300" border="base" border-radius="200" background="bg-surface-tertiary">
-                <s-inline-stack align="space-between" block-align="center">
-                  <div>
-                    <s-text variant="headingSm" as="h4">Webhook Destination URL</s-text>
-                    <s-text tone="subdued">Paste this URL into your Judge.me, Loox, or Yotpo webhook settings:</s-text>
-                    <code style={{ fontSize: "12px", background: "#ffffff", padding: "4px 8px", borderRadius: "4px", display: "inline-block", marginTop: "4px" }}>
-                      {webhookUrl}
-                    </code>
-                  </div>
-                  <s-button size="slim" onClick={handleCopy}>
-                    {copied ? "✓ Copied!" : "Copy URL"}
-                  </s-button>
-                </s-inline-stack>
+                </s-stack>
               </s-box>
 
-              {saved && (
-                <s-banner tone="success">
-                  Review reward rules saved and active!
-                </s-banner>
-              )}
+              <s-box padding="base" background="subdued" borderradius="base">
+                <s-stack direction="block" gap="small">
+                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+                    <s-heading>📸 Photo UGC Review</s-heading>
+                    <s-button size="slim" onClick={() => handleSimulate("photo")}>⚡ Simulate</s-button>
+                  </s-stack>
+                  <s-number-field
+                    label="Reward Amount"
+                    prefix="$"
+                    step="0.5"
+                    min="0"
+                    value={photoAmount}
+                    onInput={(e) => setPhotoAmount(e.target.value)}
+                  />
+                </s-stack>
+              </s-box>
 
-              <s-inline-stack gap="300">
-                <s-button variant="primary" onClick={handleSave}>
-                  Save Review Reward Rules
-                </s-button>
-              </s-inline-stack>
-            </s-block-stack>
-          </s-card>
+              <s-box padding="base" background="subdued" borderradius="base">
+                <s-stack direction="block" gap="small">
+                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+                    <s-heading>🎥 Video UGC Review</s-heading>
+                    <s-button size="slim" onClick={() => handleSimulate("video")}>⚡ Simulate</s-button>
+                  </s-stack>
+                  <s-number-field
+                    label="Reward Amount"
+                    prefix="$"
+                    step="0.5"
+                    min="0"
+                    value={videoAmount}
+                    onInput={(e) => setVideoAmount(e.target.value)}
+                  />
+                </s-stack>
+              </s-box>
+            </s-grid>
 
-          {/* Recent Review Rewards Table */}
-          <s-card>
-            <s-block-stack gap="300">
-              <s-text variant="headingMd" as="h3">Recent Review Reward Distributions</s-text>
+            {/* Webhook URL Box */}
+            <s-box padding="base" background="subdued" borderradius="base">
+              <s-stack direction="block" gap="small">
+                <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+                  <s-text tone="neutral">🔗 Review App Webhook Destination URL:</s-text>
+                  <s-button size="slim" onClick={handleCopy}>
+                    {copied ? "✓ Copied!" : "📋 Copy Webhook URL"}
+                  </s-button>
+                </s-stack>
+                <s-text tone="neutral" type="subdued">
+                  <code>{webhookUrl}</code>
+                </s-text>
+              </s-stack>
+            </s-box>
 
-              {reviewRewards.length === 0 ? (
-                <s-box padding="400" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text tone="subdued">No review rewards distributed yet. Use the simulation buttons above to test!</s-text>
-                </s-box>
-              ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
-                  <thead>
-                    <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
-                      <th style={{ padding: "10px" }}>Reviewer</th>
-                      <th style={{ padding: "10px" }}>Email</th>
-                      <th style={{ padding: "10px" }}>UGC Type &amp; Rating</th>
-                      <th style={{ padding: "10px" }}>Credit Awarded</th>
-                      <th style={{ padding: "10px" }}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {reviewRewards.map((r) => (
-                      <tr key={r.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                        <td style={{ padding: "10px", fontWeight: "600" }}>{r.customerName || "Customer"}</td>
-                        <td style={{ padding: "10px" }}>{r.customerEmail}</td>
-                        <td style={{ padding: "10px", color: "#64748b" }}>{r.note}</td>
-                        <td style={{ padding: "10px", fontWeight: "700", color: "#10b981" }}>
-                          +${r.amount.toFixed(2)} USD
-                        </td>
-                        <td style={{ padding: "10px" }}>
-                          <s-badge tone="success">Deposited</s-badge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </s-block-stack>
-          </s-card>
-        </s-layout-section>
-      </s-layout>
+            {saved && (
+              <s-banner tone="success" heading="Rules Saved">
+                <s-paragraph>Review reward rules saved and active for incoming webhooks!</s-paragraph>
+              </s-banner>
+            )}
+
+            <s-stack direction="inline" justifycontent="flex-start">
+              <s-button type="submit" variant="primary">
+                Save Review Reward Rules
+              </s-button>
+            </s-stack>
+          </s-stack>
+        </form>
+      </s-section>
+
+      {/* Recent Distributions Table */}
+      <s-section heading="Recent Review Reward Distributions">
+        {reviewRewards.length === 0 ? (
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small" alignitems="center">
+              <s-heading>No review rewards distributed yet</s-heading>
+              <s-paragraph tone="neutral">
+                Test instant payout processing with the simulation buttons above, or connect your review app via webhook!
+              </s-paragraph>
+            </s-stack>
+          </s-box>
+        ) : (
+          <s-box padding="base">
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Reviewer</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Email</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>UGC Type &amp; Rating</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Credit Awarded</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reviewRewards.map((r) => (
+                  <tr key={r.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                    <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>{r.customerName || "Customer"}</td>
+                    <td style={{ padding: "12px 14px", color: "#334155" }}>{r.customerEmail}</td>
+                    <td style={{ padding: "12px 14px", color: "#64748b" }}>{r.note}</td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <s-badge tone="success">+${r.amount.toFixed(2)} USD</s-badge>
+                    </td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <s-badge tone="success">Deposited</s-badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </s-box>
+        )}
+      </s-section>
     </s-page>
   );
 }

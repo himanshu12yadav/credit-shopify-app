@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLoaderData, useFetcher } from "react-router";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { analyzeStoreRetention } from "../services/copilot.server";
 import prisma from "../db.server";
@@ -19,7 +20,6 @@ export const action = async ({ request }) => {
   const recId = formData.get("recId");
 
   if (recId === "rec_dormant_vips") {
-    // Automatically launch targeted win-back campaign
     await prisma.campaign.create({
       data: {
         shop,
@@ -39,7 +39,6 @@ export const action = async ({ request }) => {
   }
 
   if (recId === "rec_aov_accelerator") {
-    // Create new order rule for $85 cart accelerator
     await prisma.creditRule.create({
       data: {
         shop,
@@ -73,108 +72,103 @@ export const action = async ({ request }) => {
 export default function RetentionCopilot() {
   const { recommendations, dormantCount, expiringPool } = useLoaderData();
   const fetcher = useFetcher();
+  const shopify = useAppBridge();
   const [executedRecs, setExecutedRecs] = useState({});
 
   const handleExecute = (rec) => {
     setExecutedRecs((prev) => ({ ...prev, [rec.id]: true }));
     fetcher.submit({ recId: rec.id }, { method: "POST" });
+    shopify?.toast?.show(`Executed: ${rec.title}`);
   };
 
   return (
     <s-page heading="🤖 AI Merchant Retention Copilot">
-      <s-layout>
-        <s-layout-section>
-          {/* Header Banner */}
-          <s-card>
-            <s-block-stack gap="300">
-              <s-inline-stack align="space-between" block-align="center">
-                <s-block-stack gap="100">
-                  <s-text variant="headingMd" as="h2">Algorithmic Revenue &amp; Retention Insights</s-text>
-                  <s-text tone="subdued">
-                    Your AI Copilot continuously monitors customer repurchase velocity, cart abandonment, and expiring balances to suggest high-ROI campaigns.
-                  </s-text>
-                </s-block-stack>
-                <s-badge tone="success">Continuous AI Audit Active</s-badge>
-              </s-inline-stack>
+      <s-banner tone="info" heading="Algorithmic Revenue & Retention Intelligence">
+        <s-paragraph>
+          Your AI Copilot continuously audits customer repurchase velocity, cart abandonment, and expiring balances to suggest high-ROI automated campaigns.
+        </s-paragraph>
+      </s-banner>
 
-              <s-divider></s-divider>
+      {/* KPI Section */}
+      <s-section heading="Retention Audit & Recoverable Revenue">
+        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">DORMANT VIP SPENDERS</s-text>
+              <s-heading>{dormantCount} Customers</s-heading>
+              <s-badge tone="critical">⚠️ Inactive 45+ Days</s-badge>
+            </s-stack>
+          </s-box>
 
-              <s-grid columns="repeat(auto-fit, minmax(200px, 1fr))" gap="400">
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text tone="subdued">Dormant VIP Spenders</s-text>
-                  <s-text variant="headingLg" as="p">{dormantCount} Customers</s-text>
-                  <s-text tone="critical">Inactive 45+ Days</s-text>
-                </s-box>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">EXPIRING CREDIT POOL</s-text>
+              <s-heading>${expiringPool} USD</s-heading>
+              <s-badge tone="warning">⏳ 14-Day Deadline</s-badge>
+            </s-stack>
+          </s-box>
 
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text tone="subdued">Expiring Credit Pool</s-text>
-                  <s-text variant="headingLg" as="p" tone="warning">${expiringPool} USD</s-text>
-                  <s-text tone="subdued">Urgency Deadline: 14 Days</s-text>
-                </s-box>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">EST. RECOVERABLE REVENUE</s-text>
+              <s-heading>+$14,080 USD</s-heading>
+              <s-badge tone="success">🚀 Recommended Actions</s-badge>
+            </s-stack>
+          </s-box>
+        </s-grid>
+      </s-section>
 
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text tone="subdued">Estimated Recoverable Revenue</s-text>
-                  <s-text variant="headingLg" as="p" tone="success">+$14,080 USD</s-text>
-                  <s-text tone="success">From Recommended Actions</s-text>
-                </s-box>
-              </s-grid>
-            </s-block-stack>
-          </s-card>
+      {fetcher.data?.message && (
+        <s-banner tone="success">
+          <s-paragraph>{fetcher.data.message}</s-paragraph>
+        </s-banner>
+      )}
 
-          {fetcher.data?.message && (
-            <s-banner tone="success">
-              {fetcher.data.message}
-            </s-banner>
-          )}
+      {/* Recommendations Section */}
+      <s-section heading="High-Impact Algorithmic Recommendations">
+        <s-stack direction="block" gap="base">
+          {recommendations.map((rec) => {
+            const isExecuted = executedRecs[rec.id];
 
-          {/* Recommendations List */}
-          <s-block-stack gap="400">
-            {recommendations.map((rec) => {
-              const isExecuted = executedRecs[rec.id];
-
-              return (
-                <s-card key={rec.id}>
-                  <s-block-stack gap="300">
-                    <s-inline-stack align="space-between" block-align="center">
-                      <s-inline-stack gap="200" block-align="center">
-                        <s-badge tone={rec.category === "WIN_BACK" ? "warning" : rec.category === "AOV_BOOST" ? "success" : "info"}>
-                          {rec.category.replace("_", " ")}
-                        </s-badge>
-                        <s-text variant="headingMd" as="h3">{rec.title}</s-text>
-                      </s-inline-stack>
-
-                      <s-badge tone="success">
-                        Est. Revenue Lift: {rec.estimatedRevenue}
+            return (
+              <s-box key={rec.id} padding="base" background="subdued" borderradius="base">
+                <s-stack direction="block" gap="small">
+                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+                    <s-stack direction="inline" gap="small" alignitems="center">
+                      <s-badge tone={rec.category === "WIN_BACK" ? "warning" : rec.category === "AOV_BOOST" ? "success" : "info"}>
+                        {rec.category.replace("_", " ")}
                       </s-badge>
-                    </s-inline-stack>
+                      <s-heading>{rec.title}</s-heading>
+                    </s-stack>
 
-                    <s-paragraph tone="subdued">
-                      {rec.insight}
-                    </s-paragraph>
+                    <s-badge tone="success">
+                      Est. Revenue Lift: {rec.estimatedRevenue}
+                    </s-badge>
+                  </s-stack>
 
-                    <s-divider></s-divider>
+                  <s-paragraph tone="neutral">
+                    {rec.insight}
+                  </s-paragraph>
 
-                    <s-inline-stack align="space-between" block-align="center">
-                      <s-text tone="subdued">
-                        Target Audience: <strong>{rec.targetTier}</strong>
-                      </s-text>
+                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+                    <s-text tone="neutral" type="subdued">
+                      Target Audience: <strong>{rec.targetTier}</strong>
+                    </s-text>
 
-                      <s-button
-                        variant={isExecuted ? "secondary" : "primary"}
-                        disabled={isExecuted}
-                        loading={fetcher.state !== "idle" && fetcher.formData?.get("recId") === rec.id}
-                        onClick={() => handleExecute(rec)}
-                      >
-                        {isExecuted ? "✓ Action Launched" : `⚡ ${rec.actionLabel}`}
-                      </s-button>
-                    </s-inline-stack>
-                  </s-block-stack>
-                </s-card>
-              );
-            })}
-          </s-block-stack>
-        </s-layout-section>
-      </s-layout>
+                    <s-button
+                      variant={isExecuted ? "secondary" : "primary"}
+                      disabled={isExecuted}
+                      onClick={() => handleExecute(rec)}
+                    >
+                      {isExecuted ? "✓ Action Launched" : `⚡ ${rec.actionLabel}`}
+                    </s-button>
+                  </s-stack>
+                </s-stack>
+              </s-box>
+            );
+          })}
+        </s-stack>
+      </s-section>
     </s-page>
   );
 }

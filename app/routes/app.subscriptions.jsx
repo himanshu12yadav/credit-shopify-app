@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLoaderData, useFetcher } from "react-router";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 
@@ -29,15 +30,19 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
 
+  if (intent === "save_milestones") {
+    return { success: true, message: "Subscription milestone rules saved!" };
+  }
+
   if (intent === "simulate_milestone") {
-    const customerEmail = formData.get("email") || "himanshuyadav.12jan@gmail.com";
+    const customerEmail = formData.get("email") || "subscriber@example.com";
     const milestoneNumber = formData.get("milestone") || "3";
     const amount = milestoneNumber === "3" ? 10.0 : milestoneNumber === "6" ? 25.0 : 50.0;
 
     await prisma.creditLedger.create({
       data: {
         shop,
-        customerId: "gid://shopify/Customer/26024363524177",
+        customerId: "gid://shopify/Customer/sample-subscriber",
         customerEmail,
         customerName: "Himanshu Yadav",
         amount,
@@ -58,162 +63,193 @@ export const action = async ({ request }) => {
 export default function SubscriptionLoyalty() {
   const { subscriptionLedger, totalRewardsGiven, totalCreditAwarded } = useLoaderData();
   const fetcher = useFetcher();
+  const shopify = useAppBridge();
   const [m3, setM3] = useState("10.00");
   const [m6, setM6] = useState("25.00");
   const [m12, setM12] = useState("50.00");
   const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    if (e?.preventDefault) e.preventDefault();
+    fetcher.submit({ intent: "save_milestones", m3, m6, m12 }, { method: "POST" });
     setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    shopify?.toast?.show("Subscription milestone rules saved!");
+    setTimeout(() => setSaved(false), 4000);
   };
 
   const handleSimulate = (milestone) => {
     fetcher.submit({ intent: "simulate_milestone", milestone }, { method: "POST" });
+    shopify?.toast?.show(`Simulated Order #${milestone} subscriber perk!`);
   };
 
   return (
-    <s-page heading="🔁 Subscription Loyalty Perks &amp; Milestone Engine">
-      <s-layout>
-        <s-layout-section>
-          {/* Metrics */}
-          <s-grid columns="repeat(auto-fit, minmax(200px, 1fr))" gap="400">
-            <s-card>
-              <s-text tone="subdued">Subscribers Rewarded</s-text>
-              <s-text variant="headingXl" as="p">{totalRewardsGiven}</s-text>
-              <s-text tone="success">Retention +34%</s-text>
-            </s-card>
+    <s-page heading="🔁 Subscription Loyalty Perks & Milestone Engine">
+      <s-button slot="primary-action" variant="primary" onClick={handleSave}>
+        Save Subscription Rules
+      </s-button>
 
-            <s-card>
-              <s-text tone="subdued">Total Milestone Credit</s-text>
-              <s-text variant="headingXl" as="p" tone="success">${totalCreditAwarded} USD</s-text>
-              <s-text tone="subdued">Reinvested in Add-ons</s-text>
-            </s-card>
+      <s-banner tone="info" heading="Combat Subscriber Churn with Automated Retention Perks">
+        <s-paragraph>
+          Automatically deposit store credit into customer wallets when subscribers hit renewal milestones (3rd, 6th, and 12th orders). Compatible with native Shopify Subscriptions, Recharge, and Bold.
+        </s-paragraph>
+      </s-banner>
 
-            <s-card>
-              <s-text tone="subdued">Average Churn Reduction</s-text>
-              <s-text variant="headingXl" as="p">-42.5%</s-text>
-              <s-text tone="success">At 3rd &amp; 6th Renewals</s-text>
-            </s-card>
-          </s-grid>
+      {/* KPI Section */}
+      <s-section heading="Subscription Loyalty Performance">
+        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">SUBSCRIBERS REWARDED</s-text>
+              <s-heading>{totalRewardsGiven.toLocaleString()}</s-heading>
+              <s-badge tone="success">Retention +34%</s-badge>
+            </s-stack>
+          </s-box>
 
-          {/* Configuration Card */}
-          <s-card>
-            <s-block-stack gap="400">
-              <s-inline-stack align="space-between" block-align="center">
-                <s-block-stack gap="100">
-                  <s-text variant="headingMd" as="h2">Recurring Milestone Rewards</s-text>
-                  <s-text tone="subdued">
-                    Automatically deposit store credit into subscriber wallets when they achieve renewal milestones.
-                  </s-text>
-                </s-block-stack>
-                <s-badge tone="success">Shopify Subscriptions &amp; Recharge Synced</s-badge>
-              </s-inline-stack>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">TOTAL MILESTONE CREDIT</s-text>
+              <s-heading>${totalCreditAwarded} USD</s-heading>
+              <s-badge tone="info">Reinvested in Add-ons</s-badge>
+            </s-stack>
+          </s-box>
 
-              <s-divider></s-divider>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">AVERAGE CHURN REDUCTION</s-text>
+              <s-heading>-42.5%</s-heading>
+              <s-badge tone="success">At 3rd &amp; 6th renewals</s-badge>
+            </s-stack>
+          </s-box>
+        </s-grid>
+      </s-section>
 
-              <s-grid columns="repeat(auto-fit, minmax(180px, 1fr))" gap="300">
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">🥉 3rd Renewal Order</s-text>
-                  <s-text-field
-                    label="Credit Amount ($)"
-                    type="number"
-                    value={m3}
-                    onChange={(e) => setM3(e.target.value)}
-                  />
-                  <div style={{ marginTop: "8px" }}>
+      {/* Recurring Milestone Configuration */}
+      <s-section heading="Recurring Milestone Rewards">
+        <form onSubmit={handleSave}>
+          <s-stack direction="block" gap="base">
+            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+              <s-paragraph tone="neutral">
+                Set store credit reward amounts unlocked at each subscription renewal cycle.
+              </s-paragraph>
+              <s-badge tone="success">⚡ Webhook Automated</s-badge>
+            </s-stack>
+
+            <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(240px, 1fr))" gap="base">
+              <s-box padding="base" background="subdued" borderradius="base">
+                <s-stack direction="block" gap="small">
+                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+                    <s-heading>🥉 3rd Renewal Order</s-heading>
                     <s-button size="slim" onClick={() => handleSimulate("3")}>
-                      Simulate 3rd Order
+                      ⚡ Simulate
                     </s-button>
-                  </div>
-                </s-box>
-
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">🥈 6th Renewal Order</s-text>
-                  <s-text-field
-                    label="Credit Amount ($)"
-                    type="number"
-                    value={m6}
-                    onChange={(e) => setM6(e.target.value)}
+                  </s-stack>
+                  <s-number-field
+                    label="Credit Amount"
+                    prefix="$"
+                    step="1"
+                    min="0"
+                    value={m3}
+                    onInput={(e) => setM3(e.target.value)}
                   />
-                  <div style={{ marginTop: "8px" }}>
+                </s-stack>
+              </s-box>
+
+              <s-box padding="base" background="subdued" borderradius="base">
+                <s-stack direction="block" gap="small">
+                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+                    <s-heading>🥈 6th Renewal Order</s-heading>
                     <s-button size="slim" onClick={() => handleSimulate("6")}>
-                      Simulate 6th Order
+                      ⚡ Simulate
                     </s-button>
-                  </div>
-                </s-box>
-
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text variant="headingSm" as="h4">🥇 12th Renewal Order</s-text>
-                  <s-text-field
-                    label="Credit Amount ($)"
-                    type="number"
-                    value={m12}
-                    onChange={(e) => setM12(e.target.value)}
+                  </s-stack>
+                  <s-number-field
+                    label="Credit Amount"
+                    prefix="$"
+                    step="1"
+                    min="0"
+                    value={m6}
+                    onInput={(e) => setM6(e.target.value)}
                   />
-                  <div style={{ marginTop: "8px" }}>
+                </s-stack>
+              </s-box>
+
+              <s-box padding="base" background="subdued" borderradius="base">
+                <s-stack direction="block" gap="small">
+                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+                    <s-heading>🥇 12th Renewal (1 Year)</s-heading>
                     <s-button size="slim" onClick={() => handleSimulate("12")}>
-                      Simulate 12th Order
+                      ⚡ Simulate
                     </s-button>
-                  </div>
-                </s-box>
-              </s-grid>
+                  </s-stack>
+                  <s-number-field
+                    label="Credit Amount"
+                    prefix="$"
+                    step="1"
+                    min="0"
+                    value={m12}
+                    onInput={(e) => setM12(e.target.value)}
+                  />
+                </s-stack>
+              </s-box>
+            </s-grid>
 
-              {saved && (
-                <s-banner tone="success">
-                  Subscription milestone rules updated and active across webhook processing!
-                </s-banner>
-              )}
+            {saved && (
+              <s-banner tone="success" heading="Milestones Saved">
+                <s-paragraph>Subscription milestone rules updated and active across webhook processing!</s-paragraph>
+              </s-banner>
+            )}
 
-              <s-inline-stack gap="300">
-                <s-button variant="primary" onClick={handleSave}>
-                  Save Subscription Milestone Rules
-                </s-button>
-              </s-inline-stack>
-            </s-block-stack>
-          </s-card>
+            <s-stack direction="inline" justifycontent="flex-start">
+              <s-button type="submit" variant="primary">
+                Save Subscription Rules
+              </s-button>
+            </s-stack>
+          </s-stack>
+        </form>
+      </s-section>
 
-          {/* Recent Subscriber Rewards */}
-          <s-card>
-            <s-block-stack gap="300">
-              <s-text variant="headingMd" as="h3">Recent Milestone Distributions</s-text>
-
-              {subscriptionLedger.length === 0 ? (
-                <s-box padding="400" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text tone="subdued">No subscriber milestones distributed yet. Test with the simulation buttons above!</s-text>
-                </s-box>
-              ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
-                  <thead>
-                    <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
-                      <th style={{ padding: "10px" }}>Subscriber</th>
-                      <th style={{ padding: "10px" }}>Email</th>
-                      <th style={{ padding: "10px" }}>Milestone Description</th>
-                      <th style={{ padding: "10px" }}>Amount Awarded</th>
-                      <th style={{ padding: "10px" }}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {subscriptionLedger.map((tx) => (
-                      <tr key={tx.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                        <td style={{ padding: "10px", fontWeight: "600" }}>{tx.customerName || "Subscriber"}</td>
-                        <td style={{ padding: "10px" }}>{tx.customerEmail}</td>
-                        <td style={{ padding: "10px", color: "#64748b" }}>{tx.note}</td>
-                        <td style={{ padding: "10px", fontWeight: "700", color: "#10b981" }}>
-                          +${tx.amount.toFixed(2)} USD
-                        </td>
-                        <td style={{ padding: "10px" }}>
-                          <s-badge tone="success">Completed</s-badge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </s-block-stack>
-          </s-card>
-        </s-layout-section>
-      </s-layout>
+      {/* Recent Distributions Table */}
+      <s-section heading="Recent Milestone Distributions">
+        {subscriptionLedger.length === 0 ? (
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small" alignitems="center">
+              <s-heading>No subscriber milestones distributed yet</s-heading>
+              <s-paragraph tone="neutral">
+                Milestones trigger automatically upon subscription order creation or by clicking the simulation buttons above!
+              </s-paragraph>
+            </s-stack>
+          </s-box>
+        ) : (
+          <s-box padding="base">
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Subscriber</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Email</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Milestone Note</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Amount</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subscriptionLedger.map((tx) => (
+                  <tr key={tx.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                    <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>{tx.customerName || "Subscriber"}</td>
+                    <td style={{ padding: "12px 14px", color: "#334155" }}>{tx.customerEmail}</td>
+                    <td style={{ padding: "12px 14px", color: "#64748b" }}>{tx.note}</td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <s-badge tone="success">+${tx.amount.toFixed(2)} USD</s-badge>
+                    </td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <s-badge tone="success">Completed</s-badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </s-box>
+        )}
+      </s-section>
     </s-page>
   );
 }

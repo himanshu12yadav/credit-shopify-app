@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLoaderData, useFetcher } from "react-router";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 
@@ -57,159 +58,154 @@ export const action = async ({ request }) => {
 export default function MultiplierCalendar() {
   const { events } = useLoaderData();
   const fetcher = useFetcher();
+  const shopify = useAppBridge();
   const [name, setName] = useState("⚡ 2X Double Credit Weekend");
   const [multiplier, setMultiplier] = useState("2.0");
   const [duration, setDuration] = useState("3");
 
-  const handleCreate = () => {
+  const handleCreate = (e) => {
+    if (e?.preventDefault) e.preventDefault();
     fetcher.submit(
       { intent: "create", name, multiplier, durationDays: duration },
       { method: "POST" }
     );
+    shopify?.toast?.show("Multiplier event launched!");
   };
 
   const handleDelete = (id) => {
     fetcher.submit({ intent: "delete", id }, { method: "POST" });
+    shopify?.toast?.show("Multiplier event removed");
   };
 
   return (
     <s-page heading="🚀 Double Credit Flash Days & Multiplier Calendar">
-      <s-layout>
-        <s-layout-section>
-          {/* Hero Explainer */}
-          <s-card>
-            <s-block-stack gap="400">
-              <s-inline-stack align="space-between" block-align="center">
-                <s-block-stack gap="100">
-                  <s-text variant="headingMd" as="h2">Automated Promotional Multiplier Engine</s-text>
-                  <s-text tone="subdued">
-                    Multiply order cashback (e.g. 2X or 3X) during holidays, flash sales, and weekends to trigger massive order surges.
-                  </s-text>
-                </s-block-stack>
-                <s-badge tone="success">Engine Synchronized</s-badge>
-              </s-inline-stack>
+      <s-banner tone="info" heading="Surge Weekend Order Volume with Limited-Time Multipliers">
+        <s-paragraph>
+          Multiply order cashback (e.g. 2X or 3X) during holiday promotions, flash sales, and weekends. Active multiplier events automatically apply across checkout and storefront blocks.
+        </s-paragraph>
+      </s-banner>
 
-              <s-divider></s-divider>
+      {/* KPI Section */}
+      <s-section heading="Multiplier Event Performance">
+        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">ACTIVE MULTIPLIER EVENTS</s-text>
+              <s-heading>{events.filter((e) => e.isActive).length}</s-heading>
+              <s-badge tone="success">⚡ Auto-applied at checkout</s-badge>
+            </s-stack>
+          </s-box>
 
-              <s-grid columns="repeat(auto-fit, minmax(200px, 1fr))" gap="400">
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text tone="subdued">Active Multiplier Events</s-text>
-                  <s-text variant="headingLg" as="p">{events.filter((e) => e.isActive).length}</s-text>
-                  <s-text tone="success">Auto-calculated at checkout</s-text>
-                </s-box>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">STOREFRONT BANNER</s-text>
+              <s-heading>Ready</s-heading>
+              <s-badge tone="info">OS 2.0 Theme Block</s-badge>
+            </s-stack>
+          </s-box>
 
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text tone="subdued">Storefront Banner</s-text>
-                  <s-text variant="headingLg" as="p">Ready</s-text>
-                  <s-text tone="subdued">OS 2.0 Theme Block</s-text>
-                </s-box>
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small">
+              <s-text tone="neutral" type="subdued">AVERAGE ORDER LIFT</s-text>
+              <s-heading>+28.4%</s-heading>
+              <s-badge tone="success">During active windows</s-badge>
+            </s-stack>
+          </s-box>
+        </s-grid>
+      </s-section>
 
-                <s-box padding="300" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text tone="subdued">Average Order Lift</s-text>
-                  <s-text variant="headingLg" as="p">+28.4%</s-text>
-                  <s-text tone="success">During Active Events</s-text>
-                </s-box>
-              </s-grid>
-            </s-block-stack>
-          </s-card>
+      {/* Schedule Event Section */}
+      <s-section heading="Schedule New Multiplier Event">
+        <form onSubmit={handleCreate}>
+          <s-stack direction="block" gap="base">
+            <s-grid gridtemplatecolumns="1fr 1fr 1fr" gap="base">
+              <s-text-field
+                label="Event Name"
+                value={name}
+                onInput={(e) => setName(e.target.value)}
+              />
 
-          {/* Create Event Card */}
-          <s-card>
-            <s-block-stack gap="400">
-              <s-text variant="headingMd" as="h3">Schedule New Multiplier Event</s-text>
+              <s-select
+                label="Cashback Multiplier"
+                value={multiplier}
+                onChange={(e) => setMultiplier(e.target.value)}
+              >
+                <s-option value="1.5">1.5X (50% Extra Cashback)</s-option>
+                <s-option value="2.0">2.0X (Double Cashback)</s-option>
+                <s-option value="2.5">2.5X (150% Extra Cashback)</s-option>
+                <s-option value="3.0">3.0X (Triple Cashback Weekend)</s-option>
+              </s-select>
 
-              <s-grid columns="repeat(auto-fit, minmax(180px, 1fr))" gap="300">
-                <s-text-field
-                  label="Event Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+              <s-select
+                label="Duration Window"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+              >
+                <s-option value="1">24 Hours (Flash Day)</s-option>
+                <s-option value="3">3 Days (Weekend Special)</s-option>
+                <s-option value="7">7 Days (Holiday Week)</s-option>
+              </s-select>
+            </s-grid>
 
-                <s-select
-                  label="Cashback Multiplier"
-                  value={multiplier}
-                  onChange={(e) => setMultiplier(e.target.value)}
-                  options={[
-                    { label: "1.5X (50% Extra)", value: "1.5" },
-                    { label: "2.0X (Double Cashback)", value: "2.0" },
-                    { label: "2.5X (150% Extra)", value: "2.5" },
-                    { label: "3.0X (Triple Cashback)", value: "3.0" },
-                  ]}
-                />
+            <s-stack direction="inline" justifycontent="flex-start">
+              <s-button type="submit" variant="primary" disabled={fetcher.state !== "idle"}>
+                ⚡ Launch &amp; Schedule Multiplier Event
+              </s-button>
+            </s-stack>
+          </s-stack>
+        </form>
+      </s-section>
 
-                <s-select
-                  label="Duration Window"
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  options={[
-                    { label: "24 Hours (Flash Day)", value: "1" },
-                    { label: "3 Days (Weekend Special)", value: "3" },
-                    { label: "7 Days (Holiday Week)", value: "7" },
-                  ]}
-                />
-              </s-grid>
-
-              <s-inline-stack gap="300">
-                <s-button variant="primary" onClick={handleCreate} loading={fetcher.state !== "idle"}>
-                  ⚡ Launch &amp; Schedule Multiplier Event
-                </s-button>
-              </s-inline-stack>
-            </s-block-stack>
-          </s-card>
-
-          {/* Active Events Table */}
-          <s-card>
-            <s-block-stack gap="300">
-              <s-text variant="headingMd" as="h3">Event History &amp; Active Schedules</s-text>
-
-              {events.length === 0 ? (
-                <s-box padding="400" border="base" border-radius="200" background="bg-surface-secondary">
-                  <s-text tone="subdued">No multiplier events scheduled yet. Create your first flash weekend above!</s-text>
-                </s-box>
-              ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
-                  <thead>
-                    <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
-                      <th style={{ padding: "10px" }}>Campaign Name</th>
-                      <th style={{ padding: "10px" }}>Multiplier</th>
-                      <th style={{ padding: "10px" }}>Start Date</th>
-                      <th style={{ padding: "10px" }}>End Date</th>
-                      <th style={{ padding: "10px" }}>Status</th>
-                      <th style={{ padding: "10px" }}>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {events.map((ev) => (
-                      <tr key={ev.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                        <td style={{ padding: "10px", fontWeight: "600" }}>{ev.name}</td>
-                        <td style={{ padding: "10px", fontWeight: "700", color: "#4f46e5" }}>
-                          {ev.bonusMultiplier}x
-                        </td>
-                        <td style={{ padding: "10px", color: "#64748b" }}>
-                          {new Date(ev.startDate).toLocaleDateString()}
-                        </td>
-                        <td style={{ padding: "10px", color: "#64748b" }}>
-                          {new Date(ev.endDate).toLocaleDateString()}
-                        </td>
-                        <td style={{ padding: "10px" }}>
-                          <s-badge tone={ev.isActive ? "success" : "subdued"}>
-                            {ev.isActive ? "Active Live" : "Ended"}
-                          </s-badge>
-                        </td>
-                        <td style={{ padding: "10px" }}>
-                          <s-button size="slim" tone="critical" onClick={() => handleDelete(ev.id)}>
-                            Delete
-                          </s-button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </s-block-stack>
-          </s-card>
-        </s-layout-section>
-      </s-layout>
+      {/* Active Events Table */}
+      <s-section heading="Event History & Active Schedules">
+        {events.length === 0 ? (
+          <s-box padding="base" background="subdued" borderradius="base">
+            <s-stack direction="block" gap="small" alignitems="center">
+              <s-heading>No multiplier events scheduled yet</s-heading>
+              <s-paragraph tone="neutral">
+                Create your first flash weekend above to drive an instant surge in checkout volume!
+              </s-paragraph>
+            </s-stack>
+          </s-box>
+        ) : (
+          <s-box padding="base">
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Campaign Name</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Multiplier</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Start Date</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>End Date</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Status</th>
+                  <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((ev) => (
+                  <tr key={ev.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                    <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>{ev.name}</td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <s-badge tone="info">{ev.bonusMultiplier}x Multiplier</s-badge>
+                    </td>
+                    <td style={{ padding: "12px 14px", color: "#64748b" }}>{new Date(ev.startDate).toLocaleDateString()}</td>
+                    <td style={{ padding: "12px 14px", color: "#64748b" }}>{new Date(ev.endDate).toLocaleDateString()}</td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <s-badge tone={ev.isActive ? "success" : "neutral"}>
+                        {ev.isActive ? "Active Live" : "Ended"}
+                      </s-badge>
+                    </td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <s-button size="slim" tone="critical" onClick={() => handleDelete(ev.id)}>
+                        Delete
+                      </s-button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </s-box>
+        )}
+      </s-section>
     </s-page>
   );
 }

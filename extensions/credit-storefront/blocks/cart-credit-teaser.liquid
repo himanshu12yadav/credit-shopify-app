@@ -1,6 +1,5 @@
 {{ 'credit-storefront.css' | asset_url | stylesheet_tag }}
 
-{% assign cart_dollars = cart.total_price | divided_by: 100.0 %}
 {% assign rate_decimal = block.settings.cashback_percent | divided_by: 100.0 %}
 
 {% comment %} Read customer loyalty metafields if available {% endcomment %}

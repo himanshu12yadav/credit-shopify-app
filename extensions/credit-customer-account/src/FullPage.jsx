@@ -60,13 +60,13 @@ function FullPage() {
             <InlineStack spacing="base" blockAlignment="center">
               <Button
                 kind="secondary"
-                to="https://analyst-diamonds-rooms-deaf.trycloudflare.com/api/storefront/wallet-pass?format=apple"
+                to="https://ending-equation-str-gazette.trycloudflare.com/api/storefront/wallet-pass?format=apple"
               >
                 📲 Add to Apple Wallet
               </Button>
               <Button
                 kind="secondary"
-                to="https://analyst-diamonds-rooms-deaf.trycloudflare.com/api/storefront/wallet-pass?format=google"
+                to="https://ending-equation-str-gazette.trycloudflare.com/api/storefront/wallet-pass?format=google"
               >
                 🤖 Save to Google Wallet
               </Button>

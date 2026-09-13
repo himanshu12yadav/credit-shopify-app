@@ -24,7 +24,7 @@ function OrderStatusBlock() {
           This purchase qualified for instant store credit. Your balance is ready to spend on your next order or in-store retail checkout!
         </Text>
         <InlineStack spacing="tight">
-          <Button kind="plain" to="../store-credit-wallet">
+          <Button kind="plain" to="extension:credit-customer-account/">
             View My Rewards Wallet →
           </Button>
         </InlineStack>

@@ -99,7 +99,7 @@ function initCreditStorefront() {
     const shop = window.Shopify ? window.Shopify.shop : 'pdf-store-15eu7f4v.myshopify.com';
     const currency = vipWidget.dataset.currencySymbol || '$';
 
-    fetch(`https://analyst-diamonds-rooms-deaf.trycloudflare.com/api/storefront/tier?shop=${encodeURIComponent(shop)}&customerId=${encodeURIComponent(customerId)}`)
+    fetch(`https://ending-equation-str-gazette.trycloudflare.com/api/storefront/tier?shop=${encodeURIComponent(shop)}&customerId=${encodeURIComponent(customerId)}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data || !data.customer) return;

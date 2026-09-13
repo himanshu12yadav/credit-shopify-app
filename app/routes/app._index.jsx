@@ -66,7 +66,7 @@ export const loader = async ({ request }) => {
   const isCashbackRulesActive = activeRules.length > 0;
   const isCustomerWalletActive = Boolean(settings?.cashbackEnabled !== false);
   const isPixelActive = Boolean(pixelStatus?.active);
-  const isAppEmbedActive = storefrontCount > 0;
+  const isAppEmbedActive = Boolean(settings?.appEmbedVerified) || storefrontCount > 0;
 
   const completedSteps = [isNewAccountsActive, isCashbackRulesActive, isCustomerWalletActive, isPixelActive, isAppEmbedActive].filter(Boolean).length;
   const totalSteps = 5;
@@ -182,6 +182,16 @@ export const action = async ({ request }) => {
     return { success: true, message: "Launched $15 VIP Win-Back campaign with 14-day expiry!" };
   }
 
+  if (intent === "verify_app_embed") {
+    await prisma.creditSettings.upsert({
+      where: { shop: session.shop },
+      update: { appEmbedVerified: true },
+      create: { shop: session.shop, appEmbedVerified: true },
+    });
+
+    return { success: true, message: "App embed & theme blocks verified as active!" };
+  }
+
   return { success: true };
 };
 
@@ -217,6 +227,11 @@ export default function OverviewIndex() {
   const handleSeedRules = () => {
     fetcher.submit({ intent: "seed_sample_rules" }, { method: "POST" });
     shopify?.toast?.show("Starter rules generated!");
+  };
+
+  const handleVerifyAppEmbed = () => {
+    fetcher.submit({ intent: "verify_app_embed" }, { method: "POST" });
+    shopify?.toast?.show("✓ App Embed verified as active!");
   };
 
   const isSubmitting = fetcher.state === "submitting";
@@ -369,26 +384,50 @@ export default function OverviewIndex() {
             </span>
           </div>
 
-          <a
-            href={themeEditorUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "6px 14px",
-              background: isAppEmbedActive ? "#f1f5f9" : "#008060",
-              color: isAppEmbedActive ? "#1a1a1a" : "#ffffff",
-              border: isAppEmbedActive ? "1px solid #dcdfe4" : "none",
-              fontSize: "12px",
-              fontWeight: 700,
-              borderRadius: "8px",
-              textDecoration: "none",
-            }}
-          >
-            {isAppEmbedActive ? "🎨 Theme Editor ↗" : "⚡ Enable App Embed ↗"}
-          </a>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <a
+              href={themeEditorUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "6px 14px",
+                background: isAppEmbedActive ? "#f1f5f9" : "#008060",
+                color: isAppEmbedActive ? "#1a1a1a" : "#ffffff",
+                border: isAppEmbedActive ? "1px solid #dcdfe4" : "none",
+                fontSize: "12px",
+                fontWeight: 700,
+                borderRadius: "8px",
+                textDecoration: "none",
+              }}
+            >
+              {isAppEmbedActive ? "🎨 Theme Editor ↗" : "⚡ Enable App Embed ↗"}
+            </a>
+            {!isAppEmbedActive && (
+              <button
+                type="button"
+                onClick={handleVerifyAppEmbed}
+                disabled={isSubmitting}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "6px 12px",
+                  background: "#ffffff",
+                  color: "#008060",
+                  border: "1px solid #008060",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
+                ✓ Mark as Done
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

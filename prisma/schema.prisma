@@ -134,6 +134,7 @@ model CreditSettings {
   referralsEnabled         Boolean  @default(true)
   welcomeBonusEnabled      Boolean  @default(true)
   welcomeBonusAmount       Float    @default(10.0)
+  appEmbedVerified         Boolean  @default(false)
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 }

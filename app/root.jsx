@@ -1,6 +1,23 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { useEffect } from "react";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "react-router";
+import { initPostHog } from "./services/posthog.client";
+
+export const loader = async () => {
+  return {
+    posthogKey: process.env.POSTHOG_API_KEY || "phc_kJhukHhKhpy7L3bFGqPHHsuC2wDBVAj4LfmFDULhEsHG",
+    posthogHost: process.env.POSTHOG_HOST || "https://us.i.posthog.com",
+  };
+};
 
 export default function App() {
+  const { posthogKey, posthogHost } = useLoaderData();
+
+  useEffect(() => {
+    if (posthogKey) {
+      initPostHog(posthogKey, posthogHost);
+    }
+  }, [posthogKey, posthogHost]);
+
   return (
     <html lang="en">
       <head>

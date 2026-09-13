@@ -1,4 +1,4 @@
-import prisma from "../db.server";
+import { prisma, prismaRead } from "../db.server";
 
 /**
  * GraphQL Queries and Mutations for Shopify Native Store Credit
@@ -379,6 +379,8 @@ export async function searchCustomers(arg1, arg2 = "") {
  * Get aggregated analytics and summary for dashboard
  */
 export async function getStoreCreditAnalytics({ shop }) {
+  const db = prismaRead || prisma;
+
   const [
     totalIssuedResult,
     totalDebitedResult,
@@ -387,22 +389,22 @@ export async function getStoreCreditAnalytics({ shop }) {
     activeRulesCount,
     activeCampaignsCount,
   ] = await Promise.all([
-    prisma.creditLedger.aggregate({
+    db.creditLedger.aggregate({
       where: { shop, action: "CREDIT" },
       _sum: { amount: true },
     }),
-    prisma.creditLedger.aggregate({
+    db.creditLedger.aggregate({
       where: { shop, action: "DEBIT" },
       _sum: { amount: true },
     }),
-    prisma.creditLedger.findMany({
+    db.creditLedger.findMany({
       where: { shop },
       orderBy: { createdAt: "desc" },
       take: 10,
     }),
-    prisma.creditLedger.count({ where: { shop } }),
-    prisma.creditRule.count({ where: { shop, isActive: true } }),
-    prisma.campaign.count({ where: { shop, isActive: true } }),
+    db.creditLedger.count({ where: { shop } }),
+    db.creditRule.count({ where: { shop, isActive: true } }),
+    db.campaign.count({ where: { shop, isActive: true } }),
   ]);
 
   const totalIssued = totalIssuedResult._sum.amount || 0;

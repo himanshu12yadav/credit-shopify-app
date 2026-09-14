@@ -115,7 +115,7 @@ export default function SimulatorPage() {
           Test and verify your cashback rules, VIP tier multipliers, and campaign bonuses without placing real paid orders in checkout. When you run a simulation, the rules engine executes live and deposits actual native store credit into the customer's Shopify account.
         </s-banner>
 
-        <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
           {/* Simulator Controls */}
           <s-section padding="base">
             <s-stack direction="block" gap="base">
@@ -129,7 +129,7 @@ export default function SimulatorPage() {
                   <s-select
                     label="Target Customer"
                     value={selectedCustomerId}
-                    onChange={(e) => setSelectedCustomerId(e.target.value)}
+                    onChange={(e) => setSelectedCustomerId(e.currentTarget.value)}
                   >
                     {customers.map((c) => (
                       <s-option key={c.id} value={c.id}>
@@ -143,21 +143,21 @@ export default function SimulatorPage() {
                     step="0.01"
                     min="1"
                     value={orderTotal}
-                    onInput={(e) => setOrderTotal(e.target.value)}
+                    onInput={(e) => setOrderTotal(e.currentTarget.value)}
                     required
                   />
 
                   <s-checkbox
                     label="First-time Customer Order (Qualifies for welcome bonuses)"
                     checked={isFirstOrder}
-                    onChange={(e) => setIsFirstOrder(e.target.checked)}
+                    onChange={(e) => setIsFirstOrder(e.currentTarget.checked)}
                   />
 
                   <s-text-field
                     label="Simulated Customer Tags (Comma-separated)"
                     placeholder="e.g. VIP, loyal, influencer"
                     value={customerTags}
-                    onInput={(e) => setCustomerTags(e.target.value)}
+                    onInput={(e) => setCustomerTags(e.currentTarget.value)}
                   />
 
                   <s-button
@@ -179,7 +179,7 @@ export default function SimulatorPage() {
 
               {!result ? (
                 <div style={{ textAlign: "center", padding: "40px 20px", color: "#64748b" }}>
-                  <div style={{ fontSize: "36px", marginBottom: "8px" }}>⚡</div>
+                  <div style={{ fontSize: "36px", marginBottom: "8px" }}>Ã¢Å¡Â¡</div>
                   <div style={{ fontWeight: 600 }}>No Simulation Executed Yet</div>
                   <div style={{ fontSize: "13px", marginTop: "4px" }}>
                     Configure the order parameters on the left and click "Run Order Automation" to test live credit issuance.

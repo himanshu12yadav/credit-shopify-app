@@ -157,34 +157,34 @@ export default function ExpiryCockpitPage() {
 
       {/* KPI Stats Section using s-section, s-grid, s-box, s-stack */}
       <s-section heading="Liability & Expiry Analytics">
-        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
-          <s-box padding="base" background="subdued" borderradius="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">TOTAL ACTIVE LIABILITY</s-text>
+              <s-text tone="neutral" color="subdued">TOTAL ACTIVE LIABILITY</s-text>
               <s-heading>${stats.totalLiability.toFixed(2)}</s-heading>
               <s-badge tone="success">{stats.creditsCount} ledger entries</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="critical" type="subdued">EXPIRING IN 7 DAYS</s-text>
+              <s-text tone="critical" color="subdued">EXPIRING IN 7 DAYS</s-text>
               <s-heading>${stats.expiring7Sum.toFixed(2)}</s-heading>
               <s-badge tone="critical">{stats.expiring7Count} customers need alert</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="warning" type="subdued">EXPIRING IN 30 DAYS</s-text>
+              <s-text tone="warning" color="subdued">EXPIRING IN 30 DAYS</s-text>
               <s-heading>${stats.expiring30Sum.toFixed(2)}</s-heading>
               <s-badge tone="warning">{stats.expiring30Count} upcoming expirations</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="info" type="subdued">DEFAULT EXPIRY RULE</s-text>
+              <s-text tone="info" color="subdued">DEFAULT EXPIRY RULE</s-text>
               <s-heading>{settings.defaultExpiryDays === 0 ? "Lifetime" : `${settings.defaultExpiryDays} Days`}</s-heading>
               <s-badge tone="info">Active Policy</s-badge>
             </s-stack>
@@ -194,7 +194,7 @@ export default function ExpiryCockpitPage() {
 
       {/* Policies & Grace Period Section */}
       <s-section>
-        <s-grid gridtemplatecolumns="1fr 1fr" gap="large">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="large">
           <s-stack direction="block" gap="base">
             <s-heading>Expiration Policy Configuration</s-heading>
             <s-paragraph tone="neutral">
@@ -205,7 +205,7 @@ export default function ExpiryCockpitPage() {
                 <s-select
                   label="Default Store Credit Lifespan"
                   value={selectedExpiry}
-                  onChange={(e) => setSelectedExpiry(e.target.value)}
+                  onChange={(e) => setSelectedExpiry(e.currentTarget.value)}
                 >
                   <s-option value="30">30 Days (High Urgency Retention)</s-option>
                   <s-option value="60">60 Days (Standard Retail Cycle)</s-option>
@@ -229,8 +229,8 @@ export default function ExpiryCockpitPage() {
             <s-paragraph tone="neutral">
               Grant a one-click 30-day grace period extension to all customers whose store credit is expiring within the next 7 days.
             </s-paragraph>
-            <s-box padding="base" background="subdued" borderradius="base">
-              <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+            <s-box padding="base" background="subdued" borderRadius="base">
+              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
                 <s-text>Credits Expiring This Week:</s-text>
                 <s-badge tone={stats.expiring7Count > 0 ? "critical" : "neutral"}>
                   {stats.expiring7Count} credits (${stats.expiring7Sum.toFixed(2)})
@@ -259,23 +259,23 @@ export default function ExpiryCockpitPage() {
             Preview the automated notification sent to customers 7 days before their credit balance lapses:
           </s-paragraph>
 
-          <s-grid gridtemplatecolumns="1fr 1fr 1fr" gap="base">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(180px, 1fr))" gap="base">
             <s-text-field
               label="Simulated Customer"
               value={simCustomer}
-              onInput={(e) => setSimCustomer(e.target.value)}
+              onInput={(e) => setSimCustomer(e.currentTarget.value)}
             />
             <s-number-field
               label="Expiring Balance ($)"
               value={simAmount}
               step="0.01"
-              onInput={(e) => setSimAmount(e.target.value)}
+              onInput={(e) => setSimAmount(e.currentTarget.value)}
             />
             <s-number-field
               label="Days Remaining"
               value={simDays}
               step="1"
-              onInput={(e) => setSimDays(e.target.value)}
+              onInput={(e) => setSimDays(e.currentTarget.value)}
             />
           </s-grid>
 
@@ -284,22 +284,22 @@ export default function ExpiryCockpitPage() {
               variant={simulatorMode === "email" ? "primary" : "secondary"}
               onClick={() => setSimulatorMode("email")}
             >
-              ✉️ Email Alert Preview
+              Ã¢Å“â€°Ã¯Â¸Â Email Alert Preview
             </s-button>
             <s-button
               variant={simulatorMode === "sms" ? "primary" : "secondary"}
               onClick={() => setSimulatorMode("sms")}
             >
-              📱 SMS Alert Preview
+              Ã°Å¸â€œÂ± SMS Alert Preview
             </s-button>
           </s-stack>
 
           {/* Simulator Visual Mockup */}
           {simulatorMode === "email" ? (
-            <s-box padding="large" background="subdued" borderradius="base">
-              <s-stack direction="block" gap="base" alignitems="center">
-                <s-badge tone="warning">Subject: ⏳ Don't forget your ${simAmount} store credit, {simCustomer}!</s-badge>
-                <s-box padding="large" background="base" borderradius="base" style={{ maxWidth: 460, width: "100%", textAlign: "center" }}>
+            <s-box padding="large" background="subdued" borderRadius="base">
+              <s-stack direction="block" gap="base" alignItems="center">
+                <s-badge tone="warning">Subject: Ã¢ÂÂ³ Don't forget your ${simAmount} store credit, {simCustomer}!</s-badge>
+                <s-box padding="large" background="base" borderRadius="base" style={{ maxWidth: 460, width: "100%", textAlign: "center" }}>
                   <s-heading>You have ${simAmount} expiring soon!</s-heading>
                   <s-paragraph>
                     Hi {simCustomer}, this is a friendly reminder that your available store credit balance of <strong>${simAmount}</strong> will expire in <strong>{simDays} days</strong>.
@@ -307,19 +307,19 @@ export default function ExpiryCockpitPage() {
                   <s-banner tone="success">
                     Credit applies automatically at checkout!
                   </s-banner>
-                  <s-stack direction="inline" justifycontent="center">
+                  <s-stack direction="inline" justifyContent="center">
                     <s-button variant="primary">Shop Now & Redeem ${simAmount}</s-button>
                   </s-stack>
                 </s-box>
               </s-stack>
             </s-box>
           ) : (
-            <s-box padding="large" background="subdued" borderradius="base">
-              <s-stack direction="block" gap="base" alignitems="center">
-                <s-box padding="base" background="base" borderradius="base" style={{ maxWidth: 360, width: "100%" }}>
-                  <s-text tone="neutral" type="subdued">SMS Alert • Today</s-text>
+            <s-box padding="large" background="subdued" borderRadius="base">
+              <s-stack direction="block" gap="base" alignItems="center">
+                <s-box padding="base" background="base" borderRadius="base" style={{ maxWidth: 360, width: "100%" }}>
+                  <s-text tone="neutral" color="subdued">SMS Alert Ã¢â‚¬Â¢ Today</s-text>
                   <s-paragraph>
-                    👋 Hey {simCustomer}! Friendly alert: your <strong>${simAmount}</strong> store credit at {shop?.split(".")[0]?.toUpperCase() || "VIP STORE"} expires in <strong>{simDays} days</strong>. Tap here to redeem before it's gone: credit.link/go
+                    Ã°Å¸â€˜â€¹ Hey {simCustomer}! Friendly alert: your <strong>${simAmount}</strong> store credit at {shop?.split(".")[0]?.toUpperCase() || "VIP STORE"} expires in <strong>{simDays} days</strong>. Tap here to redeem before it's gone: credit.link/go
                   </s-paragraph>
                 </s-box>
               </s-stack>

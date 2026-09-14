@@ -264,17 +264,17 @@ export default function RulesPage() {
       <s-section heading="Baseline Store Cashback Settings">
         <form onSubmit={handleSaveBaseline}>
           <s-stack direction="block" gap="base">
-            <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+            <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
               <s-stack direction="block" gap="small">
                 <s-checkbox
                   label="Universal Order Cashback"
                   checked={cashbackEnabled}
                   onChange={(e) => {
-                    const val = e.target.checked !== undefined ? e.target.checked : e.detail?.checked;
+                    const val = e.currentTarget.checked !== undefined ? e.currentTarget.checked : e.detail?.checked;
                     setCashbackEnabled(Boolean(val));
                   }}
                   onInput={(e) => {
-                    const val = e.target.checked !== undefined ? e.target.checked : e.detail?.checked;
+                    const val = e.currentTarget.checked !== undefined ? e.currentTarget.checked : e.detail?.checked;
                     setCashbackEnabled(Boolean(val));
                   }}
                 />
@@ -288,8 +288,8 @@ export default function RulesPage() {
                   step="0.5"
                   min="0"
                   max="100"
-                  onChange={(e) => setCashbackRate(String(e.target.value ?? e.detail?.value ?? ""))}
-                  onInput={(e) => setCashbackRate(String(e.target.value ?? e.detail?.value ?? ""))}
+                  onChange={(e) => setCashbackRate(String(e.currentTarget.value ?? e.detail?.value ?? ""))}
+                  onInput={(e) => setCashbackRate(String(e.currentTarget.value ?? e.detail?.value ?? ""))}
                 />
               </s-stack>
 
@@ -298,11 +298,11 @@ export default function RulesPage() {
                   label="First Purchase Welcome Bonus"
                   checked={welcomeBonusEnabled}
                   onChange={(e) => {
-                    const val = e.target.checked !== undefined ? e.target.checked : e.detail?.checked;
+                    const val = e.currentTarget.checked !== undefined ? e.currentTarget.checked : e.detail?.checked;
                     setWelcomeBonusEnabled(Boolean(val));
                   }}
                   onInput={(e) => {
-                    const val = e.target.checked !== undefined ? e.target.checked : e.detail?.checked;
+                    const val = e.currentTarget.checked !== undefined ? e.currentTarget.checked : e.detail?.checked;
                     setWelcomeBonusEnabled(Boolean(val));
                   }}
                 />
@@ -315,13 +315,13 @@ export default function RulesPage() {
                   value={welcomeBonusAmount}
                   step="1"
                   min="0"
-                  onChange={(e) => setWelcomeBonusAmount(String(e.target.value ?? e.detail?.value ?? ""))}
-                  onInput={(e) => setWelcomeBonusAmount(String(e.target.value ?? e.detail?.value ?? ""))}
+                  onChange={(e) => setWelcomeBonusAmount(String(e.currentTarget.value ?? e.detail?.value ?? ""))}
+                  onInput={(e) => setWelcomeBonusAmount(String(e.currentTarget.value ?? e.detail?.value ?? ""))}
                 />
               </s-stack>
             </s-grid>
 
-            <s-stack direction="inline" justifycontent="flex-end">
+            <s-stack direction="inline" justifyContent="flex-end">
               <s-button
                 type="button"
                 variant="secondary"
@@ -340,18 +340,18 @@ export default function RulesPage() {
         <s-section heading="Create Custom Automation Rule">
           <form onSubmit={handleCreateRule}>
             <s-stack direction="block" gap="base">
-              <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+              <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                 <s-text-field
                   label="Rule Name / Title"
                   placeholder="e.g. VIP 10% Weekend Cashback, Spend $100 get $15..."
                   value={title}
                   required
-                  onInput={(e) => setTitle(e.target.value)}
+                  onInput={(e) => setTitle(e.currentTarget.value)}
                 />
                 <s-select
                   label="Event Trigger"
                   value={trigger}
-                  onChange={(e) => setTrigger(e.target.value)}
+                  onChange={(e) => setTrigger(e.currentTarget.value)}
                 >
                   <s-option value="ORDER_PAID">Order Paid (General)</s-option>
                   <s-option value="FIRST_ORDER">First Order Ever (New Customers)</s-option>
@@ -360,11 +360,11 @@ export default function RulesPage() {
                 </s-select>
               </s-grid>
 
-              <s-grid gridtemplatecolumns="1fr 1fr 1fr" gap="base">
+              <s-grid gridTemplateColumns="repeat(auto-fit, minmax(180px, 1fr))" gap="base">
                 <s-select
                   label="Credit Calculation"
                   value={creditType}
-                  onChange={(e) => setCreditType(e.target.value)}
+                  onChange={(e) => setCreditType(e.currentTarget.value)}
                 >
                   <s-option value="PERCENTAGE">Percentage of Order Total (%)</s-option>
                   <s-option value="FIXED">Fixed Amount ($)</s-option>
@@ -375,7 +375,7 @@ export default function RulesPage() {
                   step="0.1"
                   min="0.1"
                   required
-                  onInput={(e) => setCreditValue(e.target.value)}
+                  onInput={(e) => setCreditValue(e.currentTarget.value)}
                 />
                 <s-number-field
                   label="Minimum Order Spend"
@@ -383,15 +383,15 @@ export default function RulesPage() {
                   value={minSpend}
                   step="1"
                   min="0"
-                  onInput={(e) => setMinSpend(e.target.value)}
+                  onInput={(e) => setMinSpend(e.currentTarget.value)}
                 />
               </s-grid>
 
-              <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+              <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                 <s-select
                   label="Expiration Policy"
                   value={expiryDays}
-                  onChange={(e) => setExpiryDays(e.target.value)}
+                  onChange={(e) => setExpiryDays(e.currentTarget.value)}
                 >
                   <s-option value="30">Expires in 30 days</s-option>
                   <s-option value="60">Expires in 60 days</s-option>
@@ -405,12 +405,12 @@ export default function RulesPage() {
                     label="Required Customer Tag"
                     placeholder="e.g. VIP, Wholesale"
                     value={customerTag}
-                    onInput={(e) => setCustomerTag(e.target.value)}
+                    onInput={(e) => setCustomerTag(e.currentTarget.value)}
                   />
                 )}
               </s-grid>
 
-              <s-stack direction="inline" justifycontent="flex-end" gap="small">
+              <s-stack direction="inline" justifyContent="flex-end" gap="small">
                 <s-button type="button" onClick={() => setShowBuilder(false)}>Cancel</s-button>
                 <s-button type="submit" variant="primary">Save & Enable Rule</s-button>
               </s-stack>
@@ -422,7 +422,7 @@ export default function RulesPage() {
       {/* Rules Table Section */}
       <s-section padding="none">
         <s-box padding="base">
-          <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+          <s-stack direction="inline" justifyContent="space-between" alignItems="center">
             <s-heading>Active Store Rules &amp; Automations ({rules.length})</s-heading>
             {rules.length > 0 && (
               <s-button variant="secondary" onClick={() => setShowBuilder(true)}>+ New Rule</s-button>
@@ -460,7 +460,7 @@ export default function RulesPage() {
                     <s-stack direction="block" gap="none">
                       <s-badge tone="info">{rule.trigger}</s-badge>
                       {rule.customerTag && (
-                        <s-text tone="neutral" type="subdued">Tag: {rule.customerTag}</s-text>
+                        <s-text tone="neutral" color="subdued">Tag: {rule.customerTag}</s-text>
                       )}
                     </s-stack>
                   </s-table-cell>

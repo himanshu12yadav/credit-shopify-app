@@ -109,7 +109,7 @@ export default function SettingsPage() {
               href={`https://admin.shopify.com/store/${storeSlug}/settings/customer_accounts`}
               target="_blank"
             >
-              Open Customer Accounts Settings ↗
+              Open Customer Accounts Settings Ã¢â€ â€”
             </s-button>
           </div>
         </s-banner>
@@ -119,21 +119,21 @@ export default function SettingsPage() {
       <s-section heading="General Credit Preferences">
         <form onSubmit={handleSubmit}>
           <s-stack direction="block" gap="base">
-            <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+            <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
               <s-stack direction="block" gap="small">
                 <s-select
                   label="Primary Ledger Currency"
                   value={defaultCurrency}
-                  onChange={(e) => setDefaultCurrency(e.target.value)}
+                  onChange={(e) => setDefaultCurrency(e.currentTarget.value)}
                 >
                   <s-option value="USD">USD ($) - United States Dollar</s-option>
-                  <s-option value="EUR">EUR (€) - Euro</s-option>
-                  <s-option value="GBP">GBP (£) - British Pound</s-option>
+                  <s-option value="EUR">EUR (Ã¢â€šÂ¬) - Euro</s-option>
+                  <s-option value="GBP">GBP (Ã‚Â£) - British Pound</s-option>
                   <s-option value="CAD">CAD ($) - Canadian Dollar</s-option>
                   <s-option value="AUD">AUD ($) - Australian Dollar</s-option>
-                  <s-option value="INR">INR (₹) - Indian Rupee</s-option>
+                  <s-option value="INR">INR (Ã¢â€šÂ¹) - Indian Rupee</s-option>
                 </s-select>
-                <s-text tone="neutral" type="subdued">
+                <s-text tone="neutral" color="subdued">
                   Store credit accounts in Shopify are currency-specific.
                 </s-text>
               </s-stack>
@@ -142,7 +142,7 @@ export default function SettingsPage() {
                 <s-select
                   label="Default Credit Expiration Window"
                   value={defaultExpiryDays}
-                  onChange={(e) => setDefaultExpiryDays(e.target.value)}
+                  onChange={(e) => setDefaultExpiryDays(e.currentTarget.value)}
                 >
                   <s-option value="30">30 Days</s-option>
                   <s-option value="60">60 Days</s-option>
@@ -150,13 +150,13 @@ export default function SettingsPage() {
                   <s-option value="180">180 Days (6 Months)</s-option>
                   <s-option value="365">365 Days (1 Year)</s-option>
                 </s-select>
-                <s-text tone="neutral" type="subdued">
+                <s-text tone="neutral" color="subdued">
                   Applied automatically to cashback and rule awards unless specified otherwise.
                 </s-text>
               </s-stack>
             </s-grid>
 
-            <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+            <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
               <s-stack direction="block" gap="small">
                 <s-number-field
                   label="Return / Refund Retention Bonus"
@@ -165,9 +165,9 @@ export default function SettingsPage() {
                   step="1"
                   min="0"
                   max="100"
-                  onInput={(e) => setReturnCreditBonusPercent(e.target.value)}
+                  onInput={(e) => setReturnCreditBonusPercent(e.currentTarget.value)}
                 />
-                <s-text tone="neutral" type="subdued">
+                <s-text tone="neutral" color="subdued">
                   Incentivize customers to keep funds in your store (e.g. 10% bonus turns $100 refund into $110 credit).
                 </s-text>
               </s-stack>
@@ -176,15 +176,15 @@ export default function SettingsPage() {
                 <s-checkbox
                   label="Send Automatic Shopify Email Notifications"
                   checked={autoNotifyCustomer}
-                  onChange={(e) => setAutoNotifyCustomer(e.target.checked)}
+                  onChange={(e) => setAutoNotifyCustomer(e.currentTarget.checked)}
                 />
-                <s-text tone="neutral" type="subdued">
+                <s-text tone="neutral" color="subdued">
                   Notifies customers via Shopify's native email notifications when store credit is issued or adjusted.
                 </s-text>
               </s-stack>
             </s-grid>
 
-            <s-stack direction="inline" justifycontent="flex-end">
+            <s-stack direction="inline" justifyContent="flex-end">
               <s-button type="submit" variant="primary" {...(isSaving ? { loading: true } : {})}>
                 Save Preferences
               </s-button>
@@ -204,7 +204,7 @@ export default function SettingsPage() {
             <ol style={{ margin: 0, paddingLeft: "20px", lineHeight: "1.6", fontSize: "13px", color: "#334155" }}>
               <li>In the Shopify POS app, ring up items and tap <strong>Add customer</strong> to attach the shopper.</li>
               <li>The customer's available <strong>Store Credit balance</strong> displays directly on their cart card.</li>
-              <li>Tap <strong>Checkout</strong> → Under Payment Options, select <strong>Store Credit</strong>.</li>
+              <li>Tap <strong>Checkout</strong> Ã¢â€ â€™ Under Payment Options, select <strong>Store Credit</strong>.</li>
               <li>If the balance does not cover the full order, POS allows split payments with card/cash.</li>
             </ol>
           </s-stack>

@@ -88,34 +88,34 @@ export default function LedgerPage() {
 
         {/* Executive Metrics Overview */}
         <s-section heading="Ledger Financial Summary">
-          <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
-            <s-box padding="base" background="subdued" borderradius="base">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">RECORDED TRANSACTIONS</s-text>
+                <s-text tone="neutral" color="subdued">RECORDED TRANSACTIONS</s-text>
                 <s-heading>{totalCount}</s-heading>
                 <s-badge tone="info">All Ledger Events</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">TOTAL CREDITS ISSUED</s-text>
+                <s-text tone="neutral" color="subdued">TOTAL CREDITS ISSUED</s-text>
                 <s-heading>${stats.totalCredit}</s-heading>
                 <s-badge tone="success">Cumulative Awarded</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">TOTAL DEBITS / REDEEMED</s-text>
+                <s-text tone="neutral" color="subdued">TOTAL DEBITS / REDEEMED</s-text>
                 <s-heading>${stats.totalDebit}</s-heading>
-                <s-text tone="neutral" type="subdued">Used on store orders</s-text>
+                <s-text tone="neutral" color="subdued">Used on store orders</s-text>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">NET OUTSTANDING POOL</s-text>
+                <s-text tone="neutral" color="subdued">NET OUTSTANDING POOL</s-text>
                 <s-heading>${stats.activePool}</s-heading>
                 <s-badge tone="success">100% Synced</s-badge>
               </s-stack>
@@ -127,7 +127,7 @@ export default function LedgerPage() {
         <s-section padding="none">
           <s-box padding="base">
             <s-stack direction="block" gap="base">
-              <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
                 <s-heading>Audited Transactions ({totalCount})</s-heading>
                 {(actionFilter !== "ALL" || sourceFilter !== "ALL" || searchQuery) && (
                   <s-badge tone="info">Active Filters Applied</s-badge>
@@ -158,7 +158,7 @@ export default function LedgerPage() {
                   <div style={{ minWidth: "240px" }}>
                     <s-select
                       value={actionFilter}
-                      onChange={(e) => handleFilterChange("action", e.target.value)}
+                      onChange={(e) => handleFilterChange("action", e.currentTarget.value)}
                     >
                       <s-option value="ALL">All Actions (Credit & Debit)</s-option>
                       <s-option value="CREDIT">Credits Only (+)</s-option>
@@ -169,7 +169,7 @@ export default function LedgerPage() {
                   <div style={{ minWidth: "240px" }}>
                     <s-select
                       value={sourceFilter}
-                      onChange={(e) => handleFilterChange("source", e.target.value)}
+                      onChange={(e) => handleFilterChange("source", e.currentTarget.value)}
                     >
                       <s-option value="ALL">All Sources</s-option>
                       <s-option value="CASHBACK">Order Cashback</s-option>
@@ -185,7 +185,7 @@ export default function LedgerPage() {
 
                   {(actionFilter !== "ALL" || sourceFilter !== "ALL" || searchQuery) && (
                     <s-button variant="tertiary" onClick={() => setSearchParams({})}>
-                      ✕ Reset Filters
+                      Ã¢Å“â€¢ Reset Filters
                     </s-button>
                   )}
                 </div>
@@ -220,7 +220,7 @@ export default function LedgerPage() {
                       <s-table-cell>
                         <s-stack direction="block" gap="none">
                           <s-text>{new Date(entry.createdAt).toLocaleDateString()}</s-text>
-                          <s-text tone="neutral" type="subdued">
+                          <s-text tone="neutral" color="subdued">
                             {new Date(entry.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </s-text>
                         </s-stack>
@@ -229,7 +229,7 @@ export default function LedgerPage() {
                       <s-table-cell>
                         <s-stack direction="block" gap="none">
                           <s-text><strong>{entry.customerName || "Customer"}</strong></s-text>
-                          <s-text tone="neutral" type="subdued">
+                          <s-text tone="neutral" color="subdued">
                             {entry.customerEmail || entry.customerId.replace("gid://shopify/Customer/", "ID: ")}
                           </s-text>
                         </s-stack>
@@ -270,15 +270,15 @@ export default function LedgerPage() {
                             {isExpired && <s-badge tone="critical">EXPIRED</s-badge>}
                           </s-stack>
                         ) : (
-                          <s-text tone="neutral" type="subdued">Never</s-text>
+                          <s-text tone="neutral" color="subdued">Never</s-text>
                         )}
                       </s-table-cell>
 
                       <s-table-cell>
                         <s-stack direction="block" gap="none">
-                          <s-text>{entry.note || "—"}</s-text>
+                          <s-text>{entry.note || "Ã¢â‚¬â€"}</s-text>
                           {entry.orderId && (
-                            <s-text tone="neutral" type="subdued">
+                            <s-text tone="neutral" color="subdued">
                               Order: {entry.orderId.replace("gid://shopify/Order/", "#")}
                             </s-text>
                           )}

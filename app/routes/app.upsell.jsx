@@ -85,34 +85,34 @@ export default function UpsellPage() {
 
         {/* Executive Metrics Overview */}
         <s-section heading="Booster Performance Analytics">
-          <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
-            <s-box padding="base" background="subdued" borderradius="base">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">TOTAL IMPRESSIONS</s-text>
+                <s-text tone="neutral" color="subdued">TOTAL IMPRESSIONS</s-text>
                 <s-heading>{analytics.impressions}</s-heading>
-                <s-text tone="neutral" type="subdued">Thank You page views</s-text>
+                <s-text tone="neutral" color="subdued">Thank You page views</s-text>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">ACCEPTED OFFERS</s-text>
+                <s-text tone="neutral" color="subdued">ACCEPTED OFFERS</s-text>
                 <s-heading>{analytics.accepted}</s-heading>
                 <s-badge tone="success">Immediate 2nd orders</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">CONVERSION RATE</s-text>
+                <s-text tone="neutral" color="subdued">CONVERSION RATE</s-text>
                 <s-heading>{analytics.conversionRate}</s-heading>
                 <s-badge tone="info">3.8x industry standard</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">INCREMENTAL SALES</s-text>
+                <s-text tone="neutral" color="subdued">INCREMENTAL SALES</s-text>
                 <s-heading>${analytics.incrementalRevenue}</s-heading>
                 <s-badge tone="success">Pure Margin Lift</s-badge>
               </s-stack>
@@ -122,7 +122,7 @@ export default function UpsellPage() {
 
         {/* Configuration & Preview Grid */}
         <s-section heading="Configure Booster Offer">
-          <s-grid gridtemplatecolumns="1fr 380px" gap="large">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))" gap="large">
             {/* Left: Configuration Form */}
             <form onSubmit={handleSave}>
               <s-stack direction="block" gap="base">
@@ -130,22 +130,22 @@ export default function UpsellPage() {
                   label="Booster Product Name"
                   value={productTitle}
                   required
-                  onInput={(e) => setProductTitle(e.target.value)}
+                  onInput={(e) => setProductTitle(e.currentTarget.value)}
                 />
 
                 <s-text-field
                   label="Offer Description"
                   value={productDesc}
-                  onInput={(e) => setProductDesc(e.target.value)}
+                  onInput={(e) => setProductDesc(e.currentTarget.value)}
                 />
 
-                <s-grid gridtemplatecolumns="1fr 1fr 1fr" gap="base">
+                <s-grid gridTemplateColumns="repeat(auto-fit, minmax(180px, 1fr))" gap="base">
                   <s-number-field
                     label="Original Price ($)"
                     prefix="$"
                     value={originalPrice}
                     step="0.50"
-                    onInput={(e) => setOriginalPrice(e.target.value)}
+                    onInput={(e) => setOriginalPrice(e.currentTarget.value)}
                   />
 
                   <s-number-field
@@ -153,13 +153,13 @@ export default function UpsellPage() {
                     prefix="$"
                     value={dealPrice}
                     step="0.50"
-                    onInput={(e) => setDealPrice(e.target.value)}
+                    onInput={(e) => setDealPrice(e.currentTarget.value)}
                   />
 
                   <s-select
                     label="Urgency Timer (Minutes)"
                     value={timerMinutes}
-                    onChange={(e) => setTimerMinutes(e.target.value)}
+                    onChange={(e) => setTimerMinutes(e.currentTarget.value)}
                   >
                     <s-option value="10">10 Minutes</s-option>
                     <s-option value="15">15 Minutes</s-option>
@@ -168,7 +168,7 @@ export default function UpsellPage() {
                   </s-select>
                 </s-grid>
 
-                <s-stack direction="inline" justifycontent="flex-end">
+                <s-stack direction="inline" justifyContent="flex-end">
                   <s-button type="submit" variant="primary">Save Configuration</s-button>
                 </s-stack>
               </s-stack>
@@ -189,20 +189,20 @@ export default function UpsellPage() {
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: "11px", fontWeight: 700, color: "#166534", textTransform: "uppercase" }}>
-                  ● Live Preview
+                  Ã¢â€”Â Live Preview
                 </span>
                 <span style={{ fontSize: "11px", background: "#f1f5f9", padding: "2px 8px", borderRadius: "9999px" }}>
-                  ⏱️ {timerMinutes}:00 Timer
+                  Ã¢ÂÂ±Ã¯Â¸Â {timerMinutes}:00 Timer
                 </span>
               </div>
 
               <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "10px", padding: "12px", fontSize: "12px", color: "#166534" }}>
-                <strong>🎉 You just earned $12.50 in credit!</strong> Apply it now before your order ships:
+                <strong>Ã°Å¸Å½â€° You just earned $12.50 in credit!</strong> Apply it now before your order ships:
               </div>
 
               <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                 <div style={{ width: "54px", height: "54px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px" }}>
-                  🛍️
+                  Ã°Å¸â€ºÂÃ¯Â¸Â
                 </div>
                 <div>
                   <h4 style={{ margin: "0 0 2px 0", fontSize: "14px", fontWeight: 700 }}>{productTitle}</h4>
@@ -219,7 +219,7 @@ export default function UpsellPage() {
               </div>
 
               <s-button variant="primary" style={{ width: "100%", display: "block" }}>
-                ⚡ Claim with Credit (1-Click)
+                Ã¢Å¡Â¡ Claim with Credit (1-Click)
               </s-button>
             </div>
           </s-grid>

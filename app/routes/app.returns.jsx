@@ -172,34 +172,34 @@ export default function ReturnsPage() {
 
         {/* Executive Metrics Overview */}
         <s-section heading="Cash Flow Preservation Metrics">
-          <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
-            <s-box padding="base" background="subdued" borderradius="base">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">CASH RETAINED IN BANK</s-text>
+                <s-text tone="neutral" color="subdued">CASH RETAINED IN BANK</s-text>
                 <s-heading>${stats.cashSaved}</s-heading>
                 <s-badge tone="success">Saved from refunds</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">RETURN CONVERSION RATE</s-text>
+                <s-text tone="neutral" color="subdued">RETURN CONVERSION RATE</s-text>
                 <s-heading>{stats.retentionRate}</s-heading>
-                <s-text tone="neutral" type="subdued">Chose credit over cash</s-text>
+                <s-text tone="neutral" color="subdued">Chose credit over cash</s-text>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">RETURNS CONVERTED</s-text>
+                <s-text tone="neutral" color="subdued">RETURNS CONVERTED</s-text>
                 <s-heading>{stats.convertedCount}</s-heading>
                 <s-badge tone="info">Completed conversions</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">REPURCHASE MULTIPLIER</s-text>
+                <s-text tone="neutral" color="subdued">REPURCHASE MULTIPLIER</s-text>
                 <s-heading>3.6x</s-heading>
                 <s-badge tone="success">Net basket expansion</s-badge>
               </s-stack>
@@ -209,15 +209,15 @@ export default function ReturnsPage() {
 
         {/* 1-Click Return Converter Section */}
         <s-section heading="Convert Return to Store Credit (+Bonus)">
-          <s-grid gridtemplatecolumns="1fr 380px" gap="large">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))" gap="large">
             {/* Form */}
             <form onSubmit={handleConvert}>
               <s-stack direction="block" gap="base">
-                <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+                <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                   <s-select
                     label="Customer"
                     value={selectedCustomerId}
-                    onChange={(e) => handleSelectCustomer(e.target.value)}
+                    onChange={(e) => handleSelectCustomer(e.currentTarget.value)}
                   >
                     <s-option value="">-- Select a Customer --</s-option>
                     {customers.map((c) => (
@@ -231,17 +231,17 @@ export default function ReturnsPage() {
                     label="Customer Email Address"
                     value={customerEmail}
                     required
-                    onInput={(e) => setCustomerEmail(e.target.value)}
+                    onInput={(e) => setCustomerEmail(e.currentTarget.value)}
                   />
                 </s-grid>
 
-                <s-grid gridtemplatecolumns="1fr 1fr 1fr" gap="base">
+                <s-grid gridTemplateColumns="repeat(auto-fit, minmax(180px, 1fr))" gap="base">
                   <s-text-field
                     label="Original Order #"
                     value={orderRef}
                     required
                     placeholder="e.g. #1002"
-                    onInput={(e) => setOrderRef(e.target.value)}
+                    onInput={(e) => setOrderRef(e.currentTarget.value)}
                   />
 
                   <s-number-field
@@ -251,13 +251,13 @@ export default function ReturnsPage() {
                     step="1"
                     min="1"
                     required
-                    onInput={(e) => setBaseRefund(e.target.value)}
+                    onInput={(e) => setBaseRefund(e.currentTarget.value)}
                   />
 
                   <s-select
                     label="Retention Bonus %"
                     value={bonusPercent}
-                    onChange={(e) => setBonusPercent(e.target.value)}
+                    onChange={(e) => setBonusPercent(e.currentTarget.value)}
                   >
                     <s-option value="10">+10% Extra Credit</s-option>
                     <s-option value="15">+15% Extra Credit</s-option>
@@ -266,9 +266,9 @@ export default function ReturnsPage() {
                   </s-select>
                 </s-grid>
 
-                <s-stack direction="inline" justifycontent="flex-end">
+                <s-stack direction="inline" justifyContent="flex-end">
                   <s-button type="submit" variant="primary">
-                    ⚡ Convert Return to ${totalCreditVal.toFixed(2)} Store Credit
+                    Ã¢Å¡Â¡ Convert Return to ${totalCreditVal.toFixed(2)} Store Credit
                   </s-button>
                 </s-stack>
               </s-stack>
@@ -322,7 +322,7 @@ export default function ReturnsPage() {
         {/* Converted Returns Ledger Table */}
         <s-section padding="none">
           <s-box padding="base">
-            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
               <s-heading>Converted Return Transactions ({returnEntries.length})</s-heading>
               <s-badge tone="success">Source: REFUND_CREDIT</s-badge>
             </s-stack>
@@ -358,7 +358,7 @@ export default function ReturnsPage() {
                       <s-table-cell>
                         <s-stack direction="block" gap="none">
                           <s-text><strong>{entry.customerName || "Customer"}</strong></s-text>
-                          <s-text tone="neutral" type="subdued">{entry.customerEmail}</s-text>
+                          <s-text tone="neutral" color="subdued">{entry.customerEmail}</s-text>
                         </s-stack>
                       </s-table-cell>
 
@@ -379,7 +379,7 @@ export default function ReturnsPage() {
                       </s-table-cell>
 
                       <s-table-cell>
-                        <s-text tone="neutral" type="subdued">{entry.note || "Return converted"}</s-text>
+                        <s-text tone="neutral" color="subdued">{entry.note || "Return converted"}</s-text>
                       </s-table-cell>
 
                       <s-table-cell>
@@ -387,7 +387,7 @@ export default function ReturnsPage() {
                       </s-table-cell>
 
                       <s-table-cell>
-                        <s-badge tone="success">✓ RETAINED</s-badge>
+                        <s-badge tone="success">Ã¢Å“â€œ RETAINED</s-badge>
                       </s-table-cell>
                     </s-table-row>
                   );

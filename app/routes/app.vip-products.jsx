@@ -29,7 +29,7 @@ export default function VipProductsManager() {
   };
 
   return (
-    <s-page heading="👑 VIP Exclusive Tier-Locked Products">
+    <s-page heading="Ã°Å¸â€˜â€˜ VIP Exclusive Tier-Locked Products">
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save VIP Product Rule
       </s-button>
@@ -42,26 +42,26 @@ export default function VipProductsManager() {
 
       {/* KPI Section */}
       <s-section heading="Gating Performance Metrics">
-        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
-          <s-box padding="base" background="subdued" borderradius="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">VIP EXCLUSIVE PRODUCTS</s-text>
+              <s-text tone="neutral" color="subdued">VIP EXCLUSIVE PRODUCTS</s-text>
               <s-heading>{lockedProductsCount} Items</s-heading>
-              <s-badge tone="warning">🔒 Secret Drops Active</s-badge>
+              <s-badge tone="warning">Ã°Å¸â€â€™ Secret Drops Active</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">VIP MEMBER PURCHASES</s-text>
+              <s-text tone="neutral" color="subdued">VIP MEMBER PURCHASES</s-text>
               <s-heading>{vipConversions} Orders</s-heading>
               <s-badge tone="success">High AOV Volume</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">TIER UPGRADE MOTIVATION</s-text>
+              <s-text tone="neutral" color="subdued">TIER UPGRADE MOTIVATION</s-text>
               <s-heading>+52.8%</s-heading>
               <s-badge tone="success">Shoppers spend more to unlock</s-badge>
             </s-stack>
@@ -73,28 +73,28 @@ export default function VipProductsManager() {
       <s-section heading="Configure VIP Product Gating">
         <form onSubmit={handleSave}>
           <s-stack direction="block" gap="base">
-            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
               <s-paragraph tone="neutral">
                 Select the minimum VIP tier threshold and target product handle to restrict purchase access.
               </s-paragraph>
-              <s-badge tone="success">🛡️ Storefront Gating Ready</s-badge>
+              <s-badge tone="success">Ã°Å¸â€ºÂ¡Ã¯Â¸Â Storefront Gating Ready</s-badge>
             </s-stack>
 
-            <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+            <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
               <s-select
                 label="Required VIP Tier"
                 value={tier}
-                onChange={(e) => setTier(e.target.value)}
+                onChange={(e) => setTier(e.currentTarget.value)}
               >
-                <s-option value="Silver VIP">🥈 Silver VIP ($200.00 Total Spend)</s-option>
-                <s-option value="Gold VIP">🥇 Gold VIP ($500.00 Total Spend)</s-option>
-                <s-option value="Platinum VIP">💎 Platinum VIP ($1,000.00 Total Spend)</s-option>
+                <s-option value="Silver VIP">Ã°Å¸Â¥Ë† Silver VIP ($200.00 Total Spend)</s-option>
+                <s-option value="Gold VIP">Ã°Å¸Â¥â€¡ Gold VIP ($500.00 Total Spend)</s-option>
+                <s-option value="Platinum VIP">Ã°Å¸â€™Å½ Platinum VIP ($1,000.00 Total Spend)</s-option>
               </s-select>
 
               <s-text-field
                 label="Target Product Handle"
                 value={productHandle}
-                onInput={(e) => setProductHandle(e.target.value)}
+                onInput={(e) => setProductHandle(e.currentTarget.value)}
                 placeholder="e.g. limited-gold-edition"
               />
             </s-grid>
@@ -105,7 +105,7 @@ export default function VipProductsManager() {
               </s-banner>
             )}
 
-            <s-stack direction="inline" justifycontent="flex-start">
+            <s-stack direction="inline" justifyContent="flex-start">
               <s-button type="submit" variant="primary">
                 Save VIP Product Rule
               </s-button>
@@ -117,7 +117,8 @@ export default function VipProductsManager() {
       {/* Active Catalog Drops Table */}
       <s-section heading="Active VIP Exclusive Catalog Items">
         <s-box padding="base">
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+          <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", minWidth: "640px", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
                 <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Product Item</th>
@@ -131,7 +132,7 @@ export default function VipProductsManager() {
               <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>Limited Edition Gold Member Hoodie</td>
                 <td style={{ padding: "12px 14px" }}>
-                  <s-badge tone="warning">🥇 Gold VIP</s-badge>
+                  <s-badge tone="warning">Ã°Å¸Â¥â€¡ Gold VIP</s-badge>
                 </td>
                 <td style={{ padding: "12px 14px", color: "#64748b" }}>$500.00 Lifetime</td>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>42</td>
@@ -142,7 +143,7 @@ export default function VipProductsManager() {
               <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>Founder Reserve Artisan Watch</td>
                 <td style={{ padding: "12px 14px" }}>
-                  <s-badge tone="info">💎 Platinum VIP</s-badge>
+                  <s-badge tone="info">Ã°Å¸â€™Å½ Platinum VIP</s-badge>
                 </td>
                 <td style={{ padding: "12px 14px", color: "#64748b" }}>$1,000.00 Lifetime</td>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>18</td>
@@ -153,7 +154,7 @@ export default function VipProductsManager() {
               <tr>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>Secret VIP Holiday Vault Box</td>
                 <td style={{ padding: "12px 14px" }}>
-                  <s-badge tone="neutral">🥈 Silver VIP</s-badge>
+                  <s-badge tone="neutral">Ã°Å¸Â¥Ë† Silver VIP</s-badge>
                 </td>
                 <td style={{ padding: "12px 14px", color: "#64748b" }}>$200.00 Lifetime</td>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>29</td>
@@ -163,6 +164,7 @@ export default function VipProductsManager() {
               </tr>
             </tbody>
           </table>
+          </div>
         </s-box>
       </s-section>
     </s-page>

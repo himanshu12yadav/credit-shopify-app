@@ -59,7 +59,7 @@ export default function MultiplierCalendar() {
   const { events } = useLoaderData();
   const fetcher = useFetcher();
   const shopify = useAppBridge();
-  const [name, setName] = useState("⚡ 2X Double Credit Weekend");
+  const [name, setName] = useState("Ã¢Å¡Â¡ 2X Double Credit Weekend");
   const [multiplier, setMultiplier] = useState("2.0");
   const [duration, setDuration] = useState("3");
 
@@ -78,7 +78,7 @@ export default function MultiplierCalendar() {
   };
 
   return (
-    <s-page heading="🚀 Double Credit Flash Days & Multiplier Calendar">
+    <s-page heading="Ã°Å¸Å¡â‚¬ Double Credit Flash Days & Multiplier Calendar">
       <s-banner tone="info" heading="Surge Weekend Order Volume with Limited-Time Multipliers">
         <s-paragraph>
           Multiply order cashback (e.g. 2X or 3X) during holiday promotions, flash sales, and weekends. Active multiplier events automatically apply across checkout and storefront blocks.
@@ -87,26 +87,26 @@ export default function MultiplierCalendar() {
 
       {/* KPI Section */}
       <s-section heading="Multiplier Event Performance">
-        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
-          <s-box padding="base" background="subdued" borderradius="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">ACTIVE MULTIPLIER EVENTS</s-text>
+              <s-text tone="neutral" color="subdued">ACTIVE MULTIPLIER EVENTS</s-text>
               <s-heading>{events.filter((e) => e.isActive).length}</s-heading>
-              <s-badge tone="success">⚡ Auto-applied at checkout</s-badge>
+              <s-badge tone="success">Ã¢Å¡Â¡ Auto-applied at checkout</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">STOREFRONT BANNER</s-text>
+              <s-text tone="neutral" color="subdued">STOREFRONT BANNER</s-text>
               <s-heading>Ready</s-heading>
               <s-badge tone="info">OS 2.0 Theme Block</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">AVERAGE ORDER LIFT</s-text>
+              <s-text tone="neutral" color="subdued">AVERAGE ORDER LIFT</s-text>
               <s-heading>+28.4%</s-heading>
               <s-badge tone="success">During active windows</s-badge>
             </s-stack>
@@ -118,17 +118,17 @@ export default function MultiplierCalendar() {
       <s-section heading="Schedule New Multiplier Event">
         <form onSubmit={handleCreate}>
           <s-stack direction="block" gap="base">
-            <s-grid gridtemplatecolumns="1fr 1fr 1fr" gap="base">
+            <s-grid gridTemplateColumns="repeat(auto-fit, minmax(180px, 1fr))" gap="base">
               <s-text-field
                 label="Event Name"
                 value={name}
-                onInput={(e) => setName(e.target.value)}
+                onInput={(e) => setName(e.currentTarget.value)}
               />
 
               <s-select
                 label="Cashback Multiplier"
                 value={multiplier}
-                onChange={(e) => setMultiplier(e.target.value)}
+                onChange={(e) => setMultiplier(e.currentTarget.value)}
               >
                 <s-option value="1.5">1.5X (50% Extra Cashback)</s-option>
                 <s-option value="2.0">2.0X (Double Cashback)</s-option>
@@ -139,7 +139,7 @@ export default function MultiplierCalendar() {
               <s-select
                 label="Duration Window"
                 value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) => setDuration(e.currentTarget.value)}
               >
                 <s-option value="1">24 Hours (Flash Day)</s-option>
                 <s-option value="3">3 Days (Weekend Special)</s-option>
@@ -147,9 +147,9 @@ export default function MultiplierCalendar() {
               </s-select>
             </s-grid>
 
-            <s-stack direction="inline" justifycontent="flex-start">
+            <s-stack direction="inline" justifyContent="flex-start">
               <s-button type="submit" variant="primary" disabled={fetcher.state !== "idle"}>
-                ⚡ Launch &amp; Schedule Multiplier Event
+                Ã¢Å¡Â¡ Launch &amp; Schedule Multiplier Event
               </s-button>
             </s-stack>
           </s-stack>
@@ -159,8 +159,8 @@ export default function MultiplierCalendar() {
       {/* Active Events Table */}
       <s-section heading="Event History & Active Schedules">
         {events.length === 0 ? (
-          <s-box padding="base" background="subdued" borderradius="base">
-            <s-stack direction="block" gap="small" alignitems="center">
+          <s-box padding="base" background="subdued" borderRadius="base">
+            <s-stack direction="block" gap="small" alignItems="center">
               <s-heading>No multiplier events scheduled yet</s-heading>
               <s-paragraph tone="neutral">
                 Create your first flash weekend above to drive an instant surge in checkout volume!
@@ -169,7 +169,8 @@ export default function MultiplierCalendar() {
           </s-box>
         ) : (
           <s-box padding="base">
-            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+            <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", minWidth: "640px", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
                   <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Campaign Name</th>
@@ -203,6 +204,7 @@ export default function MultiplierCalendar() {
                 ))}
               </tbody>
             </table>
+            </div>
           </s-box>
         )}
       </s-section>

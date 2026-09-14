@@ -70,7 +70,7 @@ export default function KlaviyoIntegration() {
   };
 
   return (
-    <s-page heading="📧 Klaviyo & Omnisend Deep Event Sync">
+    <s-page heading="Ã°Å¸â€œÂ§ Klaviyo & Omnisend Deep Event Sync">
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save Integration Keys
       </s-button>
@@ -83,26 +83,26 @@ export default function KlaviyoIntegration() {
 
       {/* KPI Section */}
       <s-section heading="Marketing Integration Status">
-        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
-          <s-box padding="base" background="subdued" borderradius="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">KLAVIYO PROFILES SYNCED</s-text>
+              <s-text tone="neutral" color="subdued">KLAVIYO PROFILES SYNCED</s-text>
               <s-heading>{syncedUsersCount.toLocaleString()}</s-heading>
-              <s-badge tone="success">✓ Real-time Properties Live</s-badge>
+              <s-badge tone="success">Ã¢Å“â€œ Real-time Properties Live</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">ACTIVE EVENT FLOWS</s-text>
+              <s-text tone="neutral" color="subdued">ACTIVE EVENT FLOWS</s-text>
               <s-heading>3 Flows</s-heading>
               <s-badge tone="info">Earned, Expiry, Tier Upgrade</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">EMAIL REVENUE LIFT</s-text>
+              <s-text tone="neutral" color="subdued">EMAIL REVENUE LIFT</s-text>
               <s-heading>+29.4%</s-heading>
               <s-badge tone="success">When Credit is Shown</s-badge>
             </s-stack>
@@ -114,18 +114,18 @@ export default function KlaviyoIntegration() {
       <s-section heading="Marketing Platform API Credentials">
         <form onSubmit={handleSave}>
           <s-stack direction="block" gap="base">
-            <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+            <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
               <s-text-field
                 label="Klaviyo Private API Key"
                 type="password"
                 value={apiKey}
-                onInput={(e) => setApiKey(e.target.value)}
+                onInput={(e) => setApiKey(e.currentTarget.value)}
               />
               <s-text-field
                 label="Omnisend API Key (Optional)"
                 type="password"
                 value={omnisendKey}
-                onInput={(e) => setOmnisendKey(e.target.value)}
+                onInput={(e) => setOmnisendKey(e.currentTarget.value)}
                 placeholder="Enter Omnisend API Key"
               />
             </s-grid>
@@ -136,7 +136,7 @@ export default function KlaviyoIntegration() {
               </s-banner>
             )}
 
-            <s-stack direction="inline" justifycontent="flex-start">
+            <s-stack direction="inline" justifyContent="flex-start">
               <s-button type="submit" variant="primary">
                 Save Integration Keys
               </s-button>
@@ -154,13 +154,13 @@ export default function KlaviyoIntegration() {
 
           <s-stack direction="inline" gap="small">
             <s-button onClick={() => handleTestEvent("EARNED")}>
-              ⚡ Dispatch: 'Store Credit Earned'
+              Ã¢Å¡Â¡ Dispatch: 'Store Credit Earned'
             </s-button>
             <s-button onClick={() => handleTestEvent("EXPIRING")}>
-              ⏳ Dispatch: 'Store Credit Expiring Soon'
+              Ã¢ÂÂ³ Dispatch: 'Store Credit Expiring Soon'
             </s-button>
             <s-button onClick={() => handleTestEvent("TIER_UPGRADE")}>
-              🥇 Dispatch: 'VIP Tier Upgraded'
+              Ã°Å¸Â¥â€¡ Dispatch: 'VIP Tier Upgraded'
             </s-button>
           </s-stack>
 
@@ -175,7 +175,8 @@ export default function KlaviyoIntegration() {
       {/* Merge Tag Table Section */}
       <s-section heading="Klaviyo Dynamic Email Tag Cheatsheet">
         <s-box padding="base">
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+          <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", minWidth: "640px", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
                 <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Property Name</th>
@@ -207,6 +208,7 @@ export default function KlaviyoIntegration() {
               </tr>
             </tbody>
           </table>
+          </div>
         </s-box>
       </s-section>
     </s-page>

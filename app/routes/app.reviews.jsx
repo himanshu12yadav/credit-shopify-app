@@ -50,7 +50,7 @@ export const action = async ({ request }) => {
         currency: "USD",
         action: "CREDIT",
         source: "REVIEW_REWARD",
-        note: `⭐ ${label} via Judge.me / Loox`,
+        note: `Ã¢Â­Â ${label} via Judge.me / Loox`,
         status: "COMPLETED",
       },
     });
@@ -92,7 +92,7 @@ export default function ReviewRewardsStudio() {
   };
 
   return (
-    <s-page heading="⭐ Review & UGC Video Reward Bridge">
+    <s-page heading="Ã¢Â­Â Review & UGC Video Reward Bridge">
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save Review Rules
       </s-button>
@@ -105,26 +105,26 @@ export default function ReviewRewardsStudio() {
 
       {/* KPI Section */}
       <s-section heading="Review Incentivization Metrics">
-        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
-          <s-box padding="base" background="subdued" borderradius="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">VERIFIED REVIEWS REWARDED</s-text>
+              <s-text tone="neutral" color="subdued">VERIFIED REVIEWS REWARDED</s-text>
               <s-heading>{totalCount.toLocaleString()}</s-heading>
               <s-badge tone="success">+48% Photo/Video UGC Lift</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">TOTAL STORE CREDIT ISSUED</s-text>
+              <s-text tone="neutral" color="subdued">TOTAL STORE CREDIT ISSUED</s-text>
               <s-heading>${totalAwarded} USD</s-heading>
               <s-badge tone="info">High 2nd-Order Repeat Rate</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">COMPATIBLE REVIEW APPS</s-text>
+              <s-text tone="neutral" color="subdued">COMPATIBLE REVIEW APPS</s-text>
               <s-heading>4 Apps</s-heading>
               <s-badge tone="success">Loox, Judge.me, Yotpo, Okendo</s-badge>
             </s-stack>
@@ -136,12 +136,12 @@ export default function ReviewRewardsStudio() {
       <s-section heading="UGC Review Reward Payouts">
         <form onSubmit={handleSave}>
           <s-stack direction="block" gap="base">
-            <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
-              <s-box padding="base" background="subdued" borderradius="base">
+            <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+              <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                    <s-heading>📝 Text Review</s-heading>
-                    <s-button size="slim" onClick={() => handleSimulate("text")}>⚡ Simulate</s-button>
+                  <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                    <s-heading>Ã°Å¸â€œÂ Text Review</s-heading>
+                    <s-button size="slim" onClick={() => handleSimulate("text")}>Ã¢Å¡Â¡ Simulate</s-button>
                   </s-stack>
                   <s-number-field
                     label="Reward Amount"
@@ -149,16 +149,16 @@ export default function ReviewRewardsStudio() {
                     step="0.5"
                     min="0"
                     value={textAmount}
-                    onInput={(e) => setTextAmount(e.target.value)}
+                    onInput={(e) => setTextAmount(e.currentTarget.value)}
                   />
                 </s-stack>
               </s-box>
 
-              <s-box padding="base" background="subdued" borderradius="base">
+              <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                    <s-heading>📸 Photo UGC Review</s-heading>
-                    <s-button size="slim" onClick={() => handleSimulate("photo")}>⚡ Simulate</s-button>
+                  <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                    <s-heading>Ã°Å¸â€œÂ¸ Photo UGC Review</s-heading>
+                    <s-button size="slim" onClick={() => handleSimulate("photo")}>Ã¢Å¡Â¡ Simulate</s-button>
                   </s-stack>
                   <s-number-field
                     label="Reward Amount"
@@ -166,16 +166,16 @@ export default function ReviewRewardsStudio() {
                     step="0.5"
                     min="0"
                     value={photoAmount}
-                    onInput={(e) => setPhotoAmount(e.target.value)}
+                    onInput={(e) => setPhotoAmount(e.currentTarget.value)}
                   />
                 </s-stack>
               </s-box>
 
-              <s-box padding="base" background="subdued" borderradius="base">
+              <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                    <s-heading>🎥 Video UGC Review</s-heading>
-                    <s-button size="slim" onClick={() => handleSimulate("video")}>⚡ Simulate</s-button>
+                  <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                    <s-heading>Ã°Å¸Å½Â¥ Video UGC Review</s-heading>
+                    <s-button size="slim" onClick={() => handleSimulate("video")}>Ã¢Å¡Â¡ Simulate</s-button>
                   </s-stack>
                   <s-number-field
                     label="Reward Amount"
@@ -183,22 +183,22 @@ export default function ReviewRewardsStudio() {
                     step="0.5"
                     min="0"
                     value={videoAmount}
-                    onInput={(e) => setVideoAmount(e.target.value)}
+                    onInput={(e) => setVideoAmount(e.currentTarget.value)}
                   />
                 </s-stack>
               </s-box>
             </s-grid>
 
             {/* Webhook URL Box */}
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                  <s-text tone="neutral">🔗 Review App Webhook Destination URL:</s-text>
+                <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                  <s-text tone="neutral">Ã°Å¸â€â€” Review App Webhook Destination URL:</s-text>
                   <s-button size="slim" onClick={handleCopy}>
-                    {copied ? "✓ Copied!" : "📋 Copy Webhook URL"}
+                    {copied ? "Ã¢Å“â€œ Copied!" : "Ã°Å¸â€œâ€¹ Copy Webhook URL"}
                   </s-button>
                 </s-stack>
-                <s-text tone="neutral" type="subdued">
+                <s-text tone="neutral" color="subdued">
                   <code>{webhookUrl}</code>
                 </s-text>
               </s-stack>
@@ -210,7 +210,7 @@ export default function ReviewRewardsStudio() {
               </s-banner>
             )}
 
-            <s-stack direction="inline" justifycontent="flex-start">
+            <s-stack direction="inline" justifyContent="flex-start">
               <s-button type="submit" variant="primary">
                 Save Review Reward Rules
               </s-button>
@@ -222,8 +222,8 @@ export default function ReviewRewardsStudio() {
       {/* Recent Distributions Table */}
       <s-section heading="Recent Review Reward Distributions">
         {reviewRewards.length === 0 ? (
-          <s-box padding="base" background="subdued" borderradius="base">
-            <s-stack direction="block" gap="small" alignitems="center">
+          <s-box padding="base" background="subdued" borderRadius="base">
+            <s-stack direction="block" gap="small" alignItems="center">
               <s-heading>No review rewards distributed yet</s-heading>
               <s-paragraph tone="neutral">
                 Test instant payout processing with the simulation buttons above, or connect your review app via webhook!
@@ -232,7 +232,8 @@ export default function ReviewRewardsStudio() {
           </s-box>
         ) : (
           <s-box padding="base">
-            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+            <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", minWidth: "640px", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
                   <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Reviewer</th>
@@ -258,6 +259,7 @@ export default function ReviewRewardsStudio() {
                 ))}
               </tbody>
             </table>
+            </div>
           </s-box>
         )}
       </s-section>

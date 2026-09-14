@@ -51,7 +51,7 @@ export default function WalletPage() {
           Digital wallet passes give your customers instant mobile access to their native store credit balance. In physical retail stores, cashiers scan the customer's pass directly at the POS register to redeem store credit tender.
         </s-banner>
 
-        <s-grid gridtemplatecolumns="320px 1fr" gap="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))" gap="base">
           {/* Customer Selector Sidebar */}
           <s-section padding="base">
             <s-stack direction="block" gap="base">
@@ -63,7 +63,7 @@ export default function WalletPage() {
               <s-select
                 label="Active Customer"
                 value={String(selectedCustomerIndex)}
-                onChange={(e) => setSelectedCustomerIndex(parseInt(e.target.value, 10))}
+                onChange={(e) => setSelectedCustomerIndex(parseInt(e.currentTarget.value, 10))}
               >
                 {customers.map((c, i) => (
                   <s-option key={c.id} value={String(i)}>
@@ -88,7 +88,7 @@ export default function WalletPage() {
 
           {/* Digital Wallet Card Mockup Container */}
           <s-section padding="base">
-            <s-stack direction="block" gap="base" alignitems="center">
+            <s-stack direction="block" gap="base" alignItems="center">
               <s-heading>Mobile Wallet Pass Preview</s-heading>
 
               {/* Apple / Google Wallet Realistic Card */}

@@ -62,7 +62,7 @@ export default function NotificationsPage() {
   const templatesData = {
     cashback: {
       name: "Order Cashback Earned",
-      subject: "You've earned $12.50 in store credit from your recent order! 🎉",
+      subject: "You've earned $12.50 in store credit from your recent order! Ã°Å¸Å½â€°",
       preheader: "Your store credit balance is ready to use on your next purchase.",
       badge: "CASHBACK REWARD",
       headline: "You've Earned Store Credit!",
@@ -72,7 +72,7 @@ export default function NotificationsPage() {
     },
     milestone: {
       name: "Milestone Credit Drop Perk",
-      subject: "A special gift for you: $15.00 VIP store credit has landed! 🌟",
+      subject: "A special gift for you: $15.00 VIP store credit has landed! Ã°Å¸Å’Å¸",
       preheader: "Exclusive VIP loyalty reward just added to your account.",
       badge: "VIP MILESTONE PERK",
       headline: "Surprise! A $15.00 Credit Perk",
@@ -82,17 +82,17 @@ export default function NotificationsPage() {
     },
     expiry: {
       name: "7-Day Expiry Warning",
-      subject: "Reminder: Your $25.00 store credit expires in 7 days ⏰",
+      subject: "Reminder: Your $25.00 store credit expires in 7 days Ã¢ÂÂ°",
       preheader: "Don't leave your balance behind. Use your credit before next Friday.",
       badge: "EXPIRATION ALERT",
       headline: "Don't Lose Your $25.00 Credit",
-      body: "You currently have **$25.00 in store credit** that will expire in 7 days. Your credit can be applied to any product in our store — make sure to use it before it's gone!",
+      body: "You currently have **$25.00 in store credit** that will expire in 7 days. Your credit can be applied to any product in our store Ã¢â‚¬â€ make sure to use it before it's gone!",
       cta: "Spend My $25.00 Before It Expires",
       sms: `Reminder: Your $25.00 store credit at ${settings.brandName} expires in 7 days! Don't let it go to waste: https://${shop}`,
     },
     appeasement: {
       name: "Customer Support Appeasement",
-      subject: "A goodwill store credit of $15.00 has been issued to you 🤝",
+      subject: "A goodwill store credit of $15.00 has been issued to you Ã°Å¸Â¤Â",
       preheader: "We apologize for the inconvenience and appreciate your patience.",
       badge: "GOODWILL COURTESY",
       headline: "We Appreciate Your Patience",
@@ -102,7 +102,7 @@ export default function NotificationsPage() {
     },
     referral: {
       name: "Advocate Referral Bonus",
-      subject: "Ka-ching! Your friend ordered — here is your $10.00 credit 🚀",
+      subject: "Ka-ching! Your friend ordered Ã¢â‚¬â€ here is your $10.00 credit Ã°Å¸Å¡â‚¬",
       preheader: "Your referral was successful. Your $10 reward is ready.",
       badge: "REFERRAL COMMISSION",
       headline: "Your Referral Was a Success!",
@@ -139,34 +139,34 @@ export default function NotificationsPage() {
 
         {/* Executive Metrics Overview */}
         <s-section heading="Notification Engagement Metrics">
-          <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
-            <s-box padding="base" background="subdued" borderradius="base">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">DELIVERED THIS MONTH</s-text>
+                <s-text tone="neutral" color="subdued">DELIVERED THIS MONTH</s-text>
                 <s-heading>{stats.deliveredThisMonth}</s-heading>
                 <s-badge tone="success">99.8% Inbox rate</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">AVERAGE OPEN RATE</s-text>
+                <s-text tone="neutral" color="subdued">AVERAGE OPEN RATE</s-text>
                 <s-heading>{stats.openRate}</s-heading>
                 <s-badge tone="info">3.2x promo emails</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">CLICK-TO-PURCHASE RATE</s-text>
+                <s-text tone="neutral" color="subdued">CLICK-TO-PURCHASE RATE</s-text>
                 <s-heading>{stats.clickRate}</s-heading>
                 <s-badge tone="success">High Intent</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">REVENUE PER EMAIL</s-text>
+                <s-text tone="neutral" color="subdued">REVENUE PER EMAIL</s-text>
                 <s-heading>{stats.revenuePerEmail}</s-heading>
                 <s-badge tone="success">Margin Booster</s-badge>
               </s-stack>
@@ -194,13 +194,13 @@ export default function NotificationsPage() {
                 variant={activeChannel === "email" ? "primary" : "secondary"}
                 onClick={() => setActiveChannel("email")}
               >
-                📧 Email (HTML)
+                Ã°Å¸â€œÂ§ Email (HTML)
               </s-button>
               <s-button
                 variant={activeChannel === "sms" ? "primary" : "secondary"}
                 onClick={() => setActiveChannel("sms")}
               >
-                📱 SMS Text Message
+                Ã°Å¸â€œÂ± SMS Text Message
               </s-button>
             </s-stack>
           </s-stack>
@@ -208,7 +208,7 @@ export default function NotificationsPage() {
 
         {/* Studio Editor & Live Responsive Preview */}
         <s-section heading="Template Customizer & Live Preview">
-          <s-grid gridtemplatecolumns="1fr 440px" gap="large">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))" gap="large">
             {/* Left: Customizer Controls */}
             <s-stack direction="block" gap="base">
               <s-text-field
@@ -222,11 +222,11 @@ export default function NotificationsPage() {
                 value={currentTpl.preheader}
               />
 
-              <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+              <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                 <s-select
                   label="Brand Accent Color"
                   value={brandColor}
-                  onChange={(e) => setBrandColor(e.target.value)}
+                  onChange={(e) => setBrandColor(e.currentTarget.value)}
                 >
                   <s-option value="#047857">Shopify Emerald (#047857)</s-option>
                   <s-option value="#0f172a">Midnight Slate (#0f172a)</s-option>
@@ -257,7 +257,7 @@ export default function NotificationsPage() {
                   <s-text-field
                     placeholder="Enter your email (e.g. you@domain.com)"
                     value={testEmail}
-                    onInput={(e) => setTestEmail(e.target.value)}
+                    onInput={(e) => setTestEmail(e.currentTarget.value)}
                     style={{ flex: 1 }}
                   />
                   <s-button type="submit" variant="primary">Send Test</s-button>
@@ -279,10 +279,10 @@ export default function NotificationsPage() {
             >
               <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                 <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
-                  ● Responsive Preview ({activeChannel.toUpperCase()})
+                  Ã¢â€”Â Responsive Preview ({activeChannel.toUpperCase()})
                 </span>
                 <span style={{ fontSize: "11px", color: "#166534", fontWeight: 700 }}>
-                  ✓ HTML Verified
+                  Ã¢Å“â€œ HTML Verified
                 </span>
               </div>
 

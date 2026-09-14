@@ -164,7 +164,7 @@ export const action = async ({ request }) => {
           email,
           amount,
           status: "FAILED",
-          error: err.message,
+          error: err instanceof Error ? err.message : "Import failed",
         });
         errorCount++;
       }
@@ -362,28 +362,18 @@ export default function MigratePage() {
 
         {/* Input & Validation Summary */}
         <s-section>
-          <s-grid gridtemplatecolumns="1fr 390px" gap="large">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))" gap="large">
             {/* CSV Input */}
             <s-stack direction="block" gap="base">
               <s-heading>CSV Raw Data</s-heading>
-              <textarea
+              <s-text-area
+                label="CSV raw data"
                 value={csvText}
-                onChange={(e) => handleParse(e.target.value, activePreset)}
+                onChange={(e) => handleParse(e.currentTarget.value, activePreset)}
                 rows={8}
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  fontFamily: "monospace",
-                  fontSize: "12px",
-                  padding: "14px",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  background: "#f8fafc",
-                  lineHeight: "1.6",
-                }}
               />
-              <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                <s-text tone="neutral" type="subdued">Active Format: {activePreset.toUpperCase()}</s-text>
+              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                <s-text tone="neutral" color="subdued">Active Format: {activePreset.toUpperCase()}</s-text>
                 <s-button variant="tertiary" onClick={() => handleSelectPreset(activePreset)}>
                   Reset to Sample
                 </s-button>
@@ -409,7 +399,7 @@ export default function MigratePage() {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span style={{ fontSize: "16px" }}>📋</span>
+                      <span style={{ fontSize: "16px" }}>Ã°Å¸â€œâ€¹</span>
                       <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>
                         Pre-Flight Summary
                       </h3>
@@ -419,7 +409,7 @@ export default function MigratePage() {
                     </p>
                   </div>
                   <s-badge tone={validationSummary.valid > 0 ? "success" : "neutral"}>
-                    {validationSummary.valid > 0 ? "✓ Ready to Credit" : "Awaiting Data"}
+                    {validationSummary.valid > 0 ? "Ã¢Å“â€œ Ready to Credit" : "Awaiting Data"}
                   </s-badge>
                 </div>
 
@@ -445,13 +435,13 @@ export default function MigratePage() {
                     ${validationSummary.liability.toFixed(2)}
                   </div>
                   <div style={{ fontSize: "11px", color: "#d1fae5", marginTop: "4px", display: "flex", alignItems: "center", gap: "5px" }}>
-                    <span>✨</span>
+                    <span>Ã¢Å“Â¨</span>
                     <span>Direct native Shopify credit ledger allocation</span>
                   </div>
                 </div>
 
                 {/* Structured 3-Tile Metric Breakdown */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "10px" }}>
                   <div
                     style={{
                       background: "#f8fafc",
@@ -506,10 +496,10 @@ export default function MigratePage() {
                   }}
                 >
                   <span style={{ fontSize: "12px", color: validationSummary.invalid > 0 ? "#991b1b" : "#64748b", fontWeight: 500 }}>
-                    {validationSummary.invalid > 0 ? "⚠️ Invalid or Skipped Rows" : "Syntax & Email Check"}
+                    {validationSummary.invalid > 0 ? "Ã¢Å¡Â Ã¯Â¸Â Invalid or Skipped Rows" : "Syntax & Email Check"}
                   </span>
                   <s-badge tone={validationSummary.invalid > 0 ? "critical" : "success"}>
-                    {validationSummary.invalid > 0 ? `${validationSummary.invalid} Errors` : "✓ Clean"}
+                    {validationSummary.invalid > 0 ? `${validationSummary.invalid} Errors` : "Ã¢Å“â€œ Clean"}
                   </s-badge>
                 </div>
 
@@ -528,11 +518,11 @@ export default function MigratePage() {
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>🛡️</span>
+                    <span>Ã°Å¸â€ºÂ¡Ã¯Â¸Â</span>
                     <span><strong>Shopify Native GraphQL API</strong>: Idempotent mutations</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>⚡</span>
+                    <span>Ã¢Å¡Â¡</span>
                     <span>Customer accounts auto-linked with zero duplicate balances</span>
                   </div>
                 </div>
@@ -544,7 +534,6 @@ export default function MigratePage() {
                   variant="primary"
                   onClick={handleExecuteMigration}
                   disabled={isSubmitting || validationSummary.valid === 0}
-                  style={{ width: "100%", display: "block" }}
                 >
                   {isSubmitting ? (
                     "Processing Migration..."
@@ -553,7 +542,7 @@ export default function MigratePage() {
                   )}
                 </s-button>
                 <div style={{ textAlign: "center", fontSize: "11px", color: "#94a3b8" }}>
-                  🔒 Instant balance update upon execution
+                  Ã°Å¸â€â€™ Instant balance update upon execution
                 </div>
               </div>
             </div>
@@ -565,7 +554,7 @@ export default function MigratePage() {
           <s-section padding="none">
             <s-box padding="base">
               <s-stack direction="block" gap="base">
-                <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+                <s-stack direction="inline" justifyContent="space-between" alignItems="center">
                   <s-heading>Migration Execution Results ({migrationResult.summary.successCount} Imported)</s-heading>
                   <s-button variant="secondary" onClick={handleResetBatch}>
                     Migrate Another Batch

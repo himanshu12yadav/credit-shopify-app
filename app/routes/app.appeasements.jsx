@@ -125,10 +125,10 @@ export default function AppeasementsPage() {
   const shopify = useAppBridge();
 
   const presets = [
-    { label: "📦 Late Shipping ($10)", amount: "10.00", reason: "Late Shipping / Delayed Order" },
-    { label: "💔 Damaged Item ($25)", amount: "25.00", reason: "Damaged / Defective Merchandise" },
-    { label: "⭐ VIP Goodwill ($15)", amount: "15.00", reason: "VIP Member Loyalty Goodwill" },
-    { label: "❌ Cancelled Item ($20)", amount: "20.00", reason: "Out of Stock Cancellation" },
+    { label: "Ã°Å¸â€œÂ¦ Late Shipping ($10)", amount: "10.00", reason: "Late Shipping / Delayed Order" },
+    { label: "Ã°Å¸â€™â€ Damaged Item ($25)", amount: "25.00", reason: "Damaged / Defective Merchandise" },
+    { label: "Ã¢Â­Â VIP Goodwill ($15)", amount: "15.00", reason: "VIP Member Loyalty Goodwill" },
+    { label: "Ã¢ÂÅ’ Cancelled Item ($20)", amount: "20.00", reason: "Out of Stock Cancellation" },
   ];
 
   const [selectedPreset, setSelectedPreset] = useState(presets[0]);
@@ -199,34 +199,34 @@ export default function AppeasementsPage() {
 
         {/* Executive Metrics */}
         <s-section heading="Appeasement Health & Insights">
-          <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
-            <s-box padding="base" background="subdued" borderradius="base">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">TOTAL APPEASEMENTS ISSUED</s-text>
+                <s-text tone="neutral" color="subdued">TOTAL APPEASEMENTS ISSUED</s-text>
                 <s-heading>${stats.totalAmount}</s-heading>
                 <s-badge tone="info">{stats.count} Tickets Resolved</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">TOP COMPLAINT REASON</s-text>
+                <s-text tone="neutral" color="subdued">TOP COMPLAINT REASON</s-text>
                 <s-heading>{stats.topReason}</s-heading>
-                <s-text tone="neutral" type="subdued">Leading driver of goodwill credits</s-text>
+                <s-text tone="neutral" color="subdued">Leading driver of goodwill credits</s-text>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">AVERAGE RESOLUTION TIME</s-text>
+                <s-text tone="neutral" color="subdued">AVERAGE RESOLUTION TIME</s-text>
                 <s-heading>&lt; 15 seconds</s-heading>
                 <s-badge tone="success">1-Click Native Credit</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">RETURN-TO-PURCHASE RATE</s-text>
+                <s-text tone="neutral" color="subdued">RETURN-TO-PURCHASE RATE</s-text>
                 <s-heading>74.2%</s-heading>
                 <s-badge tone="success">High Retention Lift</s-badge>
               </s-stack>
@@ -257,13 +257,13 @@ export default function AppeasementsPage() {
                     variant={isCustom ? "primary" : "secondary"}
                     onClick={() => setIsCustom(true)}
                   >
-                    ✏️ Custom Amount
+                    Ã¢Å“ÂÃ¯Â¸Â Custom Amount
                   </s-button>
                 </s-stack>
               </s-stack>
 
               {isCustom && (
-                <s-grid gridtemplatecolumns="200px 1fr" gap="base">
+                <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                   <s-number-field
                     label="Custom Credit Amount ($)"
                     prefix="$"
@@ -271,7 +271,7 @@ export default function AppeasementsPage() {
                     step="1"
                     min="1"
                     required
-                    onInput={(e) => setCustomAmount(e.target.value)}
+                    onInput={(e) => setCustomAmount(e.currentTarget.value)}
                   />
                   <s-text-field
                     label="Custom Reason Description"
@@ -281,11 +281,11 @@ export default function AppeasementsPage() {
               )}
 
               {/* Step 2: Customer Selection */}
-              <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+              <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                 <s-select
                   label="Select Customer from Recent List"
                   value={selectedCustomerId}
-                  onChange={(e) => handleSelectCustomer(e.target.value)}
+                  onChange={(e) => handleSelectCustomer(e.currentTarget.value)}
                 >
                   <s-option value="">-- Select a Customer --</s-option>
                   {customers.map((c) => (
@@ -298,39 +298,39 @@ export default function AppeasementsPage() {
                 <s-text-field
                   label="Or Customer Email Address"
                   value={customerEmail}
-                  onInput={(e) => setCustomerEmail(e.target.value)}
+                  onInput={(e) => setCustomerEmail(e.currentTarget.value)}
                   required
                 />
               </s-grid>
 
               {/* Step 3: Audit Details */}
-              <s-grid gridtemplatecolumns="1fr 1fr 1fr" gap="base">
+              <s-grid gridTemplateColumns="repeat(auto-fit, minmax(180px, 1fr))" gap="base">
                 <s-text-field
                   label="Support Ticket # / Reference"
                   placeholder="e.g. ZD-48192 or GORG-89"
                   value={ticketId}
-                  onInput={(e) => setTicketId(e.target.value)}
+                  onInput={(e) => setTicketId(e.currentTarget.value)}
                 />
                 <s-text-field
                   label="Handling Rep Name"
                   value={agentName}
-                  onInput={(e) => setAgentName(e.target.value)}
+                  onInput={(e) => setAgentName(e.currentTarget.value)}
                   required
                 />
                 <s-text-field
                   label="Internal Manager Audit Note"
                   placeholder="e.g. Courier confirmed box damaged on arrival"
                   value={agentNote}
-                  onInput={(e) => setAgentNote(e.target.value)}
+                  onInput={(e) => setAgentNote(e.currentTarget.value)}
                 />
               </s-grid>
 
-              <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                <s-text tone="neutral" type="subdued">
-                  🔒 Transaction will be recorded to the immutable ledger with source <code>APPEASEMENT</code>
+              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                <s-text tone="neutral" color="subdued">
+                  Ã°Å¸â€â€™ Transaction will be recorded to the immutable ledger with source <code>APPEASEMENT</code>
                 </s-text>
                 <s-button type="submit" variant="primary">
-                  ⚡ Issue ${isCustom ? customAmount || "0.00" : selectedPreset.amount} Credit Directly
+                  Ã¢Å¡Â¡ Issue ${isCustom ? customAmount || "0.00" : selectedPreset.amount} Credit Directly
                 </s-button>
               </s-stack>
             </s-stack>
@@ -365,7 +365,7 @@ export default function AppeasementsPage() {
         {/* Recent Appeasements Audit Table */}
         <s-section padding="none">
           <s-box padding="base">
-            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
               <s-heading>Recent Appeasements Audit Ledger ({appeasements.length})</s-heading>
               <s-badge tone="info">Source: APPEASEMENT</s-badge>
             </s-stack>
@@ -400,7 +400,7 @@ export default function AppeasementsPage() {
                       <s-table-cell>
                         <s-stack direction="block" gap="none">
                           <s-text><strong>{item.customerName || "Customer"}</strong></s-text>
-                          <s-text tone="neutral" type="subdued">{item.customerEmail}</s-text>
+                          <s-text tone="neutral" color="subdued">{item.customerEmail}</s-text>
                         </s-stack>
                       </s-table-cell>
 
@@ -413,7 +413,7 @@ export default function AppeasementsPage() {
                       <s-table-cell>
                         <s-stack direction="block" gap="none">
                           <s-text><strong>{meta.reason || "Customer Goodwill"}</strong></s-text>
-                          <s-text tone="neutral" type="subdued">{meta.ticketId ? `Ref: ${meta.ticketId}` : item.note}</s-text>
+                          <s-text tone="neutral" color="subdued">{meta.ticketId ? `Ref: ${meta.ticketId}` : item.note}</s-text>
                         </s-stack>
                       </s-table-cell>
 
@@ -426,7 +426,7 @@ export default function AppeasementsPage() {
                       </s-table-cell>
 
                       <s-table-cell>
-                        <s-badge tone="success">✓ CREDITED</s-badge>
+                        <s-badge tone="success">Ã¢Å“â€œ CREDITED</s-badge>
                       </s-table-cell>
                     </s-table-row>
                   );

@@ -275,34 +275,34 @@ export default function CampaignsPage() {
 
         {/* Executive Metrics Overview */}
         <s-section heading="Campaign Performance Overview">
-          <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
-            <s-box padding="base" background="subdued" borderradius="base">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">ACTIVE CAMPAIGNS</s-text>
+                <s-text tone="neutral" color="subdued">ACTIVE CAMPAIGNS</s-text>
                 <s-heading>{stats.activeCount}</s-heading>
                 <s-badge tone="success">Scheduled & Live</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">TOTAL PERK DROPS DISBURSED</s-text>
+                <s-text tone="neutral" color="subdued">TOTAL PERK DROPS DISBURSED</s-text>
                 <s-heading>${stats.totalDisbursed}</s-heading>
                 <s-badge tone="info">Native Store Credit</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">CUSTOMERS REACHED</s-text>
+                <s-text tone="neutral" color="subdued">CUSTOMERS REACHED</s-text>
                 <s-heading>{stats.totalRecipients}</s-heading>
-                <s-text tone="neutral" type="subdued">Credited across all drops</s-text>
+                <s-text tone="neutral" color="subdued">Credited across all drops</s-text>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">AVG. REDEMPTION RATE</s-text>
+                <s-text tone="neutral" color="subdued">AVG. REDEMPTION RATE</s-text>
                 <s-heading>68.4%</s-heading>
                 <s-badge tone="success">High Sales Lift</s-badge>
               </s-stack>
@@ -319,32 +319,32 @@ export default function CampaignsPage() {
                   variant={activeTab === "drops" ? "primary" : "secondary"}
                   onClick={() => setActiveTab("drops")}
                 >
-                  🎁 Targeted Credit Drop
+                  Ã°Å¸Å½Â Targeted Credit Drop
                 </s-button>
                 <s-button
                   variant={activeTab === "boosters" ? "primary" : "secondary"}
                   onClick={() => setActiveTab("boosters")}
                 >
-                  ⚡ Order Cashback Booster
+                  Ã¢Å¡Â¡ Order Cashback Booster
                 </s-button>
               </s-stack>
 
               {activeTab === "drops" ? (
                 <form onSubmit={handleCreateDrop}>
                   <s-stack direction="block" gap="base">
-                    <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+                    <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                       <s-text-field
                         label="Drop Campaign Name"
                         required
                         placeholder="e.g. $15 Summer VIP Perk, Gold Tier Bonus..."
                         value={dropName}
-                        onInput={(e) => setDropName(e.target.value)}
+                        onInput={(e) => setDropName(e.currentTarget.value)}
                       />
 
                       <s-select
                         label="Target Audience Segment"
                         value={dropSegment}
-                        onChange={(e) => setDropSegment(e.target.value)}
+                        onChange={(e) => setDropSegment(e.currentTarget.value)}
                       >
                         <s-option value="ALL">All Active Customers</s-option>
                         <s-option value="VIP_GOLD">VIP Gold Members Only</s-option>
@@ -354,20 +354,20 @@ export default function CampaignsPage() {
                       </s-select>
                     </s-grid>
 
-                    <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+                    <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                       <s-number-field
                         label="Perk Credit Amount ($)"
                         prefix="$"
                         value={dropAmount}
                         step="1"
                         min="1"
-                        onInput={(e) => setDropAmount(e.target.value)}
+                        onInput={(e) => setDropAmount(e.currentTarget.value)}
                       />
 
                       <s-select
                         label="Credit Expiration Period"
                         value={dropExpiry}
-                        onChange={(e) => setDropExpiry(e.target.value)}
+                        onChange={(e) => setDropExpiry(e.currentTarget.value)}
                       >
                         <s-option value="14">14 Days (Urgency Booster)</s-option>
                         <s-option value="30">30 Days (Recommended)</s-option>
@@ -376,7 +376,7 @@ export default function CampaignsPage() {
                       </s-select>
                     </s-grid>
 
-                    <s-stack direction="inline" justifycontent="flex-end" gap="small">
+                    <s-stack direction="inline" justifyContent="flex-end" gap="small">
                       <s-button type="button" onClick={() => setShowCreator(false)}>Cancel</s-button>
                       <s-button type="submit" variant="primary">Schedule Credit Drop</s-button>
                     </s-stack>
@@ -385,18 +385,18 @@ export default function CampaignsPage() {
               ) : (
                 <form onSubmit={handleCreateBooster}>
                   <s-stack direction="block" gap="base">
-                    <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+                    <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                       <s-text-field
                         label="Booster Campaign Name"
                         required
                         placeholder="e.g. 2x Double Credit Weekend, Flash Perk..."
                         value={boosterName}
-                        onInput={(e) => setBoosterName(e.target.value)}
+                        onInput={(e) => setBoosterName(e.currentTarget.value)}
                       />
                       <s-select
                         label="Credit Multiplier"
                         value={bonusMultiplier}
-                        onChange={(e) => setBonusMultiplier(e.target.value)}
+                        onChange={(e) => setBonusMultiplier(e.currentTarget.value)}
                       >
                         <s-option value="1.5">1.5x (50% Extra Credit)</s-option>
                         <s-option value="2.0">2.0x (Double Credit)</s-option>
@@ -405,14 +405,14 @@ export default function CampaignsPage() {
                       </s-select>
                     </s-grid>
 
-                    <s-grid gridtemplatecolumns="1fr 1fr 1fr 1fr" gap="base">
+                    <s-grid gridTemplateColumns="repeat(auto-fit, minmax(160px, 1fr))" gap="base">
                       <s-number-field
                         label="Fixed Bonus ($)"
                         prefix="$"
                         value={bonusFixedAmount}
                         step="1"
                         min="0"
-                        onInput={(e) => setBonusFixedAmount(e.target.value)}
+                        onInput={(e) => setBonusFixedAmount(e.currentTarget.value)}
                       />
                       <s-number-field
                         label="Min Order Spend ($)"
@@ -420,23 +420,23 @@ export default function CampaignsPage() {
                         value={minSpend}
                         step="1"
                         min="0"
-                        onInput={(e) => setMinSpend(e.target.value)}
+                        onInput={(e) => setMinSpend(e.currentTarget.value)}
                       />
                       <s-date-field
                         label="Start Date"
                         value={startDate}
                         required
-                        onInput={(e) => setStartDate(e.target.value)}
+                        onInput={(e) => setStartDate(e.currentTarget.value)}
                       />
                       <s-date-field
                         label="End Date"
                         value={endDate}
                         required
-                        onInput={(e) => setEndDate(e.target.value)}
+                        onInput={(e) => setEndDate(e.currentTarget.value)}
                       />
                     </s-grid>
 
-                    <s-stack direction="inline" justifycontent="flex-end" gap="small">
+                    <s-stack direction="inline" justifyContent="flex-end" gap="small">
                       <s-button type="button" onClick={() => setShowCreator(false)}>Cancel</s-button>
                       <s-button type="submit" variant="primary">Launch Booster</s-button>
                     </s-stack>
@@ -450,9 +450,9 @@ export default function CampaignsPage() {
         {/* Milestone Credit Drops Table */}
         <s-section padding="none">
           <s-box padding="base">
-            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-              <s-heading>🎁 Milestone Credit Drops ({drops.length})</s-heading>
-              <s-text tone="neutral" type="subdued">Bulk credit directly into customer Shopify accounts</s-text>
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+              <s-heading>Ã°Å¸Å½Â Milestone Credit Drops ({drops.length})</s-heading>
+              <s-text tone="neutral" color="subdued">Bulk credit directly into customer Shopify accounts</s-text>
             </s-stack>
           </s-box>
           <s-divider />
@@ -507,7 +507,7 @@ export default function CampaignsPage() {
 
                     <s-table-cell>
                       <s-badge tone={d.status === "COMPLETED" ? "success" : "attention"}>
-                        {d.status === "COMPLETED" ? "✓ DISBURSED" : "SCHEDULED"}
+                        {d.status === "COMPLETED" ? "Ã¢Å“â€œ DISBURSED" : "SCHEDULED"}
                       </s-badge>
                     </s-table-cell>
 
@@ -525,7 +525,7 @@ export default function CampaignsPage() {
                               }
                             }}
                           >
-                            🚀 Drop Now
+                            Ã°Å¸Å¡â‚¬ Drop Now
                           </s-button>
                         )}
                         <s-button
@@ -550,9 +550,9 @@ export default function CampaignsPage() {
         {/* Promotional Cashback Boosters Table */}
         <s-section padding="none">
           <s-box padding="base">
-            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-              <s-heading>⚡ Promotional Cashback Boosters ({boosters.length})</s-heading>
-              <s-text tone="neutral" type="subdued">Time-limited order credit multipliers</s-text>
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+              <s-heading>Ã¢Å¡Â¡ Promotional Cashback Boosters ({boosters.length})</s-heading>
+              <s-text tone="neutral" color="subdued">Time-limited order credit multipliers</s-text>
             </s-stack>
           </s-box>
           <s-divider />
@@ -600,7 +600,7 @@ export default function CampaignsPage() {
 
                       <s-table-cell>
                         <s-text tone="neutral">
-                          {start.toLocaleDateString()} — {end.toLocaleDateString()}
+                          {start.toLocaleDateString()} Ã¢â‚¬â€ {end.toLocaleDateString()}
                         </s-text>
                       </s-table-cell>
 

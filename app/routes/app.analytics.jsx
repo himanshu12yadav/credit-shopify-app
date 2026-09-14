@@ -31,7 +31,7 @@ export const action = async ({ request }) => {
     return {
       ok: true,
       message: result.updated
-        ? "Web pixel settings refreshed — telemetry endpoint is current."
+        ? "Web pixel settings refreshed Ã¢â‚¬â€ telemetry endpoint is current."
         : "Web pixel activated. Storefront and checkout events are now tracked.",
     };
   }
@@ -217,7 +217,7 @@ export default function AnalyticsPage() {
   return (
     <s-page heading="Financial Intelligence & Omnichannel ROI Analytics">
       <s-button slot="primary-action" variant="primary" onClick={handleExportCsv}>
-        {copied ? "✓ Exported CSV!" : "📥 Export Accounting Report (CSV)"}
+        {copied ? "Ã¢Å“â€œ Exported CSV!" : "Ã°Å¸â€œÂ¥ Export Accounting Report (CSV)"}
       </s-button>
 
       <s-banner tone="success" heading="Omnichannel Store Credit Engine Active">
@@ -228,46 +228,46 @@ export default function AnalyticsPage() {
 
       {/* Financial Overview Metrics */}
       <s-section heading="Financial Performance & Revenue Lift">
-        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
-          <s-box padding="base" background="subdued" borderradius="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">ESTIMATED REVENUE DRIVEN</s-text>
+              <s-text tone="neutral" color="subdued">ESTIMATED REVENUE DRIVEN</s-text>
               <s-heading>${metrics.estimatedSalesDriven} USD</s-heading>
-              <s-badge tone="success">🚀 4.4x ROI Multiplier</s-badge>
+              <s-badge tone="success">Ã°Å¸Å¡â‚¬ 4.4x ROI Multiplier</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">CASH SAVED ON RETURNS</s-text>
+              <s-text tone="neutral" color="subdued">CASH SAVED ON RETURNS</s-text>
               <s-heading>${metrics.totalCashSavedReturns} USD</s-heading>
-              <s-badge tone="success">💰 Retained Inside Business</s-badge>
+              <s-badge tone="success">Ã°Å¸â€™Â° Retained Inside Business</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">BASKET SIZE (AOV) LIFT</s-text>
+              <s-text tone="neutral" color="subdued">BASKET SIZE (AOV) LIFT</s-text>
               <s-heading>+{metrics.aovLiftPercent}%</s-heading>
               <s-badge tone="info">${metrics.avgOrderValueWithCredit} vs ${metrics.avgOrderValueStandard}</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">REPEAT VELOCITY</s-text>
+              <s-text tone="neutral" color="subdued">REPEAT VELOCITY</s-text>
               <s-heading>{metrics.daysToRepeatWithCredit} Days</s-heading>
-              <s-badge tone="success">⚡ 3.2x Faster than Standard</s-badge>
+              <s-badge tone="success">Ã¢Å¡Â¡ 3.2x Faster than Standard</s-badge>
             </s-stack>
           </s-box>
         </s-grid>
       </s-section>
 
       {/* Web Pixel Section */}
-      <s-section heading="Native Web Pixel — Zero-Latency Conversion Tracking">
-        <s-box padding="base" background="subdued" borderradius="base">
+      <s-section heading="Native Web Pixel Ã¢â‚¬â€ Zero-Latency Conversion Tracking">
+        <s-box padding="base" background="subdued" borderRadius="base">
           <s-stack direction="block" gap="base">
-            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
               <s-paragraph tone="neutral">
                 Runs inside Shopify's sandboxed Web Worker off the main thread with zero page load impact.
               </s-paragraph>
@@ -282,54 +282,54 @@ export default function AnalyticsPage() {
               </s-banner>
             )}
 
-            <s-stack direction="inline" gap="small" alignitems="center">
+            <s-stack direction="inline" gap="small" alignItems="center">
               <s-button
                 variant="primary"
                 disabled={pixelBusy || !pixel?.appUrl}
                 onClick={activatePixel}
               >
-                {pixelBusy ? "Working…" : pixelActive ? "Re-sync Pixel Settings" : "Activate Web Pixel"}
+                {pixelBusy ? "WorkingÃ¢â‚¬Â¦" : pixelActive ? "Re-sync Pixel Settings" : "Activate Web Pixel"}
               </s-button>
               {pixel?.appUrl && (
-                <s-text tone="neutral" type="subdued">
+                <s-text tone="neutral" color="subdued">
                   Ingesting to <code>{pixel.appUrl}/api/pixel/events</code>
                 </s-text>
               )}
             </s-stack>
 
             {/* Pixel Metrics Grid */}
-            <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
-              <s-box padding="base" borderradius="base">
+            <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
+              <s-box padding="base" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-text tone="neutral" type="subdued">Assisted Conversions</s-text>
+                  <s-text tone="neutral" color="subdued">Assisted Conversions</s-text>
                   <s-heading>{pa.assistedConversions ?? 0}</s-heading>
-                  <s-text tone="neutral" type="subdued">of {pa.checkoutCompleted ?? 0} checkouts (30d)</s-text>
+                  <s-text tone="neutral" color="subdued">of {pa.checkoutCompleted ?? 0} checkouts (30d)</s-text>
                 </s-stack>
               </s-box>
 
-              <s-box padding="base" borderradius="base">
+              <s-box padding="base" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-text tone="neutral" type="subdued">Assisted Revenue</s-text>
+                  <s-text tone="neutral" color="subdued">Assisted Revenue</s-text>
                   <s-heading>${(pa.assistedRevenue ?? 0).toFixed(2)}</s-heading>
-                  <s-text tone="neutral" type="subdued">Orders with store credit applied</s-text>
+                  <s-text tone="neutral" color="subdued">Orders with store credit applied</s-text>
                 </s-stack>
               </s-box>
 
-              <s-box padding="base" borderradius="base">
+              <s-box padding="base" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-text tone="neutral" type="subdued">AOV Lift (Assisted)</s-text>
+                  <s-text tone="neutral" color="subdued">AOV Lift (Assisted)</s-text>
                   <s-heading>
-                    {pa.liftPercent == null ? "—" : `${pa.liftPercent > 0 ? "+" : ""}${pa.liftPercent}%`}
+                    {pa.liftPercent == null ? "Ã¢â‚¬â€" : `${pa.liftPercent > 0 ? "+" : ""}${pa.liftPercent}%`}
                   </s-heading>
-                  <s-text tone="neutral" type="subdued">vs non-credit checkouts</s-text>
+                  <s-text tone="neutral" color="subdued">vs non-credit checkouts</s-text>
                 </s-stack>
               </s-box>
 
-              <s-box padding="base" borderradius="base">
+              <s-box padding="base" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-text tone="neutral" type="subdued">Events Processed</s-text>
+                  <s-text tone="neutral" color="subdued">Events Processed</s-text>
                   <s-heading>{pa.totalEvents ?? 0}</s-heading>
-                  <s-text tone="neutral" type="subdued">Last 30 days telemetry</s-text>
+                  <s-text tone="neutral" color="subdued">Last 30 days telemetry</s-text>
                 </s-stack>
               </s-box>
             </s-grid>
@@ -340,7 +340,8 @@ export default function AnalyticsPage() {
       {/* Disbursal Breakdown Table */}
       <s-section heading="Disbursal Breakdown by Channel & Campaign">
         <s-box padding="base">
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+          <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", minWidth: "640px", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
                 <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Program Mechanism</th>
@@ -371,6 +372,7 @@ export default function AnalyticsPage() {
               })}
             </tbody>
           </table>
+          </div>
         </s-box>
       </s-section>
     </s-page>

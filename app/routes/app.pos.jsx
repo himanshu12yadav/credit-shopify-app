@@ -45,7 +45,7 @@ export default function PosPage() {
   const handleApplyToCart = () => {
     setCartApplied(true);
     setCartTotal((prev) => Math.max(0, prev - selectedCustomer.balance));
-    setPosFeedback(`✓ Successfully applied $${selectedCustomer.balance.toFixed(2)} store credit to POS register cart!`);
+    setPosFeedback(`Ã¢Å“â€œ Successfully applied $${selectedCustomer.balance.toFixed(2)} store credit to POS register cart!`);
     setTimeout(() => setPosFeedback(""), 4000);
   };
 
@@ -54,7 +54,7 @@ export default function PosPage() {
       ...prev,
       balance: prev.balance + 10.0,
     }));
-    setPosFeedback("✓ Issued $10.00 in-store goodwill credit to customer account!");
+    setPosFeedback("Ã¢Å“â€œ Issued $10.00 in-store goodwill credit to customer account!");
     setTimeout(() => setPosFeedback(""), 4000);
   };
 
@@ -77,34 +77,34 @@ export default function PosPage() {
 
         {/* Executive POS Telemetry */}
         <s-section heading="In-Store POS Performance">
-          <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
-            <s-box padding="base" background="subdued" borderradius="base">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">ACTIVE POS TERMINALS</s-text>
+                <s-text tone="neutral" color="subdued">ACTIVE POS TERMINALS</s-text>
                 <s-heading>{stats.activeRegisters} Registers</s-heading>
                 <s-badge tone="success">Smart Grid Active</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">IN-STORE REDEMPTIONS</s-text>
+                <s-text tone="neutral" color="subdued">IN-STORE REDEMPTIONS</s-text>
                 <s-heading>{stats.inStoreRedemptions}</s-heading>
-                <s-text tone="neutral" type="subdued">Used at physical registers</s-text>
+                <s-text tone="neutral" color="subdued">Used at physical registers</s-text>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">WALLET PASS SCANS</s-text>
+                <s-text tone="neutral" color="subdued">WALLET PASS SCANS</s-text>
                 <s-heading>{stats.walletScans}</s-heading>
                 <s-badge tone="info">Apple & Google Wallet</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">OMNI-CHANNEL RETENTION</s-text>
+                <s-text tone="neutral" color="subdued">OMNI-CHANNEL RETENTION</s-text>
                 <s-heading>{stats.omniChannelRetention}</s-heading>
                 <s-badge tone="success">Online + In-Store</s-badge>
               </s-stack>
@@ -114,7 +114,7 @@ export default function PosPage() {
 
         {/* Interactive POS Terminal Simulator */}
         <s-section heading="Interactive POS Register Device Simulator">
-          <s-grid gridtemplatecolumns="1fr 400px" gap="large">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))" gap="large">
             {/* Left: iPad / POS Terminal Hardware Frame */}
             <div
               style={{
@@ -131,7 +131,7 @@ export default function PosPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: "#94a3b8", fontSize: "12px", borderBottom: "1px solid #334155", paddingBottom: "12px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
-                  <strong style={{ color: "#f8fafc" }}>Shopify POS Terminal — Register #1</strong>
+                  <strong style={{ color: "#f8fafc" }}>Shopify POS Terminal Ã¢â‚¬â€ Register #1</strong>
                 </div>
                 <div>Location: Main Retail Store</div>
               </div>
@@ -171,7 +171,7 @@ export default function PosPage() {
                     <div style={{ fontSize: "12px", color: "#64748b" }}>{selectedCustomer.email}</div>
                   </div>
                   <span style={{ background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a", padding: "4px 10px", borderRadius: "9999px", fontSize: "11px", fontWeight: 800 }}>
-                    🥇 {selectedCustomer.tier}
+                    Ã°Å¸Â¥â€¡ {selectedCustomer.tier}
                   </span>
                 </div>
 
@@ -188,49 +188,24 @@ export default function PosPage() {
                       Directly redeemable against this register sale
                     </div>
                   </div>
-                  <div style={{ fontSize: "34px" }}>💳</div>
+                  <div style={{ fontSize: "34px" }}>Ã°Å¸â€™Â³</div>
                 </div>
 
                 {/* Cashier Register Action Buttons */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <button
-                    type="button"
+                  <s-button
+                    variant="primary"
                     onClick={handleApplyToCart}
                     disabled={cartApplied || selectedCustomer.balance <= 0}
-                    style={{
-                      width: "100%",
-                      padding: "14px",
-                      borderRadius: "10px",
-                      border: "none",
-                      background: cartApplied ? "#94a3b8" : "#047857",
-                      color: "#ffffff",
-                      fontSize: "14px",
-                      fontWeight: 800,
-                      cursor: cartApplied ? "not-allowed" : "pointer",
-                      boxShadow: cartApplied ? "none" : "0 4px 12px rgba(4, 120, 87, 0.3)",
-                      transition: "all 0.2s",
-                    }}
                   >
-                    {cartApplied ? "✓ $45.00 Applied to POS Cart" : `⚡ Apply $${selectedCustomer.balance.toFixed(2)} to POS Cart`}
-                  </button>
+                    {cartApplied ? "Ã¢Å“â€œ $45.00 Applied to POS Cart" : `Ã¢Å¡Â¡ Apply $${selectedCustomer.balance.toFixed(2)} to POS Cart`}
+                  </s-button>
 
-                  <button
-                    type="button"
+                  <s-button
                     onClick={handleIssueGoodwill}
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      borderRadius: "10px",
-                      border: "1px solid #cbd5e1",
-                      background: "#f8fafc",
-                      color: "#0f172a",
-                      fontSize: "13px",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                    }}
                   >
                     + Issue $10.00 Retail Goodwill Credit
-                  </button>
+                  </s-button>
                 </div>
 
                 {posFeedback && (
@@ -242,13 +217,12 @@ export default function PosPage() {
 
               {/* Reset simulator control */}
               <div style={{ textAlign: "center" }}>
-                <button
-                  type="button"
+                <s-button
+                  variant="tertiary"
                   onClick={handleResetPos}
-                  style={{ background: "none", border: "none", color: "#94a3b8", fontSize: "11px", cursor: "pointer", textDecoration: "underline" }}
                 >
-                  🔄 Reset Terminal Simulator
-                </button>
+                  Ã°Å¸â€â€ž Reset Terminal Simulator
+                </s-button>
               </div>
             </div>
 
@@ -302,7 +276,7 @@ export default function PosPage() {
                   </div>
                   <div style={{ display: "flex", gap: "8px" }}>
                     <span style={{ fontWeight: 800, color: "#047857" }}>3.</span>
-                    <span>Tap <strong>"Apply Credit to Cart"</strong> — discount immediately updates register total.</span>
+                    <span>Tap <strong>"Apply Credit to Cart"</strong> Ã¢â‚¬â€ discount immediately updates register total.</span>
                   </div>
                 </div>
               </div>

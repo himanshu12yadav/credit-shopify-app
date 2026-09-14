@@ -23,7 +23,7 @@ export const action = async ({ request }) => {
     await prisma.campaign.create({
       data: {
         shop,
-        name: "🤖 AI Copilot: VIP Inactive Win-Back ($15 Drop)",
+        name: "Ã°Å¸Â¤â€“ AI Copilot: VIP Inactive Win-Back ($15 Drop)",
         type: "WIN_BACK",
         bonusFixedAmount: 15.0,
         startDate: new Date(),
@@ -42,7 +42,7 @@ export const action = async ({ request }) => {
     await prisma.creditRule.create({
       data: {
         shop,
-        name: "🤖 AI Copilot: $10 Bonus on Orders $85+",
+        name: "Ã°Å¸Â¤â€“ AI Copilot: $10 Bonus on Orders $85+",
         type: "TIERED_SPEND",
         value: 10.0,
         minOrderValue: 85.0,
@@ -82,7 +82,7 @@ export default function RetentionCopilot() {
   };
 
   return (
-    <s-page heading="🤖 AI Merchant Retention Copilot">
+    <s-page heading="Ã°Å¸Â¤â€“ AI Merchant Retention Copilot">
       <s-banner tone="info" heading="Algorithmic Revenue & Retention Intelligence">
         <s-paragraph>
           Your AI Copilot continuously audits customer repurchase velocity, cart abandonment, and expiring balances to suggest high-ROI automated campaigns.
@@ -91,28 +91,28 @@ export default function RetentionCopilot() {
 
       {/* KPI Section */}
       <s-section heading="Retention Audit & Recoverable Revenue">
-        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
-          <s-box padding="base" background="subdued" borderradius="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">DORMANT VIP SPENDERS</s-text>
+              <s-text tone="neutral" color="subdued">DORMANT VIP SPENDERS</s-text>
               <s-heading>{dormantCount} Customers</s-heading>
-              <s-badge tone="critical">⚠️ Inactive 45+ Days</s-badge>
+              <s-badge tone="critical">Ã¢Å¡Â Ã¯Â¸Â Inactive 45+ Days</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">EXPIRING CREDIT POOL</s-text>
+              <s-text tone="neutral" color="subdued">EXPIRING CREDIT POOL</s-text>
               <s-heading>${expiringPool} USD</s-heading>
-              <s-badge tone="warning">⏳ 14-Day Deadline</s-badge>
+              <s-badge tone="warning">Ã¢ÂÂ³ 14-Day Deadline</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">EST. RECOVERABLE REVENUE</s-text>
+              <s-text tone="neutral" color="subdued">EST. RECOVERABLE REVENUE</s-text>
               <s-heading>+$14,080 USD</s-heading>
-              <s-badge tone="success">🚀 Recommended Actions</s-badge>
+              <s-badge tone="success">Ã°Å¸Å¡â‚¬ Recommended Actions</s-badge>
             </s-stack>
           </s-box>
         </s-grid>
@@ -131,10 +131,10 @@ export default function RetentionCopilot() {
             const isExecuted = executedRecs[rec.id];
 
             return (
-              <s-box key={rec.id} padding="base" background="subdued" borderradius="base">
+              <s-box key={rec.id} padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                    <s-stack direction="inline" gap="small" alignitems="center">
+                  <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                    <s-stack direction="inline" gap="small" alignItems="center">
                       <s-badge tone={rec.category === "WIN_BACK" ? "warning" : rec.category === "AOV_BOOST" ? "success" : "info"}>
                         {rec.category.replace("_", " ")}
                       </s-badge>
@@ -150,8 +150,8 @@ export default function RetentionCopilot() {
                     {rec.insight}
                   </s-paragraph>
 
-                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                    <s-text tone="neutral" type="subdued">
+                  <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                    <s-text tone="neutral" color="subdued">
                       Target Audience: <strong>{rec.targetTier}</strong>
                     </s-text>
 
@@ -160,7 +160,7 @@ export default function RetentionCopilot() {
                       disabled={isExecuted}
                       onClick={() => handleExecute(rec)}
                     >
-                      {isExecuted ? "✓ Action Launched" : `⚡ ${rec.actionLabel}`}
+                      {isExecuted ? "Ã¢Å“â€œ Action Launched" : `Ã¢Å¡Â¡ ${rec.actionLabel}`}
                     </s-button>
                   </s-stack>
                 </s-stack>

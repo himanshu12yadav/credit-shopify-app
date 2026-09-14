@@ -42,7 +42,7 @@ export default function ScratchCardStudio() {
           <s-stack direction="block" gap="base">
             <s-section heading="Prize probability distribution">
               <s-stack direction="block" gap="base">
-                <s-grid gridTemplateColumns="1fr 1fr" gap="base">
+                <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                   {prizes.map(({ amount, value, setValue }) => <s-number-field key={amount} label={`${amount} prize probability (%)`} min={0} max={100} value={value} onChange={(event) => setValue(event.currentTarget.value)} />)}
                 </s-grid>
                 <s-text tone="neutral" color="subdued">The four probabilities must total exactly 100% before settings can be saved.</s-text>

@@ -196,7 +196,7 @@ export default function CustomersPage() {
       <s-section padding="none">
         <s-box padding="base">
           <s-stack direction="block" gap="base">
-            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
               <s-heading>Store Customers ({customers.length})</s-heading>
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 {query && (
@@ -217,7 +217,7 @@ export default function CustomersPage() {
                     textDecoration: "none",
                   }}
                 >
-                  🎧 1-Click Appeasements
+                  Ã°Å¸Å½Â§ 1-Click Appeasements
                 </Link>
                 <Link
                   to="/app/migrate"
@@ -234,7 +234,7 @@ export default function CustomersPage() {
                     textDecoration: "none",
                   }}
                 >
-                  📥 Import / Migrate CSV
+                  Ã°Å¸â€œÂ¥ Import / Migrate CSV
                 </Link>
               </div>
             </s-stack>
@@ -286,8 +286,8 @@ export default function CustomersPage() {
                   <s-table-cell>
                     <s-stack direction="block" gap="none">
                       <s-text><strong>{c.displayName}</strong></s-text>
-                      <s-text tone="neutral" type="subdued">
-                        {c.email} {c.phone !== "No phone" ? `• ${c.phone}` : ""}
+                      <s-text tone="neutral" color="subdued">
+                        {c.email} {c.phone !== "No phone" ? `Ã¢â‚¬Â¢ ${c.phone}` : ""}
                       </s-text>
                     </s-stack>
                   </s-table-cell>
@@ -295,7 +295,7 @@ export default function CustomersPage() {
                   <s-table-cell>
                     <s-stack direction="block" gap="none">
                       <s-text>{c.ordersCount} orders</s-text>
-                      <s-text tone="neutral" type="subdued">{c.totalSpent} total</s-text>
+                      <s-text tone="neutral" color="subdued">{c.totalSpent} total</s-text>
                     </s-stack>
                   </s-table-cell>
 
@@ -316,13 +316,13 @@ export default function CustomersPage() {
                       <s-button
                         onClick={() => handleOpenModal(c, "refund_to_credit")}
                       >
-                        Return → Credit
+                        Return Ã¢â€ â€™ Credit
                       </s-button>
                       <s-button
                         variant="tertiary"
                         onClick={() => handleOpenModal(c, "debit_credit")}
                       >
-                        − Deduct Credit
+                        Ã¢Ë†â€™ Deduct Credit
                       </s-button>
                     </div>
                   </s-table-cell>
@@ -366,14 +366,14 @@ export default function CustomersPage() {
                     ? "Convert Refund to Store Credit (+Bonus)"
                     : "Deduct / Revoke Store Credit"}
                 </s-heading>
-                <s-text tone="neutral" type="subdued">
-                  Target: <strong>{selectedCustomer.displayName}</strong> ({selectedCustomer.email}) • Current Balance: <strong>{selectedCustomer.creditBalance}</strong>
+                <s-text tone="neutral" color="subdued">
+                  Target: <strong>{selectedCustomer.displayName}</strong> ({selectedCustomer.email}) Ã¢â‚¬Â¢ Current Balance: <strong>{selectedCustomer.creditBalance}</strong>
                 </s-text>
               </s-stack>
 
               <form onSubmit={handleSubmitAction}>
                 <s-stack direction="block" gap="base">
-                  <s-grid gridtemplatecolumns="2fr 1fr" gap="base">
+                  <s-grid gridTemplateColumns="repeat(auto-fit, minmax(260px, 1fr))" gap="base">
                     <s-number-field
                       label={
                         actionType === "refund_to_credit"
@@ -386,19 +386,19 @@ export default function CustomersPage() {
                       step="0.01"
                       min="0.01"
                       required
-                      onInput={(e) => setAmount(e.target.value)}
+                      onInput={(e) => setAmount(e.currentTarget.value)}
                     />
                     <s-select
                       label="Currency"
                       value={currency}
-                      onChange={(e) => setCurrency(e.target.value)}
+                      onChange={(e) => setCurrency(e.currentTarget.value)}
                     >
                       <s-option value="USD">USD ($)</s-option>
-                      <s-option value="EUR">EUR (€)</s-option>
-                      <s-option value="GBP">GBP (£)</s-option>
+                      <s-option value="EUR">EUR (Ã¢â€šÂ¬)</s-option>
+                      <s-option value="GBP">GBP (Ã‚Â£)</s-option>
                       <s-option value="CAD">CAD ($)</s-option>
                       <s-option value="AUD">AUD ($)</s-option>
-                      <s-option value="INR">INR (₹)</s-option>
+                      <s-option value="INR">INR (Ã¢â€šÂ¹)</s-option>
                     </s-select>
                   </s-grid>
 
@@ -408,7 +408,7 @@ export default function CustomersPage() {
                         <s-checkbox
                           label={`Add +10% Bonus (+${(parseFloat(amount || "0") * 0.1).toFixed(2)})`}
                           checked={applyBonus}
-                          onChange={(e) => setApplyBonus(e.target.checked)}
+                          onChange={(e) => setApplyBonus(e.currentTarget.checked)}
                         />
                         <s-paragraph tone="neutral">
                           Customer receives ${(parseFloat(amount || "0") * (applyBonus ? 1.1 : 1.0)).toFixed(2)} in store credit.
@@ -429,7 +429,7 @@ export default function CustomersPage() {
                     <s-select
                       label="Expiration Policy"
                       value={expiryDays}
-                      onChange={(e) => setExpiryDays(e.target.value)}
+                      onChange={(e) => setExpiryDays(e.currentTarget.value)}
                     >
                       <s-option value="30">Expires in 30 days</s-option>
                       <s-option value="60">Expires in 60 days</s-option>
@@ -443,7 +443,7 @@ export default function CustomersPage() {
                   <s-text-field
                     label="Reason / Audit Note"
                     value={note}
-                    onInput={(e) => setNote(e.target.value)}
+                    onInput={(e) => setNote(e.currentTarget.value)}
                     placeholder={
                       actionType === "debit_credit"
                         ? "e.g. Issued by mistake, customer agreement..."
@@ -455,11 +455,11 @@ export default function CustomersPage() {
                     <s-checkbox
                       label="Notify customer via Shopify email notification"
                       checked={notify}
-                      onChange={(e) => setNotify(e.target.checked)}
+                      onChange={(e) => setNotify(e.currentTarget.checked)}
                     />
                   )}
 
-                  <s-stack direction="inline" justifycontent="flex-end" gap="small">
+                  <s-stack direction="inline" justifyContent="flex-end" gap="small">
                     <s-button type="button" onClick={handleCloseModal}>Cancel</s-button>
                     <s-button
                       type="submit"

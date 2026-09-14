@@ -124,6 +124,14 @@ export default function TiersPage() {
     );
   };
 
+  const handleCreate = (event) => {
+    event.preventDefault();
+    fetcher.submit(
+      { intent: "create_tier", name, minSpend, cashbackRate, perks, badgeColor },
+      { method: "POST" }
+    );
+  };
+
   const handleDiscard = () => {
     setTiers(initialTiers);
     setIsDirty(false);
@@ -298,29 +306,29 @@ export default function TiersPage() {
                       label="Tier Name"
                       placeholder="e.g. Diamond VIP"
                       value={name}
-                      onInput={(e) => setName(e.target.value)}
+                      onInput={(e) => setName(e.currentTarget.value)}
                       required
                     />
                     <s-number-field
                       label="Lifetime Spend Required ($)"
-                      step="1"
-                      min="0"
+                      step={1}
+                      min={0}
                       value={minSpend}
-                      onInput={(e) => setMinSpend(e.target.value)}
+                      onInput={(e) => setMinSpend(String(e.currentTarget.value))}
                       required
                     />
                     <s-number-field
                       label="Cashback Rate (%)"
-                      step="0.5"
-                      min="0.5"
+                      step={0.5}
+                      min={0.5}
                       value={cashbackRate}
-                      onInput={(e) => setCashbackRate(e.target.value)}
+                      onInput={(e) => setCashbackRate(String(e.currentTarget.value))}
                       required
                     />
                     <s-select
                       label="Badge Color"
                       value={badgeColor}
-                      onChange={(e) => setBadgeColor(e.target.value)}
+                      onChange={(e) => setBadgeColor(e.currentTarget.value)}
                     >
                       <s-option value="#4f46e5">Indigo (#4f46e5)</s-option>
                       <s-option value="#d97706">Gold (#d97706)</s-option>
@@ -335,7 +343,7 @@ export default function TiersPage() {
                     label="Perks & Benefits Description"
                     placeholder="e.g. 20% cashback on all orders, secret seasonal sales, dedicated VIP concierge"
                     value={perks}
-                    onInput={(e) => setPerks(e.target.value)}
+                    onInput={(e) => setPerks(e.currentTarget.value)}
                   />
 
                   <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "4px" }}>
@@ -387,46 +395,24 @@ export default function TiersPage() {
                     <s-table-cell>
                       <div style={{ padding: "10px 8px", display: "flex", alignItems: "center", gap: "4px" }}>
                         <span style={{ color: "#64748b", fontWeight: 700, fontSize: "13px" }}>$</span>
-                        <input
-                          type="number"
-                          step="10"
-                          min="0"
-                          value={t.minSpend}
-                          onChange={(e) => handleTierChange(t.id, "minSpend", e.target.value)}
-                          style={{
-                            width: "72px",
-                            padding: "5px 6px",
-                            borderRadius: "6px",
-                            border: "1px solid #cbd5e1",
-                            fontSize: "13px",
-                            fontWeight: 600,
-                            color: "#0f172a",
-                            backgroundColor: "#ffffff",
-                            outline: "none",
-                          }}
+                        <s-number-field
+                          label="Minimum spend"
+                          step={10}
+                          min={0}
+                          value={String(t.minSpend)}
+                          onChange={(e) => handleTierChange(t.id, "minSpend", e.currentTarget.value)}
                         />
                       </div>
                     </s-table-cell>
                     <s-table-cell>
                       <div style={{ padding: "10px 8px", display: "flex", alignItems: "center", gap: "4px" }}>
-                        <input
-                          type="number"
-                          step="0.5"
-                          min="0.1"
-                          max="100"
-                          value={t.cashbackRate}
-                          onChange={(e) => handleTierChange(t.id, "cashbackRate", e.target.value)}
-                          style={{
-                            width: "52px",
-                            padding: "5px 6px",
-                            borderRadius: "6px",
-                            border: "1px solid #cbd5e1",
-                            fontSize: "13px",
-                            fontWeight: 600,
-                            color: "#0f172a",
-                            backgroundColor: "#ffffff",
-                            outline: "none",
-                          }}
+                        <s-number-field
+                          label="Cashback rate"
+                          step={0.5}
+                          min={0.1}
+                          max={100}
+                          value={String(t.cashbackRate)}
+                          onChange={(e) => handleTierChange(t.id, "cashbackRate", e.currentTarget.value)}
                         />
                         <span
                           style={{
@@ -445,22 +431,11 @@ export default function TiersPage() {
                     </s-table-cell>
                     <s-table-cell>
                       <div style={{ padding: "10px 16px 10px 8px" }}>
-                        <input
-                          type="text"
+                        <s-text-field
+                          label="Tier perks"
                           value={t.perks || ""}
-                          onChange={(e) => handleTierChange(t.id, "perks", e.target.value)}
+                          onChange={(e) => handleTierChange(t.id, "perks", e.currentTarget.value)}
                           placeholder="e.g. Standard 5% cashback on orders"
-                          style={{
-                            width: "100%",
-                            padding: "5px 8px",
-                            borderRadius: "6px",
-                            border: "1px solid #cbd5e1",
-                            fontSize: "13px",
-                            color: "#334155",
-                            backgroundColor: "#ffffff",
-                            outline: "none",
-                            boxSizing: "border-box",
-                          }}
                         />
                       </div>
                     </s-table-cell>
@@ -485,21 +460,21 @@ export default function TiersPage() {
 
       {/* Shopify Contextual Save Bar for unsaved tier configurations */}
       <SaveBar open={isDirty}>
-        <button variant="primary" onClick={handleSave} loading={isSubmitting ? "" : undefined}>
+        <s-button variant="primary" onClick={handleSave} loading={isSubmitting}>
           Save
-        </button>
-        <button onClick={handleDiscard} disabled={isSubmitting}>
+        </s-button>
+        <s-button onClick={handleDiscard} disabled={isSubmitting}>
           Discard
-        </button>
+        </s-button>
       </SaveBar>
 
       {/* Native App Bridge Modal for clean delete confirmation (no browser alert popup) */}
       <Modal id="delete-tier-modal" open={Boolean(tierToDelete)} onHide={() => setTierToDelete(null)}>
         <TitleBar title={`Delete ${tierToDelete?.name || ""} Tier?`}>
-          <button variant="primary" tone="critical" onClick={confirmDelete}>
+          <s-button variant="primary" tone="critical" onClick={confirmDelete}>
             Delete Tier
-          </button>
-          <button onClick={() => setTierToDelete(null)}>Cancel</button>
+          </s-button>
+          <s-button onClick={() => setTierToDelete(null)}>Cancel</s-button>
         </TitleBar>
         <div style={{ padding: "24px", fontSize: "14px", color: "#374151", lineHeight: "1.6" }}>
           Are you sure you want to delete the <strong>{tierToDelete?.name}</strong> loyalty tier?

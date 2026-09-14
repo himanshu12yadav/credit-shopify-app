@@ -100,28 +100,28 @@ export default function FlowPage() {
 
   const recipes = [
     {
-      title: "⭐ 5-Star Product Review Reward",
+      title: "Ã¢Â­Â 5-Star Product Review Reward",
       app: "Judge.me / Loox / Okendo",
       amount: "$5.00 Credit",
       trigger: "Review Submitted with Rating == 5",
       desc: "Automatically credit customer's account within 60 seconds of leaving a verified 5-star review.",
     },
     {
-      title: "📦 Recharge 3rd Subscription Milestone",
+      title: "Ã°Å¸â€œÂ¦ Recharge 3rd Subscription Milestone",
       app: "Recharge / Bold Subscriptions",
       amount: "$10.00 Credit",
       trigger: "Subscription Order # == 3",
       desc: "Slash subscriber churn by surprising loyal recurring buyers with milestone store credit.",
     },
     {
-      title: "🎂 Birthday Celebration Perk",
+      title: "Ã°Å¸Å½â€š Birthday Celebration Perk",
       app: "Klaviyo / Yotpo Loyalty",
       amount: "$15.00 Credit",
       trigger: "Customer Tag added: 'birthday_perk'",
       desc: "Deliver personalized birthday credit with an automatic 14-day redemption window.",
     },
     {
-      title: "🛒 High-Value Checkout Recovery",
+      title: "Ã°Å¸â€ºâ€™ High-Value Checkout Recovery",
       app: "Shopify Abandoned Checkout",
       amount: "$10.00 Credit",
       trigger: "Cart Value > $150 & Abandoned > 24h",
@@ -176,34 +176,34 @@ export default function FlowPage() {
 
         {/* Executive Metrics Overview */}
         <s-section heading="Flow Integration Telemetry">
-          <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
-            <s-box padding="base" background="subdued" borderradius="base">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">FLOW ACTIONS EXECUTED</s-text>
+                <s-text tone="neutral" color="subdued">FLOW ACTIONS EXECUTED</s-text>
                 <s-heading>{stats.executionCount}</s-heading>
                 <s-badge tone="success">100% Automated</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">AUTOMATED FUNDS GRANTED</s-text>
+                <s-text tone="neutral" color="subdued">AUTOMATED FUNDS GRANTED</s-text>
                 <s-heading>${stats.totalDisbursed}</s-heading>
-                <s-text tone="neutral" type="subdued">Across all flow recipes</s-text>
+                <s-text tone="neutral" color="subdued">Across all flow recipes</s-text>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">ACTIVE WORKFLOWS</s-text>
+                <s-text tone="neutral" color="subdued">ACTIVE WORKFLOWS</s-text>
                 <s-heading>{stats.activeFlows} Connected</s-heading>
                 <s-badge tone="info">No-code triggers</s-badge>
               </s-stack>
             </s-box>
 
-            <s-box padding="base" background="subdued" borderradius="base">
+            <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
-                <s-text tone="neutral" type="subdued">AVG EXECUTION LATENCY</s-text>
+                <s-text tone="neutral" color="subdued">AVG EXECUTION LATENCY</s-text>
                 <s-heading>{stats.avgLatency}</s-heading>
                 <s-badge tone="success">Real-Time GraphQL</s-badge>
               </s-stack>
@@ -213,7 +213,7 @@ export default function FlowPage() {
 
         {/* Popular Flow Recipes Grid */}
         <s-section heading="Ready-to-Use Shopify Flow Recipes">
-          <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(280px, 1fr))" gap="base">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))" gap="base">
             {recipes.map((r, idx) => (
               <div
                 key={idx}
@@ -246,7 +246,7 @@ export default function FlowPage() {
                   </p>
                 </div>
                 <div style={{ background: "#f8fafc", padding: "8px 10px", borderRadius: "6px", fontSize: "11px", color: "#475569" }}>
-                  ⚡ Trigger: <code>{r.trigger}</code>
+                  Ã¢Å¡Â¡ Trigger: <code>{r.trigger}</code>
                 </div>
               </div>
             ))}
@@ -255,14 +255,14 @@ export default function FlowPage() {
 
         {/* Interactive Action Tester */}
         <s-section heading="Test Flow Action Execution">
-          <s-grid gridtemplatecolumns="1fr 380px" gap="large">
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))" gap="large">
             <form onSubmit={handleTestSubmit}>
               <s-stack direction="block" gap="base">
-                <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+                <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                   <s-select
                     label="Target Customer"
                     value={selectedCustomerId}
-                    onChange={(e) => handleSelectCustomer(e.target.value)}
+                    onChange={(e) => handleSelectCustomer(e.currentTarget.value)}
                   >
                     <s-option value="">-- Select a Customer --</s-option>
                     {customers.map((c) => (
@@ -276,15 +276,15 @@ export default function FlowPage() {
                     label="Customer Email"
                     value={customerEmail}
                     required
-                    onInput={(e) => setCustomerEmail(e.target.value)}
+                    onInput={(e) => setCustomerEmail(e.currentTarget.value)}
                   />
                 </s-grid>
 
-                <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+                <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
                   <s-select
                     label="Simulated Flow Trigger"
                     value={testTrigger}
-                    onChange={(e) => setTestTrigger(e.target.value)}
+                    onChange={(e) => setTestTrigger(e.currentTarget.value)}
                   >
                     <s-option value="Judge.me 5-Star Review">Judge.me 5-Star Review</s-option>
                     <s-option value="Recharge Subscription #3">Recharge Subscription Milestone</s-option>
@@ -299,13 +299,13 @@ export default function FlowPage() {
                     step="1"
                     min="1"
                     required
-                    onInput={(e) => setTestAmount(e.target.value)}
+                    onInput={(e) => setTestAmount(e.currentTarget.value)}
                   />
                 </s-grid>
 
-                <s-stack direction="inline" justifycontent="flex-end">
+                <s-stack direction="inline" justifyContent="flex-end">
                   <s-button type="submit" variant="primary">
-                    🚀 Run Test Flow Execution
+                    Ã°Å¸Å¡â‚¬ Run Test Flow Execution
                   </s-button>
                 </s-stack>
               </s-stack>
@@ -344,7 +344,7 @@ export default function FlowPage() {
         {/* Flow Execution Ledger Table */}
         <s-section padding="none">
           <s-box padding="base">
-            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
               <s-heading>Shopify Flow Execution Logs ({flowEntries.length})</s-heading>
               <s-badge tone="info">Source: FLOW_ACTION</s-badge>
             </s-stack>
@@ -371,7 +371,7 @@ export default function FlowPage() {
                     <s-table-cell>
                       <s-stack direction="block" gap="none">
                         <s-text><strong>{e.customerName || "Customer"}</strong></s-text>
-                        <s-text tone="neutral" type="subdued">{e.customerEmail}</s-text>
+                        <s-text tone="neutral" color="subdued">{e.customerEmail}</s-text>
                       </s-stack>
                     </s-table-cell>
 
@@ -396,7 +396,7 @@ export default function FlowPage() {
                     </s-table-cell>
 
                     <s-table-cell>
-                      <s-badge tone="success">✓ DISBURSED</s-badge>
+                      <s-badge tone="success">Ã¢Å“â€œ DISBURSED</s-badge>
                     </s-table-cell>
                   </s-table-row>
                 ))}

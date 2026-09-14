@@ -49,7 +49,7 @@ export const action = async ({ request }) => {
         currency: "USD",
         action: "CREDIT",
         source: "BIRTHDAY_REWARD",
-        note: `🎂 Happy Birthday! $${amount.toFixed(2)} Birthday VIP Credit (14-day expiry)`,
+        note: `Ã°Å¸Å½â€š Happy Birthday! $${amount.toFixed(2)} Birthday VIP Credit (14-day expiry)`,
         expiresAt,
         status: "COMPLETED",
       },
@@ -87,12 +87,12 @@ export default function BirthdayStudio() {
   };
 
   return (
-    <s-page heading="🎂 Automated Birthday Rewards Engine">
+    <s-page heading="Ã°Å¸Å½â€š Automated Birthday Rewards Engine">
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save Birthday Rules
       </s-button>
       <s-button slot="secondary-action" onClick={handleSimulate}>
-        ⚡ Simulate Birthday Payout (${amount})
+        Ã¢Å¡Â¡ Simulate Birthday Payout (${amount})
       </s-button>
 
       <s-banner tone="info" heading="Automated Birthday Store Credit Delivery">
@@ -103,34 +103,34 @@ export default function BirthdayStudio() {
 
       {/* KPI Section */}
       <s-section heading="Birthday Program Analytics">
-        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
-          <s-box padding="base" background="subdued" borderradius="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">BIRTHDAYS CELEBRATED</s-text>
+              <s-text tone="neutral" color="subdued">BIRTHDAYS CELEBRATED</s-text>
               <s-heading>{totalCount.toLocaleString()}</s-heading>
               <s-badge tone="success">+48.2% Redemption Rate</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">TOTAL BIRTHDAY CREDITS</s-text>
+              <s-text tone="neutral" color="subdued">TOTAL BIRTHDAY CREDITS</s-text>
               <s-heading>${totalAwarded} USD</s-heading>
               <s-badge tone="info">14-Day Urgent Window</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">AVERAGE AOV LIFT</s-text>
+              <s-text tone="neutral" color="subdued">AVERAGE AOV LIFT</s-text>
               <s-heading>+38.5%</s-heading>
               <s-badge tone="success">Shoppers treat as a treat</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">ANNUAL REPEAT RETENTION</s-text>
+              <s-text tone="neutral" color="subdued">ANNUAL REPEAT RETENTION</s-text>
               <s-heading>82.4%</s-heading>
               <s-badge tone="success">Repeat Shoppers</s-badge>
             </s-stack>
@@ -142,18 +142,18 @@ export default function BirthdayStudio() {
       <s-section heading="Birthday Automation Rules">
         <form onSubmit={handleSave}>
           <s-stack direction="block" gap="base">
-            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
               <s-paragraph tone="neutral">
                 Set the store credit reward amount and redemption deadline. The daily cron job executes at 09:00 UTC.
               </s-paragraph>
-              <s-badge tone="success">⏰ Daily Automated Cron Active</s-badge>
+              <s-badge tone="success">Ã¢ÂÂ° Daily Automated Cron Active</s-badge>
             </s-stack>
 
-            <s-grid gridtemplatecolumns="1fr 1fr" gap="base">
+            <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
               <s-select
                 label="Gift Credit Amount ($)"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => setAmount(e.currentTarget.value)}
               >
                 <s-option value="5.00">$5.00 Welcome Birthday Perk</s-option>
                 <s-option value="10.00">$10.00 Standard Birthday Perk (Popular)</s-option>
@@ -165,7 +165,7 @@ export default function BirthdayStudio() {
               <s-select
                 label="Urgency Expiry Window"
                 value={expiry}
-                onChange={(e) => setExpiry(e.target.value)}
+                onChange={(e) => setExpiry(e.currentTarget.value)}
               >
                 <s-option value="7">7 Days (High Urgency Conversion)</s-option>
                 <s-option value="14">14 Days (Recommended Balance)</s-option>
@@ -180,7 +180,7 @@ export default function BirthdayStudio() {
               </s-banner>
             )}
 
-            <s-stack direction="inline" justifycontent="flex-start">
+            <s-stack direction="inline" justifyContent="flex-start">
               <s-button type="submit" variant="primary">
                 Save Birthday Rules
               </s-button>
@@ -192,8 +192,8 @@ export default function BirthdayStudio() {
       {/* Recent Distributions Table */}
       <s-section heading="Recent Birthday Gift Distributions">
         {birthdayRewards.length === 0 ? (
-          <s-box padding="base" background="subdued" borderradius="base">
-            <s-stack direction="block" gap="small" alignitems="center">
+          <s-box padding="base" background="subdued" borderRadius="base">
+            <s-stack direction="block" gap="small" alignItems="center">
               <s-heading>No birthday rewards distributed yet</s-heading>
               <s-paragraph tone="neutral">
                 Click "Simulate Birthday Payout" above to test the automated reward delivery and customer account balance update!
@@ -202,7 +202,8 @@ export default function BirthdayStudio() {
           </s-box>
         ) : (
           <s-box padding="base">
-            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+            <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", minWidth: "640px", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
                   <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Celebrant</th>
@@ -218,7 +219,7 @@ export default function BirthdayStudio() {
                     <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>
                       {b.customerName || "Customer Celebrant"}
                     </td>
-                    <td style={{ padding: "12px 14px", color: "#334155" }}>{b.customerEmail || "—"}</td>
+                    <td style={{ padding: "12px 14px", color: "#334155" }}>{b.customerEmail || "Ã¢â‚¬â€"}</td>
                     <td style={{ padding: "12px 14px" }}>
                       <s-badge tone="success">+${b.amount.toFixed(2)} USD</s-badge>
                     </td>
@@ -232,6 +233,7 @@ export default function BirthdayStudio() {
                 ))}
               </tbody>
             </table>
+            </div>
           </s-box>
         )}
       </s-section>

@@ -49,7 +49,7 @@ export const action = async ({ request }) => {
         currency: "USD",
         action: "CREDIT",
         source: "SUBSCRIPTION_REWARD",
-        note: `🔁 Subscription Milestone Award: Order #${milestoneNumber} Renewal Perk`,
+        note: `Ã°Å¸â€Â Subscription Milestone Award: Order #${milestoneNumber} Renewal Perk`,
         status: "COMPLETED",
       },
     });
@@ -83,7 +83,7 @@ export default function SubscriptionLoyalty() {
   };
 
   return (
-    <s-page heading="🔁 Subscription Loyalty Perks & Milestone Engine">
+    <s-page heading="Ã°Å¸â€Â Subscription Loyalty Perks & Milestone Engine">
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save Subscription Rules
       </s-button>
@@ -96,26 +96,26 @@ export default function SubscriptionLoyalty() {
 
       {/* KPI Section */}
       <s-section heading="Subscription Loyalty Performance">
-        <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
-          <s-box padding="base" background="subdued" borderradius="base">
+        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">SUBSCRIBERS REWARDED</s-text>
+              <s-text tone="neutral" color="subdued">SUBSCRIBERS REWARDED</s-text>
               <s-heading>{totalRewardsGiven.toLocaleString()}</s-heading>
               <s-badge tone="success">Retention +34%</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">TOTAL MILESTONE CREDIT</s-text>
+              <s-text tone="neutral" color="subdued">TOTAL MILESTONE CREDIT</s-text>
               <s-heading>${totalCreditAwarded} USD</s-heading>
               <s-badge tone="info">Reinvested in Add-ons</s-badge>
             </s-stack>
           </s-box>
 
-          <s-box padding="base" background="subdued" borderradius="base">
+          <s-box padding="base" background="subdued" borderRadius="base">
             <s-stack direction="block" gap="small">
-              <s-text tone="neutral" type="subdued">AVERAGE CHURN REDUCTION</s-text>
+              <s-text tone="neutral" color="subdued">AVERAGE CHURN REDUCTION</s-text>
               <s-heading>-42.5%</s-heading>
               <s-badge tone="success">At 3rd &amp; 6th renewals</s-badge>
             </s-stack>
@@ -127,20 +127,20 @@ export default function SubscriptionLoyalty() {
       <s-section heading="Recurring Milestone Rewards">
         <form onSubmit={handleSave}>
           <s-stack direction="block" gap="base">
-            <s-stack direction="inline" justifycontent="space-between" alignitems="center">
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
               <s-paragraph tone="neutral">
                 Set store credit reward amounts unlocked at each subscription renewal cycle.
               </s-paragraph>
-              <s-badge tone="success">⚡ Webhook Automated</s-badge>
+              <s-badge tone="success">Ã¢Å¡Â¡ Webhook Automated</s-badge>
             </s-stack>
 
-            <s-grid gridtemplatecolumns="repeat(auto-fit, minmax(240px, 1fr))" gap="base">
-              <s-box padding="base" background="subdued" borderradius="base">
+            <s-grid gridTemplateColumns="repeat(auto-fit, minmax(240px, 1fr))" gap="base">
+              <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                    <s-heading>🥉 3rd Renewal Order</s-heading>
+                  <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                    <s-heading>Ã°Å¸Â¥â€° 3rd Renewal Order</s-heading>
                     <s-button size="slim" onClick={() => handleSimulate("3")}>
-                      ⚡ Simulate
+                      Ã¢Å¡Â¡ Simulate
                     </s-button>
                   </s-stack>
                   <s-number-field
@@ -149,17 +149,17 @@ export default function SubscriptionLoyalty() {
                     step="1"
                     min="0"
                     value={m3}
-                    onInput={(e) => setM3(e.target.value)}
+                    onInput={(e) => setM3(e.currentTarget.value)}
                   />
                 </s-stack>
               </s-box>
 
-              <s-box padding="base" background="subdued" borderradius="base">
+              <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                    <s-heading>🥈 6th Renewal Order</s-heading>
+                  <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                    <s-heading>Ã°Å¸Â¥Ë† 6th Renewal Order</s-heading>
                     <s-button size="slim" onClick={() => handleSimulate("6")}>
-                      ⚡ Simulate
+                      Ã¢Å¡Â¡ Simulate
                     </s-button>
                   </s-stack>
                   <s-number-field
@@ -168,17 +168,17 @@ export default function SubscriptionLoyalty() {
                     step="1"
                     min="0"
                     value={m6}
-                    onInput={(e) => setM6(e.target.value)}
+                    onInput={(e) => setM6(e.currentTarget.value)}
                   />
                 </s-stack>
               </s-box>
 
-              <s-box padding="base" background="subdued" borderradius="base">
+              <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
-                  <s-stack direction="inline" justifycontent="space-between" alignitems="center">
-                    <s-heading>🥇 12th Renewal (1 Year)</s-heading>
+                  <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                    <s-heading>Ã°Å¸Â¥â€¡ 12th Renewal (1 Year)</s-heading>
                     <s-button size="slim" onClick={() => handleSimulate("12")}>
-                      ⚡ Simulate
+                      Ã¢Å¡Â¡ Simulate
                     </s-button>
                   </s-stack>
                   <s-number-field
@@ -187,7 +187,7 @@ export default function SubscriptionLoyalty() {
                     step="1"
                     min="0"
                     value={m12}
-                    onInput={(e) => setM12(e.target.value)}
+                    onInput={(e) => setM12(e.currentTarget.value)}
                   />
                 </s-stack>
               </s-box>
@@ -199,7 +199,7 @@ export default function SubscriptionLoyalty() {
               </s-banner>
             )}
 
-            <s-stack direction="inline" justifycontent="flex-start">
+            <s-stack direction="inline" justifyContent="flex-start">
               <s-button type="submit" variant="primary">
                 Save Subscription Rules
               </s-button>
@@ -211,8 +211,8 @@ export default function SubscriptionLoyalty() {
       {/* Recent Distributions Table */}
       <s-section heading="Recent Milestone Distributions">
         {subscriptionLedger.length === 0 ? (
-          <s-box padding="base" background="subdued" borderradius="base">
-            <s-stack direction="block" gap="small" alignitems="center">
+          <s-box padding="base" background="subdued" borderRadius="base">
+            <s-stack direction="block" gap="small" alignItems="center">
               <s-heading>No subscriber milestones distributed yet</s-heading>
               <s-paragraph tone="neutral">
                 Milestones trigger automatically upon subscription order creation or by clicking the simulation buttons above!
@@ -221,7 +221,8 @@ export default function SubscriptionLoyalty() {
           </s-box>
         ) : (
           <s-box padding="base">
-            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+            <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", minWidth: "640px", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
                   <th style={{ padding: "12px 14px", fontWeight: 700, color: "#475569" }}>Subscriber</th>
@@ -247,6 +248,7 @@ export default function SubscriptionLoyalty() {
                 ))}
               </tbody>
             </table>
+            </div>
           </s-box>
         )}
       </s-section>

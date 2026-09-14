@@ -185,7 +185,7 @@ export default function LedgerPage() {
 
                   {(actionFilter !== "ALL" || sourceFilter !== "ALL" || searchQuery) && (
                     <s-button variant="tertiary" onClick={() => setSearchParams({})}>
-                      Ã¢Å“â€¢ Reset Filters
+                      ✕ Reset Filters
                     </s-button>
                   )}
                 </div>
@@ -276,7 +276,7 @@ export default function LedgerPage() {
 
                       <s-table-cell>
                         <s-stack direction="block" gap="none">
-                          <s-text>{entry.note || "Ã¢â‚¬â€"}</s-text>
+                          <s-text>{entry.note || "—"}</s-text>
                           {entry.orderId && (
                             <s-text tone="neutral" color="subdued">
                               Order: {entry.orderId.replace("gid://shopify/Order/", "#")}

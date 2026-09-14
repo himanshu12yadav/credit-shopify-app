@@ -45,7 +45,7 @@ export default function PosPage() {
   const handleApplyToCart = () => {
     setCartApplied(true);
     setCartTotal((prev) => Math.max(0, prev - selectedCustomer.balance));
-    setPosFeedback(`Ã¢Å“â€œ Successfully applied $${selectedCustomer.balance.toFixed(2)} store credit to POS register cart!`);
+    setPosFeedback(`✓ Successfully applied $${selectedCustomer.balance.toFixed(2)} store credit to POS register cart!`);
     setTimeout(() => setPosFeedback(""), 4000);
   };
 
@@ -54,7 +54,7 @@ export default function PosPage() {
       ...prev,
       balance: prev.balance + 10.0,
     }));
-    setPosFeedback("Ã¢Å“â€œ Issued $10.00 in-store goodwill credit to customer account!");
+    setPosFeedback("✓ Issued $10.00 in-store goodwill credit to customer account!");
     setTimeout(() => setPosFeedback(""), 4000);
   };
 
@@ -131,7 +131,7 @@ export default function PosPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: "#94a3b8", fontSize: "12px", borderBottom: "1px solid #334155", paddingBottom: "12px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
-                  <strong style={{ color: "#f8fafc" }}>Shopify POS Terminal Ã¢â‚¬â€ Register #1</strong>
+                  <strong style={{ color: "#f8fafc" }}>Shopify POS Terminal — Register #1</strong>
                 </div>
                 <div>Location: Main Retail Store</div>
               </div>
@@ -171,7 +171,7 @@ export default function PosPage() {
                     <div style={{ fontSize: "12px", color: "#64748b" }}>{selectedCustomer.email}</div>
                   </div>
                   <span style={{ background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a", padding: "4px 10px", borderRadius: "9999px", fontSize: "11px", fontWeight: 800 }}>
-                    Ã°Å¸Â¥â€¡ {selectedCustomer.tier}
+                    🥇 {selectedCustomer.tier}
                   </span>
                 </div>
 
@@ -188,7 +188,7 @@ export default function PosPage() {
                       Directly redeemable against this register sale
                     </div>
                   </div>
-                  <div style={{ fontSize: "34px" }}>Ã°Å¸â€™Â³</div>
+                  <div style={{ fontSize: "34px" }}>💳</div>
                 </div>
 
                 {/* Cashier Register Action Buttons */}
@@ -198,7 +198,7 @@ export default function PosPage() {
                     onClick={handleApplyToCart}
                     disabled={cartApplied || selectedCustomer.balance <= 0}
                   >
-                    {cartApplied ? "Ã¢Å“â€œ $45.00 Applied to POS Cart" : `Ã¢Å¡Â¡ Apply $${selectedCustomer.balance.toFixed(2)} to POS Cart`}
+                    {cartApplied ? "✓ $45.00 Applied to POS Cart" : `⚡ Apply $${selectedCustomer.balance.toFixed(2)} to POS Cart`}
                   </s-button>
 
                   <s-button
@@ -221,7 +221,7 @@ export default function PosPage() {
                   variant="tertiary"
                   onClick={handleResetPos}
                 >
-                  Ã°Å¸â€â€ž Reset Terminal Simulator
+                  🔄 Reset Terminal Simulator
                 </s-button>
               </div>
             </div>
@@ -276,7 +276,7 @@ export default function PosPage() {
                   </div>
                   <div style={{ display: "flex", gap: "8px" }}>
                     <span style={{ fontWeight: 800, color: "#047857" }}>3.</span>
-                    <span>Tap <strong>"Apply Credit to Cart"</strong> Ã¢â‚¬â€ discount immediately updates register total.</span>
+                    <span>Tap <strong>"Apply Credit to Cart"</strong> — discount immediately updates register total.</span>
                   </div>
                 </div>
               </div>

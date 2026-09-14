@@ -49,7 +49,7 @@ export const action = async ({ request }) => {
         currency: "USD",
         action: "CREDIT",
         source: "BIRTHDAY_REWARD",
-        note: `Ã°Å¸Å½â€š Happy Birthday! $${amount.toFixed(2)} Birthday VIP Credit (14-day expiry)`,
+        note: `🎂 Happy Birthday! $${amount.toFixed(2)} Birthday VIP Credit (14-day expiry)`,
         expiresAt,
         status: "COMPLETED",
       },
@@ -87,12 +87,12 @@ export default function BirthdayStudio() {
   };
 
   return (
-    <s-page heading="Ã°Å¸Å½â€š Automated Birthday Rewards Engine">
+    <s-page heading="🎂 Automated Birthday Rewards Engine">
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save Birthday Rules
       </s-button>
       <s-button slot="secondary-action" onClick={handleSimulate}>
-        Ã¢Å¡Â¡ Simulate Birthday Payout (${amount})
+        ⚡ Simulate Birthday Payout (${amount})
       </s-button>
 
       <s-banner tone="info" heading="Automated Birthday Store Credit Delivery">
@@ -146,7 +146,7 @@ export default function BirthdayStudio() {
               <s-paragraph tone="neutral">
                 Set the store credit reward amount and redemption deadline. The daily cron job executes at 09:00 UTC.
               </s-paragraph>
-              <s-badge tone="success">Ã¢ÂÂ° Daily Automated Cron Active</s-badge>
+              <s-badge tone="success">⏰ Daily Automated Cron Active</s-badge>
             </s-stack>
 
             <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
@@ -219,7 +219,7 @@ export default function BirthdayStudio() {
                     <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>
                       {b.customerName || "Customer Celebrant"}
                     </td>
-                    <td style={{ padding: "12px 14px", color: "#334155" }}>{b.customerEmail || "Ã¢â‚¬â€"}</td>
+                    <td style={{ padding: "12px 14px", color: "#334155" }}>{b.customerEmail || "—"}</td>
                     <td style={{ padding: "12px 14px" }}>
                       <s-badge tone="success">+${b.amount.toFixed(2)} USD</s-badge>
                     </td>

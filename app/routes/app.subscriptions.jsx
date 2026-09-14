@@ -49,7 +49,7 @@ export const action = async ({ request }) => {
         currency: "USD",
         action: "CREDIT",
         source: "SUBSCRIPTION_REWARD",
-        note: `Ã°Å¸â€Â Subscription Milestone Award: Order #${milestoneNumber} Renewal Perk`,
+        note: `🔁 Subscription Milestone Award: Order #${milestoneNumber} Renewal Perk`,
         status: "COMPLETED",
       },
     });
@@ -83,7 +83,7 @@ export default function SubscriptionLoyalty() {
   };
 
   return (
-    <s-page heading="Ã°Å¸â€Â Subscription Loyalty Perks & Milestone Engine">
+    <s-page heading="🔁 Subscription Loyalty Perks & Milestone Engine">
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save Subscription Rules
       </s-button>
@@ -131,16 +131,16 @@ export default function SubscriptionLoyalty() {
               <s-paragraph tone="neutral">
                 Set store credit reward amounts unlocked at each subscription renewal cycle.
               </s-paragraph>
-              <s-badge tone="success">Ã¢Å¡Â¡ Webhook Automated</s-badge>
+              <s-badge tone="success">⚡ Webhook Automated</s-badge>
             </s-stack>
 
             <s-grid gridTemplateColumns="repeat(auto-fit, minmax(240px, 1fr))" gap="base">
               <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
                   <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                    <s-heading>Ã°Å¸Â¥â€° 3rd Renewal Order</s-heading>
+                    <s-heading>🥉 3rd Renewal Order</s-heading>
                     <s-button size="slim" onClick={() => handleSimulate("3")}>
-                      Ã¢Å¡Â¡ Simulate
+                      ⚡ Simulate
                     </s-button>
                   </s-stack>
                   <s-number-field
@@ -157,9 +157,9 @@ export default function SubscriptionLoyalty() {
               <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
                   <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                    <s-heading>Ã°Å¸Â¥Ë† 6th Renewal Order</s-heading>
+                    <s-heading>🥈 6th Renewal Order</s-heading>
                     <s-button size="slim" onClick={() => handleSimulate("6")}>
-                      Ã¢Å¡Â¡ Simulate
+                      ⚡ Simulate
                     </s-button>
                   </s-stack>
                   <s-number-field
@@ -176,9 +176,9 @@ export default function SubscriptionLoyalty() {
               <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
                   <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                    <s-heading>Ã°Å¸Â¥â€¡ 12th Renewal (1 Year)</s-heading>
+                    <s-heading>🥇 12th Renewal (1 Year)</s-heading>
                     <s-button size="slim" onClick={() => handleSimulate("12")}>
-                      Ã¢Å¡Â¡ Simulate
+                      ⚡ Simulate
                     </s-button>
                   </s-stack>
                   <s-number-field

@@ -62,7 +62,7 @@ export default function NotificationsPage() {
   const templatesData = {
     cashback: {
       name: "Order Cashback Earned",
-      subject: "You've earned $12.50 in store credit from your recent order! Ã°Å¸Å½â€°",
+      subject: "You've earned $12.50 in store credit from your recent order! 🎉",
       preheader: "Your store credit balance is ready to use on your next purchase.",
       badge: "CASHBACK REWARD",
       headline: "You've Earned Store Credit!",
@@ -72,7 +72,7 @@ export default function NotificationsPage() {
     },
     milestone: {
       name: "Milestone Credit Drop Perk",
-      subject: "A special gift for you: $15.00 VIP store credit has landed! Ã°Å¸Å’Å¸",
+      subject: "A special gift for you: $15.00 VIP store credit has landed! 🌟",
       preheader: "Exclusive VIP loyalty reward just added to your account.",
       badge: "VIP MILESTONE PERK",
       headline: "Surprise! A $15.00 Credit Perk",
@@ -82,17 +82,17 @@ export default function NotificationsPage() {
     },
     expiry: {
       name: "7-Day Expiry Warning",
-      subject: "Reminder: Your $25.00 store credit expires in 7 days Ã¢ÂÂ°",
+      subject: "Reminder: Your $25.00 store credit expires in 7 days ⏰",
       preheader: "Don't leave your balance behind. Use your credit before next Friday.",
       badge: "EXPIRATION ALERT",
       headline: "Don't Lose Your $25.00 Credit",
-      body: "You currently have **$25.00 in store credit** that will expire in 7 days. Your credit can be applied to any product in our store Ã¢â‚¬â€ make sure to use it before it's gone!",
+      body: "You currently have **$25.00 in store credit** that will expire in 7 days. Your credit can be applied to any product in our store — make sure to use it before it's gone!",
       cta: "Spend My $25.00 Before It Expires",
       sms: `Reminder: Your $25.00 store credit at ${settings.brandName} expires in 7 days! Don't let it go to waste: https://${shop}`,
     },
     appeasement: {
       name: "Customer Support Appeasement",
-      subject: "A goodwill store credit of $15.00 has been issued to you Ã°Å¸Â¤Â",
+      subject: "A goodwill store credit of $15.00 has been issued to you 🤝",
       preheader: "We apologize for the inconvenience and appreciate your patience.",
       badge: "GOODWILL COURTESY",
       headline: "We Appreciate Your Patience",
@@ -102,7 +102,7 @@ export default function NotificationsPage() {
     },
     referral: {
       name: "Advocate Referral Bonus",
-      subject: "Ka-ching! Your friend ordered Ã¢â‚¬â€ here is your $10.00 credit Ã°Å¸Å¡â‚¬",
+      subject: "Ka-ching! Your friend ordered — here is your $10.00 credit 🚀",
       preheader: "Your referral was successful. Your $10 reward is ready.",
       badge: "REFERRAL COMMISSION",
       headline: "Your Referral Was a Success!",
@@ -194,13 +194,13 @@ export default function NotificationsPage() {
                 variant={activeChannel === "email" ? "primary" : "secondary"}
                 onClick={() => setActiveChannel("email")}
               >
-                Ã°Å¸â€œÂ§ Email (HTML)
+                📧 Email (HTML)
               </s-button>
               <s-button
                 variant={activeChannel === "sms" ? "primary" : "secondary"}
                 onClick={() => setActiveChannel("sms")}
               >
-                Ã°Å¸â€œÂ± SMS Text Message
+                📱 SMS Text Message
               </s-button>
             </s-stack>
           </s-stack>
@@ -279,10 +279,10 @@ export default function NotificationsPage() {
             >
               <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                 <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
-                  Ã¢â€”Â Responsive Preview ({activeChannel.toUpperCase()})
+                  ● Responsive Preview ({activeChannel.toUpperCase()})
                 </span>
                 <span style={{ fontSize: "11px", color: "#166534", fontWeight: 700 }}>
-                  Ã¢Å“â€œ HTML Verified
+                  ✓ HTML Verified
                 </span>
               </div>
 

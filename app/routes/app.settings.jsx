@@ -109,7 +109,7 @@ export default function SettingsPage() {
               href={`https://admin.shopify.com/store/${storeSlug}/settings/customer_accounts`}
               target="_blank"
             >
-              Open Customer Accounts Settings Ã¢â€ â€”
+              Open Customer Accounts Settings ↗
             </s-button>
           </div>
         </s-banner>
@@ -127,11 +127,11 @@ export default function SettingsPage() {
                   onChange={(e) => setDefaultCurrency(e.currentTarget.value)}
                 >
                   <s-option value="USD">USD ($) - United States Dollar</s-option>
-                  <s-option value="EUR">EUR (Ã¢â€šÂ¬) - Euro</s-option>
-                  <s-option value="GBP">GBP (Ã‚Â£) - British Pound</s-option>
+                  <s-option value="EUR">EUR (€) - Euro</s-option>
+                  <s-option value="GBP">GBP (£) - British Pound</s-option>
                   <s-option value="CAD">CAD ($) - Canadian Dollar</s-option>
                   <s-option value="AUD">AUD ($) - Australian Dollar</s-option>
-                  <s-option value="INR">INR (Ã¢â€šÂ¹) - Indian Rupee</s-option>
+                  <s-option value="INR">INR (₹) - Indian Rupee</s-option>
                 </s-select>
                 <s-text tone="neutral" color="subdued">
                   Store credit accounts in Shopify are currency-specific.
@@ -204,7 +204,7 @@ export default function SettingsPage() {
             <ol style={{ margin: 0, paddingLeft: "20px", lineHeight: "1.6", fontSize: "13px", color: "#334155" }}>
               <li>In the Shopify POS app, ring up items and tap <strong>Add customer</strong> to attach the shopper.</li>
               <li>The customer's available <strong>Store Credit balance</strong> displays directly on their cart card.</li>
-              <li>Tap <strong>Checkout</strong> Ã¢â€ â€™ Under Payment Options, select <strong>Store Credit</strong>.</li>
+              <li>Tap <strong>Checkout</strong> → Under Payment Options, select <strong>Store Credit</strong>.</li>
               <li>If the balance does not cover the full order, POS allows split payments with card/cash.</li>
             </ol>
           </s-stack>

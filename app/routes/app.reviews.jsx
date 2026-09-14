@@ -50,7 +50,7 @@ export const action = async ({ request }) => {
         currency: "USD",
         action: "CREDIT",
         source: "REVIEW_REWARD",
-        note: `Ã¢Â­Â ${label} via Judge.me / Loox`,
+        note: `⭐ ${label} via Judge.me / Loox`,
         status: "COMPLETED",
       },
     });
@@ -92,7 +92,7 @@ export default function ReviewRewardsStudio() {
   };
 
   return (
-    <s-page heading="Ã¢Â­Â Review & UGC Video Reward Bridge">
+    <s-page heading="⭐ Review & UGC Video Reward Bridge">
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save Review Rules
       </s-button>
@@ -140,8 +140,8 @@ export default function ReviewRewardsStudio() {
               <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
                   <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                    <s-heading>Ã°Å¸â€œÂ Text Review</s-heading>
-                    <s-button size="slim" onClick={() => handleSimulate("text")}>Ã¢Å¡Â¡ Simulate</s-button>
+                    <s-heading>📝 Text Review</s-heading>
+                    <s-button size="slim" onClick={() => handleSimulate("text")}>⚡ Simulate</s-button>
                   </s-stack>
                   <s-number-field
                     label="Reward Amount"
@@ -157,8 +157,8 @@ export default function ReviewRewardsStudio() {
               <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
                   <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                    <s-heading>Ã°Å¸â€œÂ¸ Photo UGC Review</s-heading>
-                    <s-button size="slim" onClick={() => handleSimulate("photo")}>Ã¢Å¡Â¡ Simulate</s-button>
+                    <s-heading>📸 Photo UGC Review</s-heading>
+                    <s-button size="slim" onClick={() => handleSimulate("photo")}>⚡ Simulate</s-button>
                   </s-stack>
                   <s-number-field
                     label="Reward Amount"
@@ -174,8 +174,8 @@ export default function ReviewRewardsStudio() {
               <s-box padding="base" background="subdued" borderRadius="base">
                 <s-stack direction="block" gap="small">
                   <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                    <s-heading>Ã°Å¸Å½Â¥ Video UGC Review</s-heading>
-                    <s-button size="slim" onClick={() => handleSimulate("video")}>Ã¢Å¡Â¡ Simulate</s-button>
+                    <s-heading>🎥 Video UGC Review</s-heading>
+                    <s-button size="slim" onClick={() => handleSimulate("video")}>⚡ Simulate</s-button>
                   </s-stack>
                   <s-number-field
                     label="Reward Amount"
@@ -193,9 +193,9 @@ export default function ReviewRewardsStudio() {
             <s-box padding="base" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="small">
                 <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                  <s-text tone="neutral">Ã°Å¸â€â€” Review App Webhook Destination URL:</s-text>
+                  <s-text tone="neutral">🔗 Review App Webhook Destination URL:</s-text>
                   <s-button size="slim" onClick={handleCopy}>
-                    {copied ? "Ã¢Å“â€œ Copied!" : "Ã°Å¸â€œâ€¹ Copy Webhook URL"}
+                    {copied ? "✓ Copied!" : "📋 Copy Webhook URL"}
                   </s-button>
                 </s-stack>
                 <s-text tone="neutral" color="subdued">

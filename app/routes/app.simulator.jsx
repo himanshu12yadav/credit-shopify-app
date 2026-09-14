@@ -179,7 +179,7 @@ export default function SimulatorPage() {
 
               {!result ? (
                 <div style={{ textAlign: "center", padding: "40px 20px", color: "#64748b" }}>
-                  <div style={{ fontSize: "36px", marginBottom: "8px" }}>Ã¢Å¡Â¡</div>
+                  <div style={{ fontSize: "36px", marginBottom: "8px" }}>⚡</div>
                   <div style={{ fontWeight: 600 }}>No Simulation Executed Yet</div>
                   <div style={{ fontSize: "13px", marginTop: "4px" }}>
                     Configure the order parameters on the left and click "Run Order Automation" to test live credit issuance.

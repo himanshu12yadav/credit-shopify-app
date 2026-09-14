@@ -23,7 +23,7 @@ export const action = async ({ request }) => {
     await prisma.campaign.create({
       data: {
         shop,
-        name: "Ã°Å¸Â¤â€“ AI Copilot: VIP Inactive Win-Back ($15 Drop)",
+        name: "🤖 AI Copilot: VIP Inactive Win-Back ($15 Drop)",
         type: "WIN_BACK",
         bonusFixedAmount: 15.0,
         startDate: new Date(),
@@ -42,7 +42,7 @@ export const action = async ({ request }) => {
     await prisma.creditRule.create({
       data: {
         shop,
-        name: "Ã°Å¸Â¤â€“ AI Copilot: $10 Bonus on Orders $85+",
+        name: "🤖 AI Copilot: $10 Bonus on Orders $85+",
         type: "TIERED_SPEND",
         value: 10.0,
         minOrderValue: 85.0,
@@ -82,7 +82,7 @@ export default function RetentionCopilot() {
   };
 
   return (
-    <s-page heading="Ã°Å¸Â¤â€“ AI Merchant Retention Copilot">
+    <s-page heading="🤖 AI Merchant Retention Copilot">
       <s-banner tone="info" heading="Algorithmic Revenue & Retention Intelligence">
         <s-paragraph>
           Your AI Copilot continuously audits customer repurchase velocity, cart abandonment, and expiring balances to suggest high-ROI automated campaigns.
@@ -96,7 +96,7 @@ export default function RetentionCopilot() {
             <s-stack direction="block" gap="small">
               <s-text tone="neutral" color="subdued">DORMANT VIP SPENDERS</s-text>
               <s-heading>{dormantCount} Customers</s-heading>
-              <s-badge tone="critical">Ã¢Å¡Â Ã¯Â¸Â Inactive 45+ Days</s-badge>
+              <s-badge tone="critical">⚠️ Inactive 45+ Days</s-badge>
             </s-stack>
           </s-box>
 
@@ -104,7 +104,7 @@ export default function RetentionCopilot() {
             <s-stack direction="block" gap="small">
               <s-text tone="neutral" color="subdued">EXPIRING CREDIT POOL</s-text>
               <s-heading>${expiringPool} USD</s-heading>
-              <s-badge tone="warning">Ã¢ÂÂ³ 14-Day Deadline</s-badge>
+              <s-badge tone="warning">⏳ 14-Day Deadline</s-badge>
             </s-stack>
           </s-box>
 
@@ -112,7 +112,7 @@ export default function RetentionCopilot() {
             <s-stack direction="block" gap="small">
               <s-text tone="neutral" color="subdued">EST. RECOVERABLE REVENUE</s-text>
               <s-heading>+$14,080 USD</s-heading>
-              <s-badge tone="success">Ã°Å¸Å¡â‚¬ Recommended Actions</s-badge>
+              <s-badge tone="success">🚀 Recommended Actions</s-badge>
             </s-stack>
           </s-box>
         </s-grid>
@@ -160,7 +160,7 @@ export default function RetentionCopilot() {
                       disabled={isExecuted}
                       onClick={() => handleExecute(rec)}
                     >
-                      {isExecuted ? "Ã¢Å“â€œ Action Launched" : `Ã¢Å¡Â¡ ${rec.actionLabel}`}
+                      {isExecuted ? "✓ Action Launched" : `⚡ ${rec.actionLabel}`}
                     </s-button>
                   </s-stack>
                 </s-stack>

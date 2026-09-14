@@ -399,7 +399,7 @@ export default function MigratePage() {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span style={{ fontSize: "16px" }}>Ã°Å¸â€œâ€¹</span>
+                      <span style={{ fontSize: "16px" }}>📋</span>
                       <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>
                         Pre-Flight Summary
                       </h3>
@@ -409,7 +409,7 @@ export default function MigratePage() {
                     </p>
                   </div>
                   <s-badge tone={validationSummary.valid > 0 ? "success" : "neutral"}>
-                    {validationSummary.valid > 0 ? "Ã¢Å“â€œ Ready to Credit" : "Awaiting Data"}
+                    {validationSummary.valid > 0 ? "✓ Ready to Credit" : "Awaiting Data"}
                   </s-badge>
                 </div>
 
@@ -435,7 +435,7 @@ export default function MigratePage() {
                     ${validationSummary.liability.toFixed(2)}
                   </div>
                   <div style={{ fontSize: "11px", color: "#d1fae5", marginTop: "4px", display: "flex", alignItems: "center", gap: "5px" }}>
-                    <span>Ã¢Å“Â¨</span>
+                    <span>✨</span>
                     <span>Direct native Shopify credit ledger allocation</span>
                   </div>
                 </div>
@@ -496,10 +496,10 @@ export default function MigratePage() {
                   }}
                 >
                   <span style={{ fontSize: "12px", color: validationSummary.invalid > 0 ? "#991b1b" : "#64748b", fontWeight: 500 }}>
-                    {validationSummary.invalid > 0 ? "Ã¢Å¡Â Ã¯Â¸Â Invalid or Skipped Rows" : "Syntax & Email Check"}
+                    {validationSummary.invalid > 0 ? "⚠️ Invalid or Skipped Rows" : "Syntax & Email Check"}
                   </span>
                   <s-badge tone={validationSummary.invalid > 0 ? "critical" : "success"}>
-                    {validationSummary.invalid > 0 ? `${validationSummary.invalid} Errors` : "Ã¢Å“â€œ Clean"}
+                    {validationSummary.invalid > 0 ? `${validationSummary.invalid} Errors` : "✓ Clean"}
                   </s-badge>
                 </div>
 
@@ -518,11 +518,11 @@ export default function MigratePage() {
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>Ã°Å¸â€ºÂ¡Ã¯Â¸Â</span>
+                    <span>🛡️</span>
                     <span><strong>Shopify Native GraphQL API</strong>: Idempotent mutations</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>Ã¢Å¡Â¡</span>
+                    <span>⚡</span>
                     <span>Customer accounts auto-linked with zero duplicate balances</span>
                   </div>
                 </div>
@@ -542,7 +542,7 @@ export default function MigratePage() {
                   )}
                 </s-button>
                 <div style={{ textAlign: "center", fontSize: "11px", color: "#94a3b8" }}>
-                  Ã°Å¸â€â€™ Instant balance update upon execution
+                  🔒 Instant balance update upon execution
                 </div>
               </div>
             </div>

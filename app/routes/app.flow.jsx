@@ -100,28 +100,28 @@ export default function FlowPage() {
 
   const recipes = [
     {
-      title: "Ã¢Â­Â 5-Star Product Review Reward",
+      title: "⭐ 5-Star Product Review Reward",
       app: "Judge.me / Loox / Okendo",
       amount: "$5.00 Credit",
       trigger: "Review Submitted with Rating == 5",
       desc: "Automatically credit customer's account within 60 seconds of leaving a verified 5-star review.",
     },
     {
-      title: "Ã°Å¸â€œÂ¦ Recharge 3rd Subscription Milestone",
+      title: "📦 Recharge 3rd Subscription Milestone",
       app: "Recharge / Bold Subscriptions",
       amount: "$10.00 Credit",
       trigger: "Subscription Order # == 3",
       desc: "Slash subscriber churn by surprising loyal recurring buyers with milestone store credit.",
     },
     {
-      title: "Ã°Å¸Å½â€š Birthday Celebration Perk",
+      title: "🎂 Birthday Celebration Perk",
       app: "Klaviyo / Yotpo Loyalty",
       amount: "$15.00 Credit",
       trigger: "Customer Tag added: 'birthday_perk'",
       desc: "Deliver personalized birthday credit with an automatic 14-day redemption window.",
     },
     {
-      title: "Ã°Å¸â€ºâ€™ High-Value Checkout Recovery",
+      title: "🛒 High-Value Checkout Recovery",
       app: "Shopify Abandoned Checkout",
       amount: "$10.00 Credit",
       trigger: "Cart Value > $150 & Abandoned > 24h",
@@ -246,7 +246,7 @@ export default function FlowPage() {
                   </p>
                 </div>
                 <div style={{ background: "#f8fafc", padding: "8px 10px", borderRadius: "6px", fontSize: "11px", color: "#475569" }}>
-                  Ã¢Å¡Â¡ Trigger: <code>{r.trigger}</code>
+                  ⚡ Trigger: <code>{r.trigger}</code>
                 </div>
               </div>
             ))}
@@ -305,7 +305,7 @@ export default function FlowPage() {
 
                 <s-stack direction="inline" justifyContent="flex-end">
                   <s-button type="submit" variant="primary">
-                    Ã°Å¸Å¡â‚¬ Run Test Flow Execution
+                    🚀 Run Test Flow Execution
                   </s-button>
                 </s-stack>
               </s-stack>
@@ -396,7 +396,7 @@ export default function FlowPage() {
                     </s-table-cell>
 
                     <s-table-cell>
-                      <s-badge tone="success">Ã¢Å“â€œ DISBURSED</s-badge>
+                      <s-badge tone="success">✓ DISBURSED</s-badge>
                     </s-table-cell>
                   </s-table-row>
                 ))}

@@ -189,20 +189,20 @@ export default function UpsellPage() {
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: "11px", fontWeight: 700, color: "#166534", textTransform: "uppercase" }}>
-                  Ã¢â€”Â Live Preview
+                  ● Live Preview
                 </span>
                 <span style={{ fontSize: "11px", background: "#f1f5f9", padding: "2px 8px", borderRadius: "9999px" }}>
-                  Ã¢ÂÂ±Ã¯Â¸Â {timerMinutes}:00 Timer
+                  ⏱️ {timerMinutes}:00 Timer
                 </span>
               </div>
 
               <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "10px", padding: "12px", fontSize: "12px", color: "#166534" }}>
-                <strong>Ã°Å¸Å½â€° You just earned $12.50 in credit!</strong> Apply it now before your order ships:
+                <strong>🎉 You just earned $12.50 in credit!</strong> Apply it now before your order ships:
               </div>
 
               <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                 <div style={{ width: "54px", height: "54px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px" }}>
-                  Ã°Å¸â€ºÂÃ¯Â¸Â
+                  🛍️
                 </div>
                 <div>
                   <h4 style={{ margin: "0 0 2px 0", fontSize: "14px", fontWeight: 700 }}>{productTitle}</h4>
@@ -219,7 +219,7 @@ export default function UpsellPage() {
               </div>
 
               <s-button variant="primary" style={{ width: "100%", display: "block" }}>
-                Ã¢Å¡Â¡ Claim with Credit (1-Click)
+                ⚡ Claim with Credit (1-Click)
               </s-button>
             </div>
           </s-grid>

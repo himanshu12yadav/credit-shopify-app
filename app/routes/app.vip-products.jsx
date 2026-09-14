@@ -29,7 +29,7 @@ export default function VipProductsManager() {
   };
 
   return (
-    <s-page heading="Ã°Å¸â€˜â€˜ VIP Exclusive Tier-Locked Products">
+    <s-page heading="👑 VIP Exclusive Tier-Locked Products">
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save VIP Product Rule
       </s-button>
@@ -47,7 +47,7 @@ export default function VipProductsManager() {
             <s-stack direction="block" gap="small">
               <s-text tone="neutral" color="subdued">VIP EXCLUSIVE PRODUCTS</s-text>
               <s-heading>{lockedProductsCount} Items</s-heading>
-              <s-badge tone="warning">Ã°Å¸â€â€™ Secret Drops Active</s-badge>
+              <s-badge tone="warning">🔒 Secret Drops Active</s-badge>
             </s-stack>
           </s-box>
 
@@ -77,7 +77,7 @@ export default function VipProductsManager() {
               <s-paragraph tone="neutral">
                 Select the minimum VIP tier threshold and target product handle to restrict purchase access.
               </s-paragraph>
-              <s-badge tone="success">Ã°Å¸â€ºÂ¡Ã¯Â¸Â Storefront Gating Ready</s-badge>
+              <s-badge tone="success">🛡️ Storefront Gating Ready</s-badge>
             </s-stack>
 
             <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
@@ -86,9 +86,9 @@ export default function VipProductsManager() {
                 value={tier}
                 onChange={(e) => setTier(e.currentTarget.value)}
               >
-                <s-option value="Silver VIP">Ã°Å¸Â¥Ë† Silver VIP ($200.00 Total Spend)</s-option>
-                <s-option value="Gold VIP">Ã°Å¸Â¥â€¡ Gold VIP ($500.00 Total Spend)</s-option>
-                <s-option value="Platinum VIP">Ã°Å¸â€™Å½ Platinum VIP ($1,000.00 Total Spend)</s-option>
+                <s-option value="Silver VIP">🥈 Silver VIP ($200.00 Total Spend)</s-option>
+                <s-option value="Gold VIP">🥇 Gold VIP ($500.00 Total Spend)</s-option>
+                <s-option value="Platinum VIP">💎 Platinum VIP ($1,000.00 Total Spend)</s-option>
               </s-select>
 
               <s-text-field
@@ -132,7 +132,7 @@ export default function VipProductsManager() {
               <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>Limited Edition Gold Member Hoodie</td>
                 <td style={{ padding: "12px 14px" }}>
-                  <s-badge tone="warning">Ã°Å¸Â¥â€¡ Gold VIP</s-badge>
+                  <s-badge tone="warning">🥇 Gold VIP</s-badge>
                 </td>
                 <td style={{ padding: "12px 14px", color: "#64748b" }}>$500.00 Lifetime</td>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>42</td>
@@ -143,7 +143,7 @@ export default function VipProductsManager() {
               <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>Founder Reserve Artisan Watch</td>
                 <td style={{ padding: "12px 14px" }}>
-                  <s-badge tone="info">Ã°Å¸â€™Å½ Platinum VIP</s-badge>
+                  <s-badge tone="info">💎 Platinum VIP</s-badge>
                 </td>
                 <td style={{ padding: "12px 14px", color: "#64748b" }}>$1,000.00 Lifetime</td>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>18</td>
@@ -154,7 +154,7 @@ export default function VipProductsManager() {
               <tr>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>Secret VIP Holiday Vault Box</td>
                 <td style={{ padding: "12px 14px" }}>
-                  <s-badge tone="neutral">Ã°Å¸Â¥Ë† Silver VIP</s-badge>
+                  <s-badge tone="neutral">🥈 Silver VIP</s-badge>
                 </td>
                 <td style={{ padding: "12px 14px", color: "#64748b" }}>$200.00 Lifetime</td>
                 <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>29</td>

@@ -31,7 +31,7 @@ export const action = async ({ request }) => {
     return {
       ok: true,
       message: result.updated
-        ? "Web pixel settings refreshed Ã¢â‚¬â€ telemetry endpoint is current."
+        ? "Web pixel settings refreshed — telemetry endpoint is current."
         : "Web pixel activated. Storefront and checkout events are now tracked.",
     };
   }
@@ -217,7 +217,7 @@ export default function AnalyticsPage() {
   return (
     <s-page heading="Financial Intelligence & Omnichannel ROI Analytics">
       <s-button slot="primary-action" variant="primary" onClick={handleExportCsv}>
-        {copied ? "Ã¢Å“â€œ Exported CSV!" : "Ã°Å¸â€œÂ¥ Export Accounting Report (CSV)"}
+        {copied ? "✓ Exported CSV!" : "📥 Export Accounting Report (CSV)"}
       </s-button>
 
       <s-banner tone="success" heading="Omnichannel Store Credit Engine Active">
@@ -233,7 +233,7 @@ export default function AnalyticsPage() {
             <s-stack direction="block" gap="small">
               <s-text tone="neutral" color="subdued">ESTIMATED REVENUE DRIVEN</s-text>
               <s-heading>${metrics.estimatedSalesDriven} USD</s-heading>
-              <s-badge tone="success">Ã°Å¸Å¡â‚¬ 4.4x ROI Multiplier</s-badge>
+              <s-badge tone="success">🚀 4.4x ROI Multiplier</s-badge>
             </s-stack>
           </s-box>
 
@@ -241,7 +241,7 @@ export default function AnalyticsPage() {
             <s-stack direction="block" gap="small">
               <s-text tone="neutral" color="subdued">CASH SAVED ON RETURNS</s-text>
               <s-heading>${metrics.totalCashSavedReturns} USD</s-heading>
-              <s-badge tone="success">Ã°Å¸â€™Â° Retained Inside Business</s-badge>
+              <s-badge tone="success">💰 Retained Inside Business</s-badge>
             </s-stack>
           </s-box>
 
@@ -257,14 +257,14 @@ export default function AnalyticsPage() {
             <s-stack direction="block" gap="small">
               <s-text tone="neutral" color="subdued">REPEAT VELOCITY</s-text>
               <s-heading>{metrics.daysToRepeatWithCredit} Days</s-heading>
-              <s-badge tone="success">Ã¢Å¡Â¡ 3.2x Faster than Standard</s-badge>
+              <s-badge tone="success">⚡ 3.2x Faster than Standard</s-badge>
             </s-stack>
           </s-box>
         </s-grid>
       </s-section>
 
       {/* Web Pixel Section */}
-      <s-section heading="Native Web Pixel Ã¢â‚¬â€ Zero-Latency Conversion Tracking">
+      <s-section heading="Native Web Pixel — Zero-Latency Conversion Tracking">
         <s-box padding="base" background="subdued" borderRadius="base">
           <s-stack direction="block" gap="base">
             <s-stack direction="inline" justifyContent="space-between" alignItems="center">
@@ -288,7 +288,7 @@ export default function AnalyticsPage() {
                 disabled={pixelBusy || !pixel?.appUrl}
                 onClick={activatePixel}
               >
-                {pixelBusy ? "WorkingÃ¢â‚¬Â¦" : pixelActive ? "Re-sync Pixel Settings" : "Activate Web Pixel"}
+                {pixelBusy ? "Working…" : pixelActive ? "Re-sync Pixel Settings" : "Activate Web Pixel"}
               </s-button>
               {pixel?.appUrl && (
                 <s-text tone="neutral" color="subdued">
@@ -319,7 +319,7 @@ export default function AnalyticsPage() {
                 <s-stack direction="block" gap="small">
                   <s-text tone="neutral" color="subdued">AOV Lift (Assisted)</s-text>
                   <s-heading>
-                    {pa.liftPercent == null ? "Ã¢â‚¬â€" : `${pa.liftPercent > 0 ? "+" : ""}${pa.liftPercent}%`}
+                    {pa.liftPercent == null ? "—" : `${pa.liftPercent > 0 ? "+" : ""}${pa.liftPercent}%`}
                   </s-heading>
                   <s-text tone="neutral" color="subdued">vs non-credit checkouts</s-text>
                 </s-stack>

@@ -268,7 +268,7 @@ export default function ReturnsPage() {
 
                 <s-stack direction="inline" justifyContent="flex-end">
                   <s-button type="submit" variant="primary">
-                    Ã¢Å¡Â¡ Convert Return to ${totalCreditVal.toFixed(2)} Store Credit
+                    ⚡ Convert Return to ${totalCreditVal.toFixed(2)} Store Credit
                   </s-button>
                 </s-stack>
               </s-stack>
@@ -387,7 +387,7 @@ export default function ReturnsPage() {
                       </s-table-cell>
 
                       <s-table-cell>
-                        <s-badge tone="success">Ã¢Å“â€œ RETAINED</s-badge>
+                        <s-badge tone="success">✓ RETAINED</s-badge>
                       </s-table-cell>
                     </s-table-row>
                   );

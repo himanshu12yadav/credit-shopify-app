@@ -319,13 +319,13 @@ export default function CampaignsPage() {
                   variant={activeTab === "drops" ? "primary" : "secondary"}
                   onClick={() => setActiveTab("drops")}
                 >
-                  Ã°Å¸Å½Â Targeted Credit Drop
+                  🎁 Targeted Credit Drop
                 </s-button>
                 <s-button
                   variant={activeTab === "boosters" ? "primary" : "secondary"}
                   onClick={() => setActiveTab("boosters")}
                 >
-                  Ã¢Å¡Â¡ Order Cashback Booster
+                  ⚡ Order Cashback Booster
                 </s-button>
               </s-stack>
 
@@ -451,7 +451,7 @@ export default function CampaignsPage() {
         <s-section padding="none">
           <s-box padding="base">
             <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-              <s-heading>Ã°Å¸Å½Â Milestone Credit Drops ({drops.length})</s-heading>
+              <s-heading>🎁 Milestone Credit Drops ({drops.length})</s-heading>
               <s-text tone="neutral" color="subdued">Bulk credit directly into customer Shopify accounts</s-text>
             </s-stack>
           </s-box>
@@ -507,7 +507,7 @@ export default function CampaignsPage() {
 
                     <s-table-cell>
                       <s-badge tone={d.status === "COMPLETED" ? "success" : "attention"}>
-                        {d.status === "COMPLETED" ? "Ã¢Å“â€œ DISBURSED" : "SCHEDULED"}
+                        {d.status === "COMPLETED" ? "✓ DISBURSED" : "SCHEDULED"}
                       </s-badge>
                     </s-table-cell>
 
@@ -525,7 +525,7 @@ export default function CampaignsPage() {
                               }
                             }}
                           >
-                            Ã°Å¸Å¡â‚¬ Drop Now
+                            🚀 Drop Now
                           </s-button>
                         )}
                         <s-button
@@ -551,7 +551,7 @@ export default function CampaignsPage() {
         <s-section padding="none">
           <s-box padding="base">
             <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-              <s-heading>Ã¢Å¡Â¡ Promotional Cashback Boosters ({boosters.length})</s-heading>
+              <s-heading>⚡ Promotional Cashback Boosters ({boosters.length})</s-heading>
               <s-text tone="neutral" color="subdued">Time-limited order credit multipliers</s-text>
             </s-stack>
           </s-box>
@@ -600,7 +600,7 @@ export default function CampaignsPage() {
 
                       <s-table-cell>
                         <s-text tone="neutral">
-                          {start.toLocaleDateString()} Ã¢â‚¬â€ {end.toLocaleDateString()}
+                          {start.toLocaleDateString()} — {end.toLocaleDateString()}
                         </s-text>
                       </s-table-cell>
 

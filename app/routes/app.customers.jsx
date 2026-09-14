@@ -217,7 +217,7 @@ export default function CustomersPage() {
                     textDecoration: "none",
                   }}
                 >
-                  Ã°Å¸Å½Â§ 1-Click Appeasements
+                  🎧 1-Click Appeasements
                 </Link>
                 <Link
                   to="/app/migrate"
@@ -234,7 +234,7 @@ export default function CustomersPage() {
                     textDecoration: "none",
                   }}
                 >
-                  Ã°Å¸â€œÂ¥ Import / Migrate CSV
+                  📥 Import / Migrate CSV
                 </Link>
               </div>
             </s-stack>
@@ -287,7 +287,7 @@ export default function CustomersPage() {
                     <s-stack direction="block" gap="none">
                       <s-text><strong>{c.displayName}</strong></s-text>
                       <s-text tone="neutral" color="subdued">
-                        {c.email} {c.phone !== "No phone" ? `Ã¢â‚¬Â¢ ${c.phone}` : ""}
+                        {c.email} {c.phone !== "No phone" ? `• ${c.phone}` : ""}
                       </s-text>
                     </s-stack>
                   </s-table-cell>
@@ -316,13 +316,13 @@ export default function CustomersPage() {
                       <s-button
                         onClick={() => handleOpenModal(c, "refund_to_credit")}
                       >
-                        Return Ã¢â€ â€™ Credit
+                        Return → Credit
                       </s-button>
                       <s-button
                         variant="tertiary"
                         onClick={() => handleOpenModal(c, "debit_credit")}
                       >
-                        Ã¢Ë†â€™ Deduct Credit
+                        − Deduct Credit
                       </s-button>
                     </div>
                   </s-table-cell>
@@ -367,7 +367,7 @@ export default function CustomersPage() {
                     : "Deduct / Revoke Store Credit"}
                 </s-heading>
                 <s-text tone="neutral" color="subdued">
-                  Target: <strong>{selectedCustomer.displayName}</strong> ({selectedCustomer.email}) Ã¢â‚¬Â¢ Current Balance: <strong>{selectedCustomer.creditBalance}</strong>
+                  Target: <strong>{selectedCustomer.displayName}</strong> ({selectedCustomer.email}) • Current Balance: <strong>{selectedCustomer.creditBalance}</strong>
                 </s-text>
               </s-stack>
 
@@ -394,11 +394,11 @@ export default function CustomersPage() {
                       onChange={(e) => setCurrency(e.currentTarget.value)}
                     >
                       <s-option value="USD">USD ($)</s-option>
-                      <s-option value="EUR">EUR (Ã¢â€šÂ¬)</s-option>
-                      <s-option value="GBP">GBP (Ã‚Â£)</s-option>
+                      <s-option value="EUR">EUR (€)</s-option>
+                      <s-option value="GBP">GBP (£)</s-option>
                       <s-option value="CAD">CAD ($)</s-option>
                       <s-option value="AUD">AUD ($)</s-option>
-                      <s-option value="INR">INR (Ã¢â€šÂ¹)</s-option>
+                      <s-option value="INR">INR (₹)</s-option>
                     </s-select>
                   </s-grid>
 

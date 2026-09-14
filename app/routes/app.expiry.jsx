@@ -284,13 +284,13 @@ export default function ExpiryCockpitPage() {
               variant={simulatorMode === "email" ? "primary" : "secondary"}
               onClick={() => setSimulatorMode("email")}
             >
-              Ã¢Å“â€°Ã¯Â¸Â Email Alert Preview
+              ✉️ Email Alert Preview
             </s-button>
             <s-button
               variant={simulatorMode === "sms" ? "primary" : "secondary"}
               onClick={() => setSimulatorMode("sms")}
             >
-              Ã°Å¸â€œÂ± SMS Alert Preview
+              📱 SMS Alert Preview
             </s-button>
           </s-stack>
 
@@ -298,7 +298,7 @@ export default function ExpiryCockpitPage() {
           {simulatorMode === "email" ? (
             <s-box padding="large" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="base" alignItems="center">
-                <s-badge tone="warning">Subject: Ã¢ÂÂ³ Don't forget your ${simAmount} store credit, {simCustomer}!</s-badge>
+                <s-badge tone="warning">Subject: ⏳ Don't forget your ${simAmount} store credit, {simCustomer}!</s-badge>
                 <s-box padding="large" background="base" borderRadius="base" style={{ maxWidth: 460, width: "100%", textAlign: "center" }}>
                   <s-heading>You have ${simAmount} expiring soon!</s-heading>
                   <s-paragraph>
@@ -317,9 +317,9 @@ export default function ExpiryCockpitPage() {
             <s-box padding="large" background="subdued" borderRadius="base">
               <s-stack direction="block" gap="base" alignItems="center">
                 <s-box padding="base" background="base" borderRadius="base" style={{ maxWidth: 360, width: "100%" }}>
-                  <s-text tone="neutral" color="subdued">SMS Alert Ã¢â‚¬Â¢ Today</s-text>
+                  <s-text tone="neutral" color="subdued">SMS Alert • Today</s-text>
                   <s-paragraph>
-                    Ã°Å¸â€˜â€¹ Hey {simCustomer}! Friendly alert: your <strong>${simAmount}</strong> store credit at {shop?.split(".")[0]?.toUpperCase() || "VIP STORE"} expires in <strong>{simDays} days</strong>. Tap here to redeem before it's gone: credit.link/go
+                    👋 Hey {simCustomer}! Friendly alert: your <strong>${simAmount}</strong> store credit at {shop?.split(".")[0]?.toUpperCase() || "VIP STORE"} expires in <strong>{simDays} days</strong>. Tap here to redeem before it's gone: credit.link/go
                   </s-paragraph>
                 </s-box>
               </s-stack>

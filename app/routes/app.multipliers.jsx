@@ -59,7 +59,7 @@ export default function MultiplierCalendar() {
   const { events } = useLoaderData();
   const fetcher = useFetcher();
   const shopify = useAppBridge();
-  const [name, setName] = useState("Ã¢Å¡Â¡ 2X Double Credit Weekend");
+  const [name, setName] = useState("⚡ 2X Double Credit Weekend");
   const [multiplier, setMultiplier] = useState("2.0");
   const [duration, setDuration] = useState("3");
 
@@ -78,7 +78,7 @@ export default function MultiplierCalendar() {
   };
 
   return (
-    <s-page heading="Ã°Å¸Å¡â‚¬ Double Credit Flash Days & Multiplier Calendar">
+    <s-page heading="🚀 Double Credit Flash Days & Multiplier Calendar">
       <s-banner tone="info" heading="Surge Weekend Order Volume with Limited-Time Multipliers">
         <s-paragraph>
           Multiply order cashback (e.g. 2X or 3X) during holiday promotions, flash sales, and weekends. Active multiplier events automatically apply across checkout and storefront blocks.
@@ -92,7 +92,7 @@ export default function MultiplierCalendar() {
             <s-stack direction="block" gap="small">
               <s-text tone="neutral" color="subdued">ACTIVE MULTIPLIER EVENTS</s-text>
               <s-heading>{events.filter((e) => e.isActive).length}</s-heading>
-              <s-badge tone="success">Ã¢Å¡Â¡ Auto-applied at checkout</s-badge>
+              <s-badge tone="success">⚡ Auto-applied at checkout</s-badge>
             </s-stack>
           </s-box>
 
@@ -149,7 +149,7 @@ export default function MultiplierCalendar() {
 
             <s-stack direction="inline" justifyContent="flex-start">
               <s-button type="submit" variant="primary" disabled={fetcher.state !== "idle"}>
-                Ã¢Å¡Â¡ Launch &amp; Schedule Multiplier Event
+                ⚡ Launch &amp; Schedule Multiplier Event
               </s-button>
             </s-stack>
           </s-stack>

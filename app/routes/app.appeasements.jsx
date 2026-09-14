@@ -125,10 +125,10 @@ export default function AppeasementsPage() {
   const shopify = useAppBridge();
 
   const presets = [
-    { label: "Ã°Å¸â€œÂ¦ Late Shipping ($10)", amount: "10.00", reason: "Late Shipping / Delayed Order" },
-    { label: "Ã°Å¸â€™â€ Damaged Item ($25)", amount: "25.00", reason: "Damaged / Defective Merchandise" },
-    { label: "Ã¢Â­Â VIP Goodwill ($15)", amount: "15.00", reason: "VIP Member Loyalty Goodwill" },
-    { label: "Ã¢ÂÅ’ Cancelled Item ($20)", amount: "20.00", reason: "Out of Stock Cancellation" },
+    { label: "📦 Late Shipping ($10)", amount: "10.00", reason: "Late Shipping / Delayed Order" },
+    { label: "💔 Damaged Item ($25)", amount: "25.00", reason: "Damaged / Defective Merchandise" },
+    { label: "⭐ VIP Goodwill ($15)", amount: "15.00", reason: "VIP Member Loyalty Goodwill" },
+    { label: "❌ Cancelled Item ($20)", amount: "20.00", reason: "Out of Stock Cancellation" },
   ];
 
   const [selectedPreset, setSelectedPreset] = useState(presets[0]);
@@ -257,7 +257,7 @@ export default function AppeasementsPage() {
                     variant={isCustom ? "primary" : "secondary"}
                     onClick={() => setIsCustom(true)}
                   >
-                    Ã¢Å“ÂÃ¯Â¸Â Custom Amount
+                    ✏️ Custom Amount
                   </s-button>
                 </s-stack>
               </s-stack>
@@ -327,10 +327,10 @@ export default function AppeasementsPage() {
 
               <s-stack direction="inline" justifyContent="space-between" alignItems="center">
                 <s-text tone="neutral" color="subdued">
-                  Ã°Å¸â€â€™ Transaction will be recorded to the immutable ledger with source <code>APPEASEMENT</code>
+                  🔒 Transaction will be recorded to the immutable ledger with source <code>APPEASEMENT</code>
                 </s-text>
                 <s-button type="submit" variant="primary">
-                  Ã¢Å¡Â¡ Issue ${isCustom ? customAmount || "0.00" : selectedPreset.amount} Credit Directly
+                  ⚡ Issue ${isCustom ? customAmount || "0.00" : selectedPreset.amount} Credit Directly
                 </s-button>
               </s-stack>
             </s-stack>
@@ -426,7 +426,7 @@ export default function AppeasementsPage() {
                       </s-table-cell>
 
                       <s-table-cell>
-                        <s-badge tone="success">Ã¢Å“â€œ CREDITED</s-badge>
+                        <s-badge tone="success">✓ CREDITED</s-badge>
                       </s-table-cell>
                     </s-table-row>
                   );

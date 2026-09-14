@@ -70,7 +70,7 @@ export default function KlaviyoIntegration() {
   };
 
   return (
-    <s-page heading="Ã°Å¸â€œÂ§ Klaviyo & Omnisend Deep Event Sync">
+    <s-page heading="📧 Klaviyo & Omnisend Deep Event Sync">
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save Integration Keys
       </s-button>
@@ -88,7 +88,7 @@ export default function KlaviyoIntegration() {
             <s-stack direction="block" gap="small">
               <s-text tone="neutral" color="subdued">KLAVIYO PROFILES SYNCED</s-text>
               <s-heading>{syncedUsersCount.toLocaleString()}</s-heading>
-              <s-badge tone="success">Ã¢Å“â€œ Real-time Properties Live</s-badge>
+              <s-badge tone="success">✓ Real-time Properties Live</s-badge>
             </s-stack>
           </s-box>
 
@@ -154,13 +154,13 @@ export default function KlaviyoIntegration() {
 
           <s-stack direction="inline" gap="small">
             <s-button onClick={() => handleTestEvent("EARNED")}>
-              Ã¢Å¡Â¡ Dispatch: 'Store Credit Earned'
+              ⚡ Dispatch: 'Store Credit Earned'
             </s-button>
             <s-button onClick={() => handleTestEvent("EXPIRING")}>
-              Ã¢ÂÂ³ Dispatch: 'Store Credit Expiring Soon'
+              ⏳ Dispatch: 'Store Credit Expiring Soon'
             </s-button>
             <s-button onClick={() => handleTestEvent("TIER_UPGRADE")}>
-              Ã°Å¸Â¥â€¡ Dispatch: 'VIP Tier Upgraded'
+              🥇 Dispatch: 'VIP Tier Upgraded'
             </s-button>
           </s-stack>
 

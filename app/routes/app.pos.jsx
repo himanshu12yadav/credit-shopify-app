@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -10,7 +11,7 @@ export const loader = async ({ request }) => {
   const inStoreLedger = await prisma.creditLedger.findMany({
     where: {
       shop,
-      note: { contains: "POS" },
+      source: { in: ["POS", "POS_CREDIT"] },
     },
     orderBy: { createdAt: "desc" },
     take: 10,
@@ -67,6 +68,7 @@ export default function PosPage() {
 
   return (
     <s-page heading="Shopify POS Terminal & Register Extension">
+      <HubBreadcrumb toPath="/app/rewards" label="Reward Triggers" />
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
         {/* Banner */}
         <s-banner tone="success" heading="True Omni-Channel Loyalty Across Online & In-Store Retail POS">

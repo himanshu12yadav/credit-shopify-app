@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLoaderData, useFetcher, useSearchParams, Link } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
+import { HubSubNav } from "../components/HubNav";
 // Services for Native Store Credit handling (v2 synced)
 import { searchCustomers, creditCustomer, debitCustomer } from "../services/store-credit.server";
 import { issueRefundStoreCredit } from "../services/rules-engine.server";
@@ -192,6 +193,7 @@ export default function CustomersPage() {
 
   return (
     <s-page heading="Customers & Store Credit Balances">
+      <HubSubNav clusterKey="customers" currentPath="/app/customers" />
       {/* Unified Customers Table Section */}
       <s-section padding="none">
         <s-box padding="base">

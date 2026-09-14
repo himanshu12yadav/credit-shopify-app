@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLoaderData, useFetcher } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -71,6 +72,8 @@ export default function KlaviyoIntegration() {
 
   return (
     <s-page heading="📧 Klaviyo & Omnisend Deep Event Sync">
+      <HubBreadcrumb toPath="/app/notifications" label="Integrations" />
+      <HubSubNav clusterKey="integrations" currentPath="/app/klaviyo" />
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save Integration Keys
       </s-button>

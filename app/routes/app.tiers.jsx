@@ -3,6 +3,7 @@ import { useLoaderData, useFetcher } from "react-router";
 import { useAppBridge, SaveBar, Modal, TitleBar } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { getVipTiers, createVipTier, updateVipTier, deleteVipTier } from "../services/tiers.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -155,7 +156,9 @@ export default function TiersPage() {
 
   return (
     <s-page heading="VIP Loyalty Tiers & Spend Thresholds">
+      <HubBreadcrumb toPath="/app/customers" label="Customers & Wallet" />
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "40px" }}>
+        <HubSubNav clusterKey="customers" currentPath="/app/tiers" />
         {/* Banner with clean spacing */}
         <s-banner tone="info" heading="Automatic VIP Tier Progression">
           Customers automatically ascend to higher tiers as their lifetime store spend increases. Higher tiers grant higher store credit cashback on every paid order!

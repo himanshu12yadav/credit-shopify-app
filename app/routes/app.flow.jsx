@@ -4,6 +4,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import { searchCustomers, creditCustomer } from "../services/store-credit.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -166,7 +167,9 @@ export default function FlowPage() {
 
   return (
     <s-page heading="Shopify Flow Automations Hub">
+      <HubBreadcrumb toPath="/app/rules" label="Rules & Automation" />
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+        <HubSubNav clusterKey="rules" currentPath="/app/flow" />
         {/* Banner */}
         <s-banner tone="info" heading="No-Code Store Credit Automations Powered by Shopify Flow">
           <s-paragraph>

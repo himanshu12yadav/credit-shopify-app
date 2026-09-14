@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useLoaderData, useFetcher } from "react-router";
+import { useLoaderData, useFetcher, useNavigate } from "react-router";
+import { HubSubNav } from "../components/HubNav";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { getCustomerAccountVersion } from "../services/store-credit.server";
@@ -63,6 +64,7 @@ export const action = async ({ request }) => {
 export default function SettingsPage() {
   const { shop, settings, customerAccountVersion } = useLoaderData();
   const fetcher = useFetcher();
+  const navigate = useNavigate();
   const shopify = useAppBridge();
 
   const isSaving = fetcher.state === "submitting";
@@ -91,6 +93,16 @@ export default function SettingsPage() {
 
   return (
     <s-page heading="Store Credit Settings & POS Guide">
+      <HubSubNav clusterKey="settings" currentPath="/app/settings" />
+      <s-stack direction="block" gap="small">
+        <s-text tone="neutral" color="subdued">Some settings are configured on their own page:</s-text>
+        <s-stack direction="inline" gap="small">
+          <s-button variant="tertiary" onClick={() => navigate("/app/rules")}>Cashback & welcome bonus → Rules</s-button>
+          <s-button variant="tertiary" onClick={() => navigate("/app/referrals")}>Referral program → Referrals</s-button>
+          <s-button variant="tertiary" onClick={() => navigate("/app/expiry")}>Default expiry → Retention & Expiry</s-button>
+          <s-button variant="tertiary" onClick={() => navigate("/app/notifications")}>Notify-on-credit → Notification Studio</s-button>
+        </s-stack>
+      </s-stack>
       {/* Dynamic Status Banner */}
       {isNewAccountsActive ? (
         <s-banner tone="success" heading="New Customer Accounts Active">

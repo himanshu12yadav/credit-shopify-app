@@ -3,6 +3,7 @@ import { useLoaderData, useFetcher } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -75,7 +76,9 @@ export default function UpsellPage() {
 
   return (
     <s-page heading="Post-Purchase 'Double-Down' Upsell">
+      <HubBreadcrumb toPath="/app/campaigns" label="Campaigns & Growth" />
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+        <HubSubNav clusterKey="campaigns" currentPath="/app/upsell" />
         {/* Banner */}
         <s-banner tone="info" heading="Convert Instant Gratification into Second Orders">
           <s-paragraph>

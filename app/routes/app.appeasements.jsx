@@ -4,6 +4,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import { searchCustomers, creditCustomer } from "../services/store-credit.server";
+import { HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -189,6 +190,7 @@ export default function AppeasementsPage() {
 
   return (
     <s-page heading="Customer Support 1-Click Appeasements">
+      <HubBreadcrumb toPath="/app/rewards" label="Reward Triggers" />
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
         {/* Banner */}
         <s-banner tone="info" heading="Turn Frustrated Shoppers into Lifelong Loyalists">

@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useLoaderData, useFetcher } from "react-router";
+import { useLoaderData, useFetcher, useNavigate } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import { searchCustomers, creditCustomer } from "../services/store-credit.server";
+import { HubSubNav } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -190,6 +191,7 @@ export default function CampaignsPage() {
   const { campaigns, vipTiers, stats } = useLoaderData();
   const fetcher = useFetcher();
   const shopify = useAppBridge();
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("drops"); // "drops" or "boosters"
   const [showCreator, setShowCreator] = useState(false);
@@ -266,6 +268,11 @@ export default function CampaignsPage() {
       </s-button>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+        <HubSubNav clusterKey="campaigns" currentPath="/app/campaigns" />
+        <s-stack direction="inline" gap="small">
+          <s-button variant="tertiary" onClick={() => navigate("/app/ledger?source=CAMPAIGN")}>View drops in ledger</s-button>
+          <s-button variant="tertiary" onClick={() => navigate("/app/analytics")}>Analytics & ROI</s-button>
+        </s-stack>
         {/* Banner */}
         <s-banner tone="info" heading="Surge Retention with Targeted Milestone Credit Drops">
           <s-paragraph>

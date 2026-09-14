@@ -4,7 +4,9 @@ import {
   useLoaderData,
   useNavigation,
   useSubmit,
+  useNavigate,
 } from "react-router";
+import { HubSubNav } from "../components/HubNav";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import {
@@ -170,6 +172,7 @@ export default function AnalyticsPage() {
   const actionData = useActionData();
   const navigation = useNavigation();
   const submit = useSubmit();
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
 
   const pixelBusy =
@@ -219,6 +222,11 @@ export default function AnalyticsPage() {
       <s-button slot="primary-action" variant="primary" onClick={handleExportCsv}>
         {copied ? "✓ Exported CSV!" : "📥 Export Accounting Report (CSV)"}
       </s-button>
+
+      <HubSubNav clusterKey="reporting" currentPath="/app/analytics" />
+      <s-stack direction="inline" gap="small">
+        <s-button variant="tertiary" onClick={() => navigate("/app/expiry")}>Retention & Expiry</s-button>
+      </s-stack>
 
       <s-banner tone="success" heading="Omnichannel Store Credit Engine Active">
         <s-paragraph>

@@ -3,6 +3,7 @@ import { useLoaderData, useFetcher } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { HubSubNav } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -130,6 +131,7 @@ export default function NotificationsPage() {
   return (
     <s-page heading="Automated Customer Email & SMS Template Studio">
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+        <HubSubNav clusterKey="integrations" currentPath="/app/notifications" />
         {/* Banner */}
         <s-banner tone="info" heading="High-Converting Notifications that Drive Urgent Repeat Orders">
           <s-paragraph>

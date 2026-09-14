@@ -3,6 +3,7 @@ import { useLoaderData, useFetcher } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -79,6 +80,8 @@ export default function MultiplierCalendar() {
 
   return (
     <s-page heading="🚀 Double Credit Flash Days & Multiplier Calendar">
+      <HubBreadcrumb toPath="/app/campaigns" label="Campaigns & Growth" />
+      <HubSubNav clusterKey="campaigns" currentPath="/app/multipliers" />
       <s-banner tone="info" heading="Surge Weekend Order Volume with Limited-Time Multipliers">
         <s-paragraph>
           Multiply order cashback (e.g. 2X or 3X) during holiday promotions, flash sales, and weekends. Active multiplier events automatically apply across checkout and storefront blocks.

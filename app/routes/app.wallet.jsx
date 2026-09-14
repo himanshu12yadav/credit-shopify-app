@@ -3,6 +3,7 @@ import { useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
 import { searchCustomers } from "../services/store-credit.server";
 import { getVipTiers } from "../services/tiers.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -45,7 +46,9 @@ export default function WalletPage() {
 
   return (
     <s-page heading="Digital Store Credit Wallet Pass (Apple & Google Wallet)">
+      <HubBreadcrumb toPath="/app/customers" label="Customers & Wallet" />
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "40px" }}>
+        <HubSubNav clusterKey="customers" currentPath="/app/wallet" />
         {/* Banner with spacing */}
         <s-banner tone="info" heading="In-Store & Mobile Retail Experience">
           Digital wallet passes give your customers instant mobile access to their native store credit balance. In physical retail stores, cashiers scan the customer's pass directly at the POS register to redeem store credit tender.

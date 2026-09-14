@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -33,6 +34,9 @@ export default function VipProductsManager() {
       <s-button slot="primary-action" variant="primary" onClick={handleSave}>
         Save VIP Product Rule
       </s-button>
+
+      <HubBreadcrumb toPath="/app/campaigns" label="Campaigns & Growth" />
+      <HubSubNav clusterKey="campaigns" currentPath="/app/vip-products" />
 
       <s-banner tone="info" heading="Exclusive Loyalty Gating & Aspirational Retention">
         <s-paragraph>

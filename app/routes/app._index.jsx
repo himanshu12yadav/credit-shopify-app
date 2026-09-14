@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { Link, useFetcher, useLoaderData, useRevalidator } from "react-router";
+import { useFetcher, useLoaderData, useRevalidator, useNavigate } from "react-router";
+import { SOURCE_TO_ROUTE } from "../components/HubNav";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { getCustomerAccountVersion, getStoreCreditAnalytics } from "../services/store-credit.server";
@@ -61,6 +62,7 @@ export default function OverviewIndex() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
   const revalidator = useRevalidator();
+  const navigate = useNavigate();
   const lastCheckRef = useRef(0);
   const themeEditorUrl = `https://admin.shopify.com/store/${data.storeSlug}/themes/current/editor?context=apps`;
   useEffect(() => { const refresh = () => { if (Date.now() - lastCheckRef.current > 1500 && revalidator.state === "idle") { lastCheckRef.current = Date.now(); revalidator.revalidate(); } }; window.addEventListener("focus", refresh); return () => window.removeEventListener("focus", refresh); }, [revalidator]);
@@ -71,7 +73,7 @@ export default function OverviewIndex() {
   const metrics = [["Credit issued", `$${data.analytics.totalIssued}`, "All-time rewards"], ["Credit redeemed", `$${data.analytics.totalDebited}`, "Customer redemptions"], ["Outstanding liability", `$${data.analytics.outstandingLiability}`, "Current ledger balance"], ["Active automations", data.analytics.activeRulesCount, "Rules and campaigns"]];
   return (
     <s-page heading="Store Credit & Loyalty Command Center" inlineSize="large">
-      <s-button slot="primary-action" variant="primary" onClick={() => window.location.assign("/app/customers")}>Issue store credit</s-button>
+      <s-button slot="primary-action" variant="primary" onClick={() => navigate("/app/customers")}>Issue store credit</s-button>
       <s-stack direction="block" gap="large">
         <s-banner tone="info" heading="Your loyalty operating center">
           Manage native store credit, rewards automation, loyalty tiers, and store activation from one place. <s-link href={themeEditorUrl} target="_blank">Open theme editor</s-link>
@@ -114,7 +116,7 @@ export default function OverviewIndex() {
             <s-stack direction="inline" gap="small" alignItems="center">
               <s-button variant="primary" onClick={() => submit("seed_sample_rules", "Starter rules generated")}>Generate starter rules</s-button>
               <s-button onClick={() => submit("launch_winback_drop", "VIP win-back campaign launched")}>Launch VIP win-back drop</s-button>
-              <s-button onClick={() => window.location.assign("/app/campaigns")}>Create a campaign</s-button>
+              <s-button onClick={() => navigate("/app/campaigns")}>Create a campaign</s-button>
             </s-stack>
           </s-section>
           <s-section heading="Activation status" padding="base">
@@ -136,6 +138,9 @@ export default function OverviewIndex() {
         </s-grid>
 
         <s-section heading="Recent ledger activity" padding="base">
+          <s-stack direction="inline" justifyContent="flex-end">
+            <s-button variant="tertiary" onClick={() => navigate("/app/ledger")}>View full ledger</s-button>
+          </s-stack>
           {data.formattedLedger.length === 0 ? (
             <s-box padding="large" background="subdued" borderRadius="base">
               <s-text>No credit activity yet. Create a rule or issue credit manually to begin.</s-text>
@@ -152,7 +157,16 @@ export default function OverviewIndex() {
                 {data.formattedLedger.map((entry) => (
                   <s-table-row key={entry.id}>
                     <s-table-cell>{entry.name}</s-table-cell>
-                    <s-table-cell><s-badge tone="info">{entry.source}</s-badge></s-table-cell>
+                    <s-table-cell>
+                      <s-badge
+                        tone="info"
+                        {...(SOURCE_TO_ROUTE[entry.source]
+                          ? { onClick: () => navigate(SOURCE_TO_ROUTE[entry.source]) }
+                          : {})}
+                      >
+                        {entry.source}
+                      </s-badge>
+                    </s-table-cell>
                     <s-table-cell><s-text tone={entry.action === "CREDIT" ? "success" : "critical"}>{entry.amount}</s-text></s-table-cell>
                     <s-table-cell>{entry.date}</s-table-cell>
                   </s-table-row>

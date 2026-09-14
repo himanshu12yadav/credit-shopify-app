@@ -3,6 +3,7 @@ import { useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -28,6 +29,7 @@ export default function ScratchCardStudio() {
 
   return (
     <s-page heading="Scratch Card Lead Studio">
+      <HubBreadcrumb toPath="/app/rewards" label="Reward Triggers" />
       <s-button slot="primary-action" variant="primary" disabled={!isOddsValid} onClick={() => shopify?.toast?.show("Probability settings updated for the storefront")}>Save probability settings</s-button>
       <s-stack direction="block" gap="large">
         <s-banner tone={isOddsValid ? "success" : "warning"} heading={isOddsValid ? "Prize distribution is balanced" : "Prize distribution must equal 100%"}>

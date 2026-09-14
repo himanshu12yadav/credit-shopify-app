@@ -4,6 +4,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { analyzeStoreRetention } from "../services/copilot.server";
 import prisma from "../db.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -83,6 +84,8 @@ export default function RetentionCopilot() {
 
   return (
     <s-page heading="🤖 AI Merchant Retention Copilot">
+      <HubBreadcrumb toPath="/app/rules" label="Rules & Automation" />
+      <HubSubNav clusterKey="rules" currentPath="/app/copilot" />
       <s-banner tone="info" heading="Algorithmic Revenue & Retention Intelligence">
         <s-paragraph>
           Your AI Copilot continuously audits customer repurchase velocity, cart abandonment, and expiring balances to suggest high-ROI automated campaigns.

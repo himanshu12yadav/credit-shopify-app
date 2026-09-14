@@ -1,6 +1,7 @@
-import { useLoaderData, useSearchParams } from "react-router";
+import { useLoaderData, useSearchParams, useNavigate } from "react-router";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { HubSubNav, HubBreadcrumb, SOURCE_TO_ROUTE } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -65,6 +66,7 @@ export const loader = async ({ request }) => {
 export default function LedgerPage() {
   const { ledgerEntries, totalCount, actionFilter, sourceFilter, searchQuery, stats } = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const handleFilterChange = (key, value) => {
     const params = new URLSearchParams(searchParams);
@@ -78,7 +80,9 @@ export default function LedgerPage() {
 
   return (
     <s-page heading="Store Credit Ledger & Audit Trail">
+      <HubBreadcrumb toPath="/app/analytics" label="Reporting" />
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+        <HubSubNav clusterKey="reporting" currentPath="/app/ledger" />
         {/* Banner */}
         <s-banner tone="info" heading="Immutable Shopify Store Credit Audit Trail">
           <s-paragraph>
@@ -180,6 +184,13 @@ export default function LedgerPage() {
                       <s-option value="REFUND_CREDIT">Return / Refund</s-option>
                       <s-option value="RULE_AWARD">Automation Rule</s-option>
                       <s-option value="MANUAL">Manual Adjustment</s-option>
+                      <s-option value="SUBSCRIPTION_REWARD">Subscription Perk</s-option>
+                      <s-option value="REVIEW_REWARD">Review Reward</s-option>
+                      <s-option value="BIRTHDAY_REWARD">Birthday Reward</s-option>
+                      <s-option value="SCRATCH_CARD">Scratch Card</s-option>
+                      <s-option value="FLOW_ACTION">Shopify Flow Action</s-option>
+                      <s-option value="MIGRATION">CSV Migration</s-option>
+                      <s-option value="POS">POS Redemption</s-option>
                     </s-select>
                   </div>
 
@@ -258,6 +269,9 @@ export default function LedgerPage() {
                               ? "attention"
                               : "neutral"
                           }
+                          {...(SOURCE_TO_ROUTE[entry.source]
+                            ? { onClick: () => navigate(SOURCE_TO_ROUTE[entry.source]) }
+                            : {})}
                         >
                           {entry.source}
                         </s-badge>

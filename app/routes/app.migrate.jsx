@@ -4,6 +4,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import { creditCustomer } from "../services/store-credit.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -330,8 +331,10 @@ export default function MigratePage() {
 
   return (
     <s-page heading="CSV Bulk Credit Importer & Migration Tool">
+      <HubBreadcrumb toPath="/app/settings" label="Settings & Data" />
       {/* 24px Vertical Rhythm Container to prevent cramped cards */}
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+        <HubSubNav clusterKey="settings" currentPath="/app/migrate" />
         
         {/* Top Banner */}
         <s-banner tone="info" heading="Migrate from Rise.ai, Smile.io, Yotpo, or Custom CSV">

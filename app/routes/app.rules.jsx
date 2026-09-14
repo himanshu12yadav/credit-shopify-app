@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { useLoaderData, useFetcher } from "react-router";
+import { useLoaderData, useFetcher, useNavigate } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { HubSubNav } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -172,6 +173,7 @@ export default function RulesPage() {
   const { rules, settings } = useLoaderData();
   const fetcher = useFetcher();
   const shopify = useAppBridge();
+  const navigate = useNavigate();
 
   const [showBuilder, setShowBuilder] = useState(false);
   const [title, setTitle] = useState("");
@@ -259,6 +261,13 @@ export default function RulesPage() {
       <s-button slot="primary-action" variant="primary" onClick={() => setShowBuilder(!showBuilder)}>
         {showBuilder ? "Close Builder" : "+ Create New Rule"}
       </s-button>
+
+      <HubSubNav clusterKey="rules" currentPath="/app/rules" />
+      <s-stack direction="inline" gap="small">
+        <s-button variant="tertiary" onClick={() => navigate("/app/ledger?source=RULE_AWARD")}>View rule payouts in ledger</s-button>
+        <s-button variant="tertiary" onClick={() => navigate("/app/analytics")}>Analytics & ROI</s-button>
+        <s-button variant="tertiary" onClick={() => navigate("/app/campaigns")}>Campaigns & Growth</s-button>
+      </s-stack>
 
       {/* Baseline Settings using s-section, s-checkbox, s-number-field */}
       <s-section heading="Baseline Store Cashback Settings">

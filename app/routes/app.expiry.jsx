@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLoaderData, useFetcher } from "react-router";
+import { useLoaderData, useFetcher, useNavigate } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
@@ -118,6 +118,7 @@ export const action = async ({ request }) => {
 export default function ExpiryCockpitPage() {
   const { shop, settings, stats, expiring7Days } = useLoaderData();
   const fetcher = useFetcher();
+  const navigate = useNavigate();
   const shopify = useAppBridge();
 
   const [selectedExpiry, setSelectedExpiry] = useState(String(settings.defaultExpiryDays || 90));
@@ -148,6 +149,10 @@ export default function ExpiryCockpitPage() {
   return (
     <s-page heading="Automated Credit Expiry & Notification Cockpit">
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+        <s-stack direction="inline" gap="small">
+          <s-button variant="tertiary" onClick={() => navigate("/app/ledger")}>View full ledger</s-button>
+          <s-button variant="tertiary" onClick={() => navigate("/app/analytics")}>Analytics & ROI</s-button>
+        </s-stack>
         {/* Top Banner */}
         <s-banner tone="info" heading="Active Store Credit Retention & Expiration Lifecycle">
         <s-paragraph>

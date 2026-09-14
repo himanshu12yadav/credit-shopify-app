@@ -4,6 +4,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -82,7 +83,9 @@ export default function ReferralsPage() {
 
   return (
     <s-page heading="Advocate Referral Program">
+      <HubBreadcrumb toPath="/app/campaigns" label="Campaigns & Growth" />
       <s-stack direction="block" gap="large">
+        <HubSubNav clusterKey="campaigns" currentPath="/app/referrals" />
         <s-banner tone="info" heading="Give $10, Get $10">
           Turn loyal customers into advocates. Friends receive store credit on their first purchase and advocates receive a reward when that purchase is completed.
         </s-banner>

@@ -4,6 +4,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { searchCustomers } from "../services/store-credit.server";
 import { processOrderForCredit } from "../services/rules-engine.server";
+import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -110,7 +111,9 @@ export default function SimulatorPage() {
 
   return (
     <s-page heading="Order Webhook & Automation Simulator">
+      <HubBreadcrumb toPath="/app/rules" label="Rules & Automation" />
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "40px" }}>
+        <HubSubNav clusterKey="rules" currentPath="/app/simulator" />
         <s-banner tone="info" heading="Instant Automation Testing Cockpit">
           Test and verify your cashback rules, VIP tier multipliers, and campaign bonuses without placing real paid orders in checkout. When you run a simulation, the rules engine executes live and deposits actual native store credit into the customer's Shopify account.
         </s-banner>

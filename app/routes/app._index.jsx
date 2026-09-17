@@ -68,112 +68,146 @@ export default function OverviewIndex() {
   useEffect(() => { const refresh = () => { if (Date.now() - lastCheckRef.current > 1500 && revalidator.state === "idle") { lastCheckRef.current = Date.now(); revalidator.revalidate(); } }; window.addEventListener("focus", refresh); return () => window.removeEventListener("focus", refresh); }, [revalidator]);
   const submit = (intent, message) => { fetcher.submit({ intent }, { method: "POST" }); shopify?.toast?.show(message); };
   const setupSteps = [
-    ["Customer accounts", data.isNewAccountsActive, "/app/portal"], ["Cashback rules", data.isCashbackRulesActive, "/app/rules"], ["Customer wallet", data.isCustomerWalletActive, "/app/wallet"], ["Web pixel", data.isPixelActive, "/app/analytics"], ["App embed", data.isAppEmbedActive, null],
+    { label: "Customer accounts", description: "Enable new customer accounts so shoppers can view their store credit balance.", complete: data.isNewAccountsActive, href: "/app/portal" },
+    { label: "Cashback rules", description: "Create automation rules that award store credit on qualifying orders.", complete: data.isCashbackRulesActive, href: "/app/rules" },
+    { label: "Customer wallet", description: "Turn on the customer wallet so shoppers can redeem credit at checkout.", complete: data.isCustomerWalletActive, href: "/app/wallet" },
+    { label: "Web pixel", description: "Install the web pixel to track redemptions and attribution.", complete: data.isPixelActive, href: "/app/analytics" },
+    { label: "App embed", description: "Activate the theme app embed so the wallet widget appears on-site.", complete: data.isAppEmbedActive, href: null },
   ];
-  const metrics = [["Credit issued", `$${data.analytics.totalIssued}`, "All-time rewards"], ["Credit redeemed", `$${data.analytics.totalDebited}`, "Customer redemptions"], ["Outstanding liability", `$${data.analytics.outstandingLiability}`, "Current ledger balance"], ["Active automations", data.analytics.activeRulesCount, "Rules and campaigns"]];
+  const heroMetric = ["Outstanding liability", `$${data.analytics.outstandingLiability}`, "Current ledger balance"];
+  const secondaryMetrics = [["Credit issued", `$${data.analytics.totalIssued}`, "All-time rewards"], ["Credit redeemed", `$${data.analytics.totalDebited}`, "Customer redemptions"], ["Active automations", data.analytics.activeRulesCount, "Rules and campaigns"]];
+  const isSetupComplete = data.completedSteps === data.totalSteps;
   return (
     <s-page heading="Store Credit & Loyalty Command Center" inlineSize="large">
       <s-button slot="primary-action" variant="primary" onClick={() => navigate("/app/customers")}>Issue store credit</s-button>
-      <s-stack direction="block" gap="large">
-        <s-banner tone="info" heading="Your loyalty operating center">
-          Manage native store credit, rewards automation, loyalty tiers, and store activation from one place. <s-link href={themeEditorUrl} target="_blank">Open theme editor</s-link>
-        </s-banner>
-
-        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap="base">
-          {metrics.map(([label, value, detail]) => (
-            <s-box key={label} padding="base" background="subdued" border="base" borderRadius="base">
-              <s-stack direction="block" gap="small">
-                <s-text tone="neutral" color="subdued">{label}</s-text>
-                <s-heading>{value}</s-heading>
-                <s-text tone="neutral" color="subdued">{detail}</s-text>
-              </s-stack>
-            </s-box>
-          ))}
-        </s-grid>
-
-        <s-section heading={`Launch checklist (${data.completedSteps}/${data.totalSteps})`} padding="base">
-          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(160px, 1fr))" gap="base">
-            {setupSteps.map(([label, complete, href]) => (
-              <s-box key={label} padding="base" background="subdued" border="base" borderRadius="base">
-                <s-stack direction="block" gap="small">
-                  <s-badge tone={complete ? "success" : "warning"}>{complete ? "Complete" : "Action needed"}</s-badge>
-                  <s-heading>{label}</s-heading>
-                  {href ? (
-                    <s-link href={href}>{complete ? "Review configuration" : "Complete setup"}</s-link>
-                  ) : (
-                    <s-button onClick={() => data.isAppEmbedActive ? window.open(themeEditorUrl, "_blank") : submit("verify_app_embed", "App embed marked as active")}>
-                      {data.isAppEmbedActive ? "Open theme editor" : "Mark as active"}
-                    </s-button>
-                  )}
-                </s-stack>
-              </s-box>
-            ))}
-          </s-grid>
-        </s-section>
-
-        <s-grid gridTemplateColumns="repeat(auto-fit, minmax(320px, 1fr))" gap="base">
-          <s-section heading="Quick actions" padding="base">
-            <s-stack direction="inline" gap="small" alignItems="center">
-              <s-button variant="primary" onClick={() => submit("seed_sample_rules", "Starter rules generated")}>Generate starter rules</s-button>
-              <s-button onClick={() => submit("launch_winback_drop", "VIP win-back campaign launched")}>Launch VIP win-back drop</s-button>
-              <s-button onClick={() => navigate("/app/campaigns")}>Create a campaign</s-button>
-            </s-stack>
-          </s-section>
-          <s-section heading="Activation status" padding="base">
-            <s-stack direction="block" gap="small">
-              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                <s-text>Theme</s-text>
-                <s-badge tone="info">{data.mainThemeName}</s-badge>
-              </s-stack>
-              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                <s-text>POS credit activity</s-text>
-                <s-badge tone={data.isPosSynced ? "success" : "warning"}>{data.isPosSynced ? "Connected" : "Not yet used"}</s-badge>
-              </s-stack>
-              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                <s-text>Active rules</s-text>
-                <s-badge tone="success">{data.activeRules.length}</s-badge>
-              </s-stack>
-            </s-stack>
-          </s-section>
-        </s-grid>
-
-        <s-section heading="Recent ledger activity" padding="base">
-          <s-stack direction="inline" justifyContent="flex-end">
-            <s-button variant="tertiary" onClick={() => navigate("/app/ledger")}>View full ledger</s-button>
-          </s-stack>
-          {data.formattedLedger.length === 0 ? (
-            <s-box padding="large" background="subdued" borderRadius="base">
-              <s-text>No credit activity yet. Create a rule or issue credit manually to begin.</s-text>
-            </s-box>
-          ) : (
-            <s-table variant="auto">
-              <s-table-header-row>
-                <s-table-header>Customer</s-table-header>
-                <s-table-header>Source</s-table-header>
-                <s-table-header>Amount</s-table-header>
-                <s-table-header>Date</s-table-header>
-              </s-table-header-row>
-              <s-table-body>
-                {data.formattedLedger.map((entry) => (
-                  <s-table-row key={entry.id}>
-                    <s-table-cell>{entry.name}</s-table-cell>
-                    <s-table-cell>
-                      <s-badge
-                        tone="info"
-                        {...(SOURCE_TO_ROUTE[entry.source]
-                          ? { onClick: () => navigate(SOURCE_TO_ROUTE[entry.source]) }
-                          : {})}
-                      >
-                        {entry.source}
+      <s-stack direction="block" gap="base">
+        {isSetupComplete ? (
+          <s-banner tone="success" heading="Setup complete">
+            Your loyalty program is fully configured and live. <s-link href={themeEditorUrl} target="_blank">Open theme editor</s-link>
+          </s-banner>
+        ) : (
+          <s-section heading="Setup guide" padding="base">
+            <s-stack direction="block" gap="base">
+              <s-paragraph color="subdued">{data.completedSteps} of {data.totalSteps} steps completed</s-paragraph>
+              <s-stack direction="block" gap="base">
+                {setupSteps.map((step, index) => (
+                  <s-stack key={step.label} direction="block" gap="base">
+                    <s-grid gridTemplateColumns="auto 1fr auto" gap="base" alignItems="center">
+                      <s-badge tone={step.complete ? "success" : "neutral"} icon={step.complete ? "check-circle" : undefined}>
+                        {step.complete ? "Done" : String(index + 1)}
                       </s-badge>
-                    </s-table-cell>
-                    <s-table-cell><s-text tone={entry.action === "CREDIT" ? "success" : "critical"}>{entry.amount}</s-text></s-table-cell>
-                    <s-table-cell>{entry.date}</s-table-cell>
-                  </s-table-row>
+                      <s-stack direction="block" gap="small-200">
+                        <s-text type="strong">{step.label}</s-text>
+                        <s-text tone="neutral" color="subdued">{step.description}</s-text>
+                      </s-stack>
+                      {step.href ? (
+                        <s-link href={step.href}>{step.complete ? "Review" : "Complete setup"}</s-link>
+                      ) : (
+                        <s-button onClick={() => data.isAppEmbedActive ? window.open(themeEditorUrl, "_blank") : submit("verify_app_embed", "App embed marked as active")}>
+                          {data.isAppEmbedActive ? "Open theme editor" : "Mark as active"}
+                        </s-button>
+                      )}
+                    </s-grid>
+                    {index < setupSteps.length - 1 ? <s-divider direction="inline" /> : null}
+                  </s-stack>
                 ))}
-              </s-table-body>
-            </s-table>
-          )}
+              </s-stack>
+            </s-stack>
+          </s-section>
+        )}
+
+        <s-section heading="Store overview" padding="base">
+          <s-stack direction="block" gap="base">
+            <s-section heading="Performance">
+              <s-grid gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="base" alignItems="start">
+                <s-box padding="base" background="strong" borderRadius="base">
+                  <s-stack direction="block" gap="small">
+                    <s-text tone="success">{heroMetric[0]}</s-text>
+                    <s-heading>{heroMetric[1]}</s-heading>
+                    <s-text tone="neutral" color="subdued">{heroMetric[2]}</s-text>
+                  </s-stack>
+                </s-box>
+                {secondaryMetrics.map(([label, value, detail]) => (
+                  <s-box key={label} padding="base" background="subdued" border="base" borderRadius="base">
+                    <s-stack direction="block" gap="small">
+                      <s-text tone="neutral" color="subdued">{label}</s-text>
+                      <s-heading>{value}</s-heading>
+                      <s-text tone="neutral" color="subdued">{detail}</s-text>
+                    </s-stack>
+                  </s-box>
+                ))}
+              </s-grid>
+            </s-section>
+
+            <s-section heading="Store health">
+              <s-grid gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))" gap="large">
+                <s-stack direction="block" gap="base">
+                  <s-text type="strong">Quick actions</s-text>
+                  <s-stack direction="block" gap="small">
+                    <s-button variant="primary" onClick={() => submit("seed_sample_rules", "Starter rules generated")}>Generate starter rules</s-button>
+                    <s-button onClick={() => submit("launch_winback_drop", "VIP win-back campaign launched")}>Launch VIP win-back drop</s-button>
+                    <s-button onClick={() => navigate("/app/campaigns")}>Create a campaign</s-button>
+                  </s-stack>
+                </s-stack>
+                <s-stack direction="block" gap="base">
+                  <s-text type="strong">Activation status</s-text>
+                  <s-stack direction="block" gap="small">
+                    <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                      <s-text>Theme</s-text>
+                      <s-badge tone="info">{data.mainThemeName}</s-badge>
+                    </s-stack>
+                    <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                      <s-text>POS credit activity</s-text>
+                      <s-badge tone={data.isPosSynced ? "success" : "warning"}>{data.isPosSynced ? "Connected" : "Not yet used"}</s-badge>
+                    </s-stack>
+                    <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                      <s-text>Active rules</s-text>
+                      <s-badge tone="success">{data.activeRules.length}</s-badge>
+                    </s-stack>
+                  </s-stack>
+                </s-stack>
+              </s-grid>
+            </s-section>
+
+            <s-section heading="Recent activity">
+              <s-stack direction="inline" justifyContent="flex-end">
+                <s-button variant="tertiary" onClick={() => navigate("/app/ledger")}>View full ledger</s-button>
+              </s-stack>
+              {data.formattedLedger.length === 0 ? (
+                <s-box padding="large" background="subdued" borderRadius="base">
+                  <s-text>No credit activity yet. Create a rule or issue credit manually to begin.</s-text>
+                </s-box>
+              ) : (
+                <s-table variant="auto">
+                  <s-table-header-row>
+                    <s-table-header>Customer</s-table-header>
+                    <s-table-header>Source</s-table-header>
+                    <s-table-header>Amount</s-table-header>
+                    <s-table-header>Date</s-table-header>
+                  </s-table-header-row>
+                  <s-table-body>
+                    {data.formattedLedger.map((entry) => (
+                      <s-table-row key={entry.id}>
+                        <s-table-cell>{entry.name}</s-table-cell>
+                        <s-table-cell>
+                          <s-badge
+                            tone="info"
+                            {...(SOURCE_TO_ROUTE[entry.source]
+                              ? { onClick: () => navigate(SOURCE_TO_ROUTE[entry.source]) }
+                              : {})}
+                          >
+                            {entry.source}
+                          </s-badge>
+                        </s-table-cell>
+                        <s-table-cell><s-text tone={entry.action === "CREDIT" ? "success" : "critical"}>{entry.amount}</s-text></s-table-cell>
+                        <s-table-cell>{entry.date}</s-table-cell>
+                      </s-table-row>
+                    ))}
+                  </s-table-body>
+                </s-table>
+              )}
+            </s-section>
+          </s-stack>
         </s-section>
       </s-stack>
     </s-page>

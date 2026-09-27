@@ -77,7 +77,7 @@ export default function UpsellPage() {
   return (
     <s-page heading="Post-Purchase 'Double-Down' Upsell">
       <HubBreadcrumb toPath="/app/campaigns" label="Campaigns & Growth" />
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "48px" }}>
         <HubSubNav clusterKey="campaigns" currentPath="/app/upsell" />
         {/* Banner */}
         <s-banner tone="info" heading="Convert Instant Gratification into Second Orders">
@@ -227,7 +227,7 @@ export default function UpsellPage() {
             </div>
           </s-grid>
         </s-section>
-      </div>
+      </s-stack>
     </s-page>
   );
 }

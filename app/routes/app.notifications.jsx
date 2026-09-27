@@ -130,7 +130,7 @@ export default function NotificationsPage() {
 
   return (
     <s-page heading="Automated Customer Email & SMS Template Studio">
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "48px" }}>
         <HubSubNav clusterKey="integrations" currentPath="/app/notifications" />
         {/* Banner */}
         <s-banner tone="info" heading="High-Converting Notifications that Drive Urgent Repeat Orders">
@@ -179,7 +179,7 @@ export default function NotificationsPage() {
         {/* Template Selector Pills */}
         <s-section heading="Select Lifecycle Event Template">
           <s-stack direction="block" gap="base">
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <s-stack direction="inline" gap="small" style={{ flexWrap: "wrap" }}>
               {Object.entries(templatesData).map(([key, t]) => (
                 <s-button
                   key={key}
@@ -189,7 +189,7 @@ export default function NotificationsPage() {
                   {t.name}
                 </s-button>
               ))}
-            </div>
+            </s-stack>
 
             <s-stack direction="inline" gap="small">
               <s-button
@@ -249,21 +249,22 @@ export default function NotificationsPage() {
                   border: "1px solid #e2e8f0",
                   borderRadius: "10px",
                   padding: "16px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
                 }}
               >
-                <strong style={{ fontSize: "13px", color: "#0f172a" }}>Send a Live Test Dispatch</strong>
-                <form onSubmit={handleSendTest} style={{ display: "flex", gap: "10px", width: "100%" }}>
-                  <s-text-field
-                    placeholder="Enter your email (e.g. you@domain.com)"
-                    value={testEmail}
-                    onInput={(e) => setTestEmail(e.currentTarget.value)}
-                    style={{ flex: 1 }}
-                  />
-                  <s-button type="submit" variant="primary">Send Test</s-button>
-                </form>
+                <s-stack direction="block" gap="small">
+                  <strong style={{ fontSize: "13px", color: "#0f172a" }}>Send a Live Test Dispatch</strong>
+                  <form onSubmit={handleSendTest} style={{ width: "100%" }}>
+                    <s-stack direction="inline" gap="small">
+                      <s-text-field
+                        placeholder="Enter your email (e.g. you@domain.com)"
+                        value={testEmail}
+                        onInput={(e) => setTestEmail(e.currentTarget.value)}
+                        style={{ flex: 1 }}
+                      />
+                      <s-button type="submit" variant="primary">Send Test</s-button>
+                    </s-stack>
+                  </form>
+                </s-stack>
               </div>
             </s-stack>
 
@@ -276,10 +277,11 @@ export default function NotificationsPage() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                gap: "16px",
                 boxShadow: "inset 0 2px 4px rgba(0,0,0,0.06)",
               }}
             >
-              <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+              <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
                   ● Responsive Preview ({activeChannel.toUpperCase()})
                 </span>
@@ -391,7 +393,7 @@ export default function NotificationsPage() {
             </div>
           </s-grid>
         </s-section>
-      </div>
+      </s-stack>
     </s-page>
   );
 }

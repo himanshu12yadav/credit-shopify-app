@@ -148,7 +148,7 @@ export default function ExpiryCockpitPage() {
 
   return (
     <s-page heading="Automated Credit Expiry & Notification Cockpit">
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "48px" }}>
         <s-stack direction="inline" gap="small">
           <s-button variant="tertiary" onClick={() => navigate("/app/ledger")}>View full ledger</s-button>
           <s-button variant="tertiary" onClick={() => navigate("/app/analytics")}>Analytics & ROI</s-button>
@@ -373,7 +373,7 @@ export default function ExpiryCockpitPage() {
           </s-table>
         )}
       </s-section>
-      </div>
+      </s-stack>
     </s-page>
   );
 }

@@ -333,7 +333,7 @@ export default function MigratePage() {
     <s-page heading="CSV Bulk Credit Importer & Migration Tool">
       <HubBreadcrumb toPath="/app/settings" label="Settings & Data" />
       {/* 24px Vertical Rhythm Container to prevent cramped cards */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "48px" }}>
         <HubSubNav clusterKey="settings" currentPath="/app/migrate" />
         
         {/* Top Banner */}
@@ -657,7 +657,7 @@ export default function MigratePage() {
             )}
           </s-section>
         )}
-      </div>
+      </s-stack>
     </s-page>
   );
 }

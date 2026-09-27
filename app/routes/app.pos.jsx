@@ -69,7 +69,7 @@ export default function PosPage() {
   return (
     <s-page heading="Shopify POS Terminal & Register Extension">
       <HubBreadcrumb toPath="/app/rewards" label="Reward Triggers" />
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "48px" }}>
         {/* Banner */}
         <s-banner tone="success" heading="True Omni-Channel Loyalty Across Online & In-Store Retail POS">
           <s-paragraph>
@@ -285,7 +285,7 @@ export default function PosPage() {
             </div>
           </s-grid>
         </s-section>
-      </div>
+      </s-stack>
     </s-page>
   );
 }

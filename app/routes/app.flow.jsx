@@ -168,7 +168,7 @@ export default function FlowPage() {
   return (
     <s-page heading="Shopify Flow Automations Hub">
       <HubBreadcrumb toPath="/app/rules" label="Rules & Automation" />
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "48px" }}>
         <HubSubNav clusterKey="rules" currentPath="/app/flow" />
         {/* Banner */}
         <s-banner tone="info" heading="No-Code Store Credit Automations Powered by Shopify Flow">
@@ -407,7 +407,7 @@ export default function FlowPage() {
             </s-table>
           )}
         </s-section>
-      </div>
+      </s-stack>
     </s-page>
   );
 }

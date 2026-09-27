@@ -191,7 +191,7 @@ export default function AppeasementsPage() {
   return (
     <s-page heading="Customer Support 1-Click Appeasements">
       <HubBreadcrumb toPath="/app/rewards" label="Reward Triggers" />
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "48px" }}>
         {/* Banner */}
         <s-banner tone="info" heading="Turn Frustrated Shoppers into Lifelong Loyalists">
           <s-paragraph>
@@ -437,7 +437,7 @@ export default function AppeasementsPage() {
             </s-table>
           )}
         </s-section>
-      </div>
+      </s-stack>
     </s-page>
   );
 }

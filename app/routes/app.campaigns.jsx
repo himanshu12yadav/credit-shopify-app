@@ -267,7 +267,7 @@ export default function CampaignsPage() {
         {showCreator ? "Close Creator" : "+ Create Campaign"}
       </s-button>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "48px" }}>
         <HubSubNav clusterKey="campaigns" currentPath="/app/campaigns" />
         <s-stack direction="inline" gap="small">
           <s-button variant="tertiary" onClick={() => navigate("/app/ledger?source=CAMPAIGN")}>View drops in ledger</s-button>
@@ -648,7 +648,7 @@ export default function CampaignsPage() {
             </s-table>
           )}
         </s-section>
-      </div>
+      </s-stack>
     </s-page>
   );
 }

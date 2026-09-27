@@ -81,7 +81,7 @@ export default function LedgerPage() {
   return (
     <s-page heading="Store Credit Ledger & Audit Trail">
       <HubBreadcrumb toPath="/app/analytics" label="Reporting" />
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "48px" }}>
         <HubSubNav clusterKey="reporting" currentPath="/app/ledger" />
         {/* Banner */}
         <s-banner tone="info" heading="Immutable Shopify Store Credit Audit Trail">
@@ -311,7 +311,7 @@ export default function LedgerPage() {
             </s-table>
           )}
         </s-section>
-      </div>
+      </s-stack>
     </s-page>
   );
 }

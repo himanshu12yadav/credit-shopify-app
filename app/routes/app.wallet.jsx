@@ -47,7 +47,7 @@ export default function WalletPage() {
   return (
     <s-page heading="Digital Store Credit Wallet Pass (Apple & Google Wallet)">
       <HubBreadcrumb toPath="/app/customers" label="Customers & Wallet" />
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "40px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "40px" }}>
         <HubSubNav clusterKey="customers" currentPath="/app/wallet" />
         {/* Banner with spacing */}
         <s-banner tone="info" heading="In-Store & Mobile Retail Experience">
@@ -268,7 +268,7 @@ export default function WalletPage() {
             </s-stack>
           </s-section>
         </s-grid>
-      </div>
+      </s-stack>
     </s-page>
   );
 }

@@ -164,7 +164,7 @@ export default function ReturnsPage() {
   return (
     <s-page heading="'Save-the-Sale' Returns & Exchange Bonus Portal">
       <HubBreadcrumb toPath="/app/rewards" label="Reward Triggers" />
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "48px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "48px" }}>
         {/* Banner */}
         <s-banner tone="success" heading="Stop Losing Cash to Return Refunds">
           <s-paragraph>
@@ -398,7 +398,7 @@ export default function ReturnsPage() {
             </s-table>
           )}
         </s-section>
-      </div>
+      </s-stack>
     </s-page>
   );
 }

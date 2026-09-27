@@ -157,7 +157,7 @@ export default function TiersPage() {
   return (
     <s-page heading="VIP Loyalty Tiers & Spend Thresholds">
       <HubBreadcrumb toPath="/app/customers" label="Customers & Wallet" />
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", paddingBottom: "40px" }}>
+      <s-stack direction="block" gap="large" style={{ paddingBottom: "40px" }}>
         <HubSubNav clusterKey="customers" currentPath="/app/tiers" />
         {/* Banner with clean spacing */}
         <s-banner tone="info" heading="Automatic VIP Tier Progression">
@@ -459,7 +459,7 @@ export default function TiersPage() {
             </s-table>
           </div>
         </div>
-      </div>
+      </s-stack>
 
       {/* Shopify Contextual Save Bar for unsaved tier configurations */}
       <SaveBar open={isDirty}>

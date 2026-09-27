@@ -45,7 +45,7 @@ export const action = async ({ request }) => {
         shop,
         customerId: "gid://shopify/Customer/sample-birthday-celebrant",
         customerEmail: "celebrant@example.com",
-        customerName: "Himanshu Yadav",
+        customerName: "Sample Customer",
         amount,
         currency: "USD",
         action: "CREDIT",

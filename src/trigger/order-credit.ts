@@ -3,7 +3,7 @@ import { task, logger } from "@trigger.dev/sdk";
 export interface OrderCreditPayload {
   shop: string;
   orderId: string;
-  orderData: Record<string, any>;
+  orderData: Record<string, unknown>;
 }
 
 export const processOrderCreditTask = task({

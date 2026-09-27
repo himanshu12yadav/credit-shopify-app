@@ -4,11 +4,13 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import { searchCustomers, creditCustomer } from "../services/store-credit.server";
+import { getOrCreateExternalApiKey, regenerateExternalApiKey } from "../services/api-keys.server";
 import { HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
   const shop = session.shop;
+  const externalApiKey = await getOrCreateExternalApiKey(shop);
 
   // 1. Fetch recent appeasement ledgers
   const appeasements = await prisma.creditLedger.findMany({
@@ -68,6 +70,7 @@ export const loader = async ({ request }) => {
     shop,
     appeasements,
     customers: customers.slice(0, 15),
+    externalApiKey,
     stats: {
       totalAmount: totalAmount.toFixed(2),
       count,
@@ -81,6 +84,11 @@ export const action = async ({ request }) => {
   const shop = session.shop;
   const formData = await request.formData();
   const intent = formData.get("intent");
+
+  if (intent === "regenerate_api_key") {
+    const newKey = await regenerateExternalApiKey(shop);
+    return { success: true, externalApiKey: newKey, regenerated: true };
+  }
 
   if (intent === "issue_appeasement") {
     const customerId = formData.get("customerId");
@@ -121,9 +129,18 @@ export const action = async ({ request }) => {
 };
 
 export default function AppeasementsPage() {
-  const { shop, appeasements, customers, stats } = useLoaderData();
+  const { shop, appeasements, customers, stats, externalApiKey: initialApiKey } = useLoaderData();
   const fetcher = useFetcher();
+  const keyFetcher = useFetcher();
   const shopify = useAppBridge();
+  const externalApiKey = keyFetcher.data?.externalApiKey || initialApiKey;
+
+  const handleRegenerateKey = () => {
+    if (!confirm("Regenerating invalidates the current key immediately. Any helpdesk macro still using it will stop working until you update it. Continue?")) {
+      return;
+    }
+    keyFetcher.submit({ intent: "regenerate_api_key" }, { method: "POST" });
+  };
 
   const presets = [
     { label: "📦 Late Shipping ($10)", amount: "10.00", reason: "Late Shipping / Delayed Order" },
@@ -343,8 +360,14 @@ export default function AppeasementsPage() {
         <s-section heading="Gorgias, Zendesk & Klaviyo Webhook Integration">
           <s-stack direction="block" gap="base">
             <s-paragraph tone="neutral">
-              Support reps can issue credit directly from Zendesk or Gorgias macros using our dedicated webhook endpoint.
+              Support reps can issue credit directly from Zendesk or Gorgias macros using our dedicated webhook endpoint. Authenticate with the private API key below — never share it outside your helpdesk configuration.
             </s-paragraph>
+            <s-stack direction="inline" gap="small" alignItems="center">
+              <s-text-field label="Your private API key" value={externalApiKey} readOnly />
+              <s-button type="button" onClick={handleRegenerateKey} loading={keyFetcher.state !== "idle"}>
+                🔄 Regenerate Key
+              </s-button>
+            </s-stack>
             <div
               style={{
                 background: "#0f172a",
@@ -359,7 +382,8 @@ export default function AppeasementsPage() {
               <div style={{ color: "#38bdf8", marginBottom: "6px" }}># Endpoint: POST /api/support/appeasement</div>
               <div>{`curl -X POST "https://${shop}/api/support/appeasement" \\`}</div>
               <div>{`  -H "Content-Type: application/json" \\`}</div>
-              <div>{`  -d '{"shop": "${shop}", "customerEmail": "user@example.com", "amount": 15.00, "reason": "Late Delivery", "ticketId": "ZD-1092"}'`}</div>
+              <div>{`  -H "Authorization: Bearer ${externalApiKey}" \\`}</div>
+              <div>{`  -d '{"customerEmail": "user@example.com", "amount": 15.00, "reason": "Late Delivery", "ticketId": "ZD-1092"}'`}</div>
             </div>
           </s-stack>
         </s-section>

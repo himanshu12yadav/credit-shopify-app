@@ -120,7 +120,7 @@ export const action = async ({ request }) => {
 
 export default function CustomersPage() {
   const { customers, query } = useLoaderData();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
   const fetcher = useFetcher();
   const shopify = useAppBridge();
 

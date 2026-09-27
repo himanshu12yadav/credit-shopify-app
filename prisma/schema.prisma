@@ -73,6 +73,7 @@ model CreditLedger {
   expiresAt           DateTime?
   status              String    @default("COMPLETED") // COMPLETED, FAILED, EXPIRED
   metadata            String?   // JSON object for gifts, appeasement reasons, etc.
+  idempotencyKey      String?   @unique // deterministic per-source key preventing duplicate/replayed issuance
   createdAt           DateTime  @default(now())
 
   @@index([shop, createdAt])
@@ -135,6 +136,7 @@ model CreditSettings {
   welcomeBonusEnabled      Boolean  @default(true)
   welcomeBonusAmount       Float    @default(10.0)
   appEmbedVerified         Boolean  @default(false)
+  externalApiKey            String?  @unique // bearer token merchants configure in their helpdesk (Zendesk/Gorgias) to call /api/support/appeasement
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 }

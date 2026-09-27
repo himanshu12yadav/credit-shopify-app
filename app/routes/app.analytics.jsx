@@ -201,7 +201,7 @@ export default function AnalyticsPage() {
       ["Source Category", "Total Amount ($)", "Transaction Count", "Purpose"],
     ];
 
-    Object.entries(sourceBreakdown).forEach(([k, v]) => {
+    Object.values(sourceBreakdown).forEach((v) => {
       csvRows.push([v.label, `$${v.amount.toFixed(2)}`, v.count, `"${v.purpose}"`]);
     });
 

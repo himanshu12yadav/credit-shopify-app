@@ -2,17 +2,11 @@ import { useState } from "react";
 import { useLoaderData, useFetcher } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
-import prisma from "../db.server";
 import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   const shop = session.shop;
-
-  // Fetch or default settings
-  const settings = await prisma.creditSettings.findUnique({
-    where: { shop },
-  });
 
   return {
     shop,
@@ -35,7 +29,7 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  await authenticate.admin(request);
   const formData = await request.formData();
   const intent = formData.get("intent");
 

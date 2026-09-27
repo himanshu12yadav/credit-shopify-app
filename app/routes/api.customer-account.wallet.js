@@ -1,138 +1,91 @@
+import { authenticate, unauthenticated } from "../shopify.server";
 import prisma from "../db.server";
 import { getCustomerTier, getVipTiers } from "../services/tiers.server";
 
-export const loader = async ({ request }) => {
-  const url = new URL(request.url);
-  const shop = url.searchParams.get("shop");
-  const customerId = url.searchParams.get("customerId");
-  const customerEmail = url.searchParams.get("email");
-
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Content-Type": "application/json",
-  };
-
-  if (!shop) {
-    return new Response(JSON.stringify({ success: false, error: "Missing shop parameter" }), {
-      status: 400,
-      headers: corsHeaders,
-    });
+// Called from the credit-customer-account UI extension, which sends the
+// extension's session token (api.sessionToken.get()) as an Authorization:
+// Bearer header. authenticate.public.customerAccount verifies it and
+// returns the decoded token — `dest` is the shop domain, `sub` is the
+// logged-in customer's id. Only ever returns this signed-in customer's own
+// wallet, never an arbitrary customerId from a query param.
+const GET_CUSTOMER_ACCOUNT_WALLET_QUERY = `#graphql
+  query getCustomerAccountWallet($id: ID!) {
+    customer(id: $id) {
+      id
+      displayName
+      email
+      amountSpent {
+        amount
+        currencyCode
+      }
+      storeCreditAccounts(first: 1) {
+        nodes {
+          id
+          balance {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
   }
+`;
+
+export const loader = async ({ request }) => {
+  const { sessionToken, cors } = await authenticate.public.customerAccount(request);
+
+  const shop = sessionToken.dest.replace(/^https?:\/\//, "");
+  const rawCustomerId = sessionToken.sub;
+  const targetGid = rawCustomerId.startsWith("gid://")
+    ? rawCustomerId
+    : `gid://shopify/Customer/${rawCustomerId}`;
 
   try {
-    const session = await prisma.session.findFirst({ where: { shop } });
-    if (!session) {
-      return new Response(JSON.stringify({ success: false, error: "Session inactive" }), {
-        status: 500,
-        headers: corsHeaders,
-      });
-    }
+    const { admin } = await unauthenticated.admin(shop);
 
-    let targetGid = customerId;
-    if (!targetGid && customerEmail) {
-      const qResp = await fetch(`https://${shop}/admin/api/2024-07/graphql.json`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Shopify-Access-Token": session.accessToken,
-        },
-        body: JSON.stringify({
-          query: `query findCust($q: String!) { customers(first: 1, query: $q) { nodes { id email displayName } } }`,
-          variables: { q: `email:${customerEmail}` },
-        }),
-      });
-      const qJson = await qResp.json();
-      targetGid = qJson.data?.customers?.nodes?.[0]?.id;
-    }
-
-    // Default demo customer if none provided
-    if (!targetGid) {
-      targetGid = "gid://shopify/Customer/26024363524177";
-    }
-
-    // Query customer info & store credit balance via Admin API
-    const custResp = await fetch(`https://${shop}/admin/api/2024-07/graphql.json`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Access-Token": session.accessToken,
-      },
-      body: JSON.stringify({
-        query: `
-          query getCustomerAccountWallet($id: ID!) {
-            customer(id: $id) {
-              id
-              displayName
-              email
-              amountSpent {
-                amount
-                currencyCode
-              }
-              storeCreditAccounts(first: 1) {
-                nodes {
-                  id
-                  balance {
-                    amount
-                    currencyCode
-                  }
-                }
-              }
-            }
-          }
-        `,
-        variables: { id: targetGid },
-      }),
-    });
-
+    const custResp = await admin.graphql(GET_CUSTOMER_ACCOUNT_WALLET_QUERY, { variables: { id: targetGid } });
     const custJson = await custResp.json();
     const cust = custJson.data?.customer;
-    const balance = cust?.storeCreditAccounts?.nodes?.[0]?.balance?.amount || "45.00";
+    const balance = cust?.storeCreditAccounts?.nodes?.[0]?.balance?.amount || "0.00";
     const currency = cust?.storeCreditAccounts?.nodes?.[0]?.balance?.currencyCode || "USD";
-    const totalSpent = parseFloat(cust?.amountSpent?.amount || "250.00");
+    const totalSpent = parseFloat(cust?.amountSpent?.amount || "0");
 
-    // Tier calculation
-    let currentTier = { name: "Silver VIP", cashbackRate: 8.0, minSpend: 200 };
-    let nextTier = { name: "Gold VIP", cashbackRate: 12.0, minSpend: 500 };
+    let currentTier = { name: "Bronze VIP", cashbackRate: 5.0 };
+    let nextTier = null;
     try {
       currentTier = await getCustomerTier(shop, totalSpent);
       const allTiers = await getVipTiers(shop);
-      const next = allTiers.find((t) => t.minSpend > totalSpent);
-      if (next) {
-        nextTier = next;
-      } else {
-        nextTier = null;
-      }
+      nextTier = allTiers.find((t) => t.minSpend > totalSpent) || null;
     } catch {
       // fallback
     }
 
     const spendToNextTier = nextTier ? Math.max(0, nextTier.minSpend - totalSpent) : 0;
 
-    // Fetch personal ledger entries
     const ledger = await prisma.creditLedger.findMany({
       where: { shop, customerId: targetGid },
       orderBy: { createdAt: "desc" },
       take: 10,
     });
 
-    return new Response(
-      JSON.stringify({
+    return cors(
+      Response.json({
         success: true,
         wallet: {
           customerId: cust?.id || targetGid,
-          displayName: cust?.displayName || "Himanshu Yadav",
-          email: cust?.email || "himanshuyadav.12jan@gmail.com",
+          displayName: cust?.displayName,
+          email: cust?.email,
           balance,
           currency,
           totalSpent,
           tier: {
-            name: currentTier?.name || "Silver VIP",
-            cashbackRate: currentTier?.cashbackRate || 8.0,
+            name: currentTier?.name || "Bronze VIP",
+            cashbackRate: currentTier?.cashbackRate || 5.0,
             nextTierName: nextTier?.name || null,
             spendToNextTier: spendToNextTier.toFixed(2),
           },
+          walletPassAppleUrl: `https://${shop}/apps/credit/api/storefront/wallet-pass?format=apple`,
+          walletPassGoogleUrl: `https://${shop}/apps/credit/api/storefront/wallet-pass?format=google`,
           transactions: ledger.map((tx) => ({
             id: tx.id,
             action: tx.action,
@@ -143,13 +96,10 @@ export const loader = async ({ request }) => {
             expiresAt: tx.expiresAt,
           })),
         },
-      }),
-      { status: 200, headers: corsHeaders }
+      })
     );
   } catch (err) {
-    return new Response(JSON.stringify({ success: false, error: err.message }), {
-      status: 500,
-      headers: corsHeaders,
-    });
+    console.error("Customer account wallet error:", err);
+    return cors(Response.json({ success: false, error: "Failed to load wallet" }, { status: 500 }));
   }
 };

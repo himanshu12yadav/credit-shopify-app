@@ -1,10 +1,40 @@
-import prisma from "../db.server";
+import { authenticate } from "../shopify.server";
 import { getVipTiers } from "../services/tiers.server";
 
+// Mounted behind the Shopify App Proxy. Only ever shows the balance/pass for
+// the signed-in visitor (`logged_in_customer_id` from the verified proxy
+// query string) — never an arbitrary client-supplied customerId, since that
+// would let anyone view another shopper's name and store credit balance.
+const GET_PASS_CUSTOMER_QUERY = `#graphql
+  query getPassCust($id: ID!) {
+    customer(id: $id) {
+      id
+      displayName
+      amountSpent {
+        amount
+      }
+      storeCreditAccounts(first: 1) {
+        nodes {
+          balance {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const loader = async ({ request }) => {
+  const { session, admin } = await authenticate.public.appProxy(request);
+
+  if (!session || !admin) {
+    return Response.json({ success: false, error: "Shop session not active" }, { status: 401 });
+  }
+  const shop = session.shop;
+
   const url = new URL(request.url);
-  const shop = url.searchParams.get("shop") || "pdf-store-15eu7f4v.myshopify.com";
-  const customerId = url.searchParams.get("customerId");
+  const loggedInCustomerId = url.searchParams.get("logged_in_customer_id");
   const format = url.searchParams.get("format") || "apple"; // "apple", "google", "download"
 
   const corsHeaders = {
@@ -13,89 +43,44 @@ export const loader = async ({ request }) => {
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
-  let effectiveCustId = customerId;
-  if (!effectiveCustId) {
-    try {
-      const session = await prisma.session.findFirst({ where: { shop } });
-      if (session) {
-        const findResp = await fetch(`https://${shop}/admin/api/2024-07/graphql.json`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Shopify-Access-Token": session.accessToken,
-          },
-          body: JSON.stringify({
-            query: `query { customers(first: 1) { nodes { id } } }`,
-          }),
-        });
-        const findJson = await findResp.json();
-        effectiveCustId = findJson.data?.customers?.nodes?.[0]?.id || "gid://shopify/Customer/26024363524177";
-      } else {
-        effectiveCustId = "gid://shopify/Customer/26024363524177";
-      }
-    } catch {
-      effectiveCustId = "gid://shopify/Customer/26024363524177";
-    }
+  if (!loggedInCustomerId) {
+    return Response.json(
+      { success: false, error: "Sign in to view your store credit wallet pass" },
+      { status: 401, headers: corsHeaders }
+    );
   }
 
   try {
-    const session = await prisma.session.findFirst({ where: { shop } });
-    let customerName = "Himanshu Yadav";
-    let creditBalance = "45.00";
-    let tierName = "Gold";
-    let badgeColor = "#d97706";
-    let cashbackRate = 12;
+    let customerName = "Member";
+    let creditBalance = "0.00";
+    let tierName = "Bronze";
+    let badgeColor = "#6b7280";
+    let cashbackRate = 5;
 
-    if (session) {
-      const fullGid = effectiveCustId.includes("gid://") ? effectiveCustId : `gid://shopify/Customer/${effectiveCustId}`;
-      const queryResp = await fetch(`https://${shop}/admin/api/2024-07/graphql.json`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Shopify-Access-Token": session.accessToken,
-        },
-        body: JSON.stringify({
-          query: `
-            query getPassCust($id: ID!) {
-              customer(id: $id) {
-                id
-                displayName
-                amountSpent { amount }
-                storeCreditAccounts(first: 1) {
-                  nodes {
-                    balance { amount currencyCode }
-                  }
-                }
-              }
-            }
-          `,
-          variables: { id: fullGid },
-        }),
-      });
+    const fullGid = `gid://shopify/Customer/${loggedInCustomerId}`;
+    const queryResp = await admin.graphql(GET_PASS_CUSTOMER_QUERY, { variables: { id: fullGid } });
+    const qJson = await queryResp.json();
+    const c = qJson.data?.customer;
 
-      const qJson = await queryResp.json();
-      const c = qJson.data?.customer;
-      if (c) {
-        customerName = c.displayName || "Valued Member";
-        creditBalance = c.storeCreditAccounts?.nodes?.[0]?.balance?.amount || "89.99";
-        const tiers = await getVipTiers(shop);
-        const spent = parseFloat(c.amountSpent?.amount || "1499.90");
-        let matchedTier = tiers[0];
-        for (const t of tiers) {
-          if (spent >= t.minSpend) matchedTier = t;
-        }
-        if (matchedTier) {
-          tierName = matchedTier.name;
-          badgeColor = matchedTier.badgeColor || "#4f46e5";
-          cashbackRate = matchedTier.cashbackRate;
-        }
+    if (c) {
+      customerName = c.displayName || "Valued Member";
+      creditBalance = c.storeCreditAccounts?.nodes?.[0]?.balance?.amount || "0.00";
+      const tiers = await getVipTiers(shop);
+      const spent = parseFloat(c.amountSpent?.amount || "0");
+      let matchedTier = tiers[0];
+      for (const t of tiers) {
+        if (spent >= t.minSpend) matchedTier = t;
+      }
+      if (matchedTier) {
+        tierName = matchedTier.name;
+        badgeColor = matchedTier.badgeColor || "#4f46e5";
+        cashbackRate = matchedTier.cashbackRate;
       }
     }
 
-    const cleanCustId = String(effectiveCustId).replace("gid://shopify/Customer/", "");
+    const cleanCustId = String(loggedInCustomerId);
 
     if (format === "download") {
-      // Simulate pkpass bundle download headers
       const passJson = JSON.stringify(
         {
           formatVersion: 1,
@@ -113,31 +98,11 @@ export const loader = async ({ request }) => {
             messageEncoding: "iso-8859-1",
           },
           storeCard: {
-            headerFields: [
-              {
-                key: "tier",
-                label: "VIP TIER",
-                value: `${tierName} VIP`,
-              },
-            ],
-            primaryFields: [
-              {
-                key: "balance",
-                label: "AVAILABLE CREDIT",
-                value: `$${creditBalance}`,
-              },
-            ],
+            headerFields: [{ key: "tier", label: "VIP TIER", value: `${tierName} VIP` }],
+            primaryFields: [{ key: "balance", label: "AVAILABLE CREDIT", value: `$${creditBalance}` }],
             secondaryFields: [
-              {
-                key: "holder",
-                label: "CARDHOLDER",
-                value: customerName,
-              },
-              {
-                key: "cashback",
-                label: "CASHBACK RATE",
-                value: `${cashbackRate}% Back`,
-              },
+              { key: "holder", label: "CARDHOLDER", value: customerName },
+              { key: "cashback", label: "CASHBACK RATE", value: `${cashbackRate}% Back` },
             ],
           },
         },
@@ -156,13 +121,12 @@ export const loader = async ({ request }) => {
 
     const acceptHeader = request.headers.get("accept") || "";
     if (acceptHeader.includes("text/html")) {
-      const isGoogle = format === "google";
       const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${isGoogle ? "Google Wallet" : "Apple Wallet"} • Store Credit VIP Pass</title>
+  <title>${format === "google" ? "Google Wallet" : "Apple Wallet"} • Store Credit VIP Pass</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     body { min-height: 100vh; background: #090d16; color: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 24px; }
@@ -216,7 +180,7 @@ export const loader = async ({ request }) => {
       </div>
       <div class="balance-label">Available Store Credit</div>
       <div class="balance-amount">$${creditBalance} <span>USD</span></div>
-      
+
       <div class="meta-row">
         <div>
           <div class="meta-label">Passholder</div>
@@ -266,8 +230,8 @@ export const loader = async ({ request }) => {
       </div>
 
       <div class="actions">
-        <a class="btn btn-apple" href="/api/storefront/wallet-pass?shop=${encodeURIComponent(shop)}&customerId=${encodeURIComponent(cleanCustId)}&format=download">
-           Download Apple Wallet (.pkpass)
+        <a class="btn btn-apple" href="/apps/credit/api/storefront/wallet-pass?format=download">
+           Download Apple Wallet (.pkpass)
         </a>
         <a class="btn btn-google" href="#" onclick="alert('Digital pass link synced with your Google Account!'); return false;">
           <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -283,16 +247,12 @@ export const loader = async ({ request }) => {
 </html>`;
       return new Response(html, {
         status: 200,
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "text/html; charset=utf-8",
-        },
+        headers: { ...corsHeaders, "Content-Type": "text/html; charset=utf-8" },
       });
     }
 
-    // Return JSON pass payload for API clients
-    return new Response(
-      JSON.stringify({
+    return Response.json(
+      {
         success: true,
         pass: {
           walletType: format === "google" ? "Google Wallet" : "Apple Wallet",
@@ -303,22 +263,13 @@ export const loader = async ({ request }) => {
           badgeColor,
           cashbackRate,
           barcodeMessage: `SHOPIFY-CREDIT-${cleanCustId}`,
-          downloadUrl: `/api/storefront/wallet-pass?shop=${encodeURIComponent(shop)}&customerId=${encodeURIComponent(cleanCustId)}&format=download`,
+          downloadUrl: `/apps/credit/api/storefront/wallet-pass?format=download`,
         },
-      }),
-      {
-        status: 200,
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        },
-      }
+      },
+      { headers: corsHeaders }
     );
   } catch (err) {
     console.error("Wallet pass generation error:", err);
-    return new Response(JSON.stringify({ success: false, error: err.message }), {
-      status: 500,
-      headers: corsHeaders,
-    });
+    return Response.json({ success: false, error: "Failed to generate wallet pass" }, { status: 500, headers: corsHeaders });
   }
 };

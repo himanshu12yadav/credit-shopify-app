@@ -188,7 +188,7 @@ export const action = async ({ request }) => {
 };
 
 export default function CampaignsPage() {
-  const { campaigns, vipTiers, stats } = useLoaderData();
+  const { campaigns, stats } = useLoaderData();
   const fetcher = useFetcher();
   const shopify = useAppBridge();
   const navigate = useNavigate();

@@ -1,60 +1,76 @@
-import prisma from "../db.server";
+import { unauthenticated } from "../shopify.server";
+import { resolveShopFromExternalApiKey } from "../services/api-keys.server";
+import { creditCustomer } from "../services/store-credit.server";
+import { CreditValidationError } from "../services/credit-validation.server";
+
+// Configured as a "Send an HTTP request" step in Shopify Flow, or by a
+// merchant's own automation tooling — authenticated with the shop's private
+// external-integration API key (see app/services/api-keys.server.js) sent as
+// an Authorization: Bearer header, since Flow HTTP actions carry merchant-
+// configured headers rather than a Shopify session token.
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Content-Type": "application/json",
+};
+
+const FIND_CUSTOMER_BY_EMAIL_QUERY = `#graphql
+  query findCustomerByEmail($query: String!) {
+    customers(first: 1, query: $query) {
+      nodes {
+        id
+        email
+        displayName
+      }
+    }
+  }
+`;
 
 export const action = async ({ request }) => {
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-Shopify-Shop-Domain",
-    "Content-Type": "application/json",
-  };
-
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders });
+  }
+
+  const shop = await resolveShopFromExternalApiKey(request);
+  if (!shop) {
+    return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+      status: 401,
+      headers: corsHeaders,
+    });
   }
 
   try {
     const body = await request.json();
     const {
-      shop,
       customerId,
       customerEmail,
       amount,
       note = "Issued via Shopify Flow Automation",
       triggerName = "Shopify Flow",
       expiryDays = 90,
+      idempotencyKey,
     } = body;
 
-    if (!shop || (!customerId && !customerEmail) || !amount) {
+    if ((!customerId && !customerEmail) || amount === undefined || amount === null) {
       return new Response(
-        JSON.stringify({ success: false, error: "Missing required parameters (shop, customer, amount)" }),
+        JSON.stringify({ success: false, error: "Missing required parameters (customer, amount)" }),
         { status: 400, headers: corsHeaders }
       );
     }
 
-    const session = await prisma.session.findFirst({ where: { shop } });
-    if (!session) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Shop session not active" }),
-        { status: 500, headers: corsHeaders }
-      );
-    }
+    const { admin } = await unauthenticated.admin(shop);
 
-    // Admin context using fetch
     let targetCustomerId = customerId;
+    let targetCustomerEmail = customerEmail;
     if (!targetCustomerId && customerEmail) {
-      const queryResp = await fetch(`https://${shop}/admin/api/2024-07/graphql.json`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Shopify-Access-Token": session.accessToken,
-        },
-        body: JSON.stringify({
-          query: `query findCust($q: String!) { customers(first: 1, query: $q) { nodes { id email displayName } } }`,
-          variables: { q: `email:${customerEmail}` },
-        }),
+      const queryResp = await admin.graphql(FIND_CUSTOMER_BY_EMAIL_QUERY, {
+        variables: { query: `email:${customerEmail}` },
       });
       const qJson = await queryResp.json();
-      targetCustomerId = qJson.data?.customers?.nodes?.[0]?.id;
+      const match = qJson.data?.customers?.nodes?.[0];
+      targetCustomerId = match?.id;
+      targetCustomerEmail = match?.email || customerEmail;
     }
 
     if (!targetCustomerId) {
@@ -71,94 +87,52 @@ export const action = async ({ request }) => {
       expiresAt = exp;
     }
 
-    // Issue credit via GraphQL
-    const creditMutation = `
-      mutation creditFromFlow($id: ID!, $creditInput: StoreCreditAccountCreditInput!) {
-        storeCreditAccountCredit(id: $id, creditInput: $creditInput) {
-          storeCreditAccountTransaction {
-            id
-            account {
-              id
-              balance {
-                amount
-                currencyCode
-              }
-            }
-          }
-          userErrors {
-            message
-          }
-        }
-      }
-    `;
-
-    const creditResp = await fetch(`https://${shop}/admin/api/2024-07/graphql.json`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Access-Token": session.accessToken,
-      },
-      body: JSON.stringify({
-        query: creditMutation,
-        variables: {
-          id: targetCustomerId,
-          creditInput: {
-            creditAmount: {
-              amount: parseFloat(amount).toFixed(2),
-              currencyCode: "USD",
-            },
-            ...(expiresAt ? { expiresAt: expiresAt.toISOString() } : {}),
-          },
-        },
-      }),
+    const result = await creditCustomer({
+      admin,
+      shop,
+      customerId: targetCustomerId,
+      customerEmail: targetCustomerEmail,
+      amount,
+      currencyCode: "USD",
+      expiresAt,
+      source: "FLOW_ACTION",
+      note: `[Flow: ${triggerName}] ${note}`,
+      metadata: { triggerName, executedAt: new Date().toISOString() },
+      // Flow can pass its own run/workflow id for exactly-once semantics;
+      // otherwise fall back to a per-shop+customer+trigger+day key so a
+      // retried Flow step doesn't double-credit.
+      idempotencyKey:
+        idempotencyKey ||
+        `flow:${shop}:${targetCustomerId}:${triggerName}:${new Date().toISOString().slice(0, 10)}`,
     });
 
-    const creditJson = await creditResp.json();
-    const userErrors = creditJson.data?.storeCreditAccountCredit?.userErrors || [];
-    if (userErrors.length > 0) {
+    if (!result.success) {
       return new Response(
-        JSON.stringify({ success: false, error: userErrors.map((e) => e.message).join(", ") }),
-        { status: 400, headers: corsHeaders }
+        JSON.stringify({ success: false, error: result.apiError || "Failed to issue credit" }),
+        { status: 502, headers: corsHeaders }
       );
     }
-
-    const tx = creditJson.data?.storeCreditAccountCredit?.storeCreditAccountTransaction;
-
-    // Record in ledger with source FLOW_ACTION
-    const entry = await prisma.creditLedger.create({
-      data: {
-        shop,
-        customerId: targetCustomerId,
-        customerEmail,
-        amount: parseFloat(amount),
-        currency: "USD",
-        action: "CREDIT",
-        source: "FLOW_ACTION",
-        shopifyTransactionId: tx?.id || tx?.account?.id,
-        note: `[Flow: ${triggerName}] ${note}`,
-        expiresAt,
-        metadata: JSON.stringify({
-          triggerName,
-          executedAt: new Date().toISOString(),
-          flowId: "shopify-flow-direct",
-        }),
-        status: "COMPLETED",
-      },
-    });
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: `Shopify Flow issued $${parseFloat(amount).toFixed(2)} store credit`,
-        transactionId: tx?.id,
-        ledgerId: entry.id,
+        message: `Shopify Flow issued $${result.ledgerEntry.amount.toFixed(2)} store credit`,
+        transactionId: result.shopifyTxId,
+        ledgerId: result.ledgerEntry.id,
+        duplicate: Boolean(result.duplicate),
       }),
       { status: 200, headers: corsHeaders }
     );
   } catch (err) {
+    if (err instanceof CreditValidationError) {
+      return new Response(JSON.stringify({ success: false, error: err.message }), {
+        status: 400,
+        headers: corsHeaders,
+      });
+    }
     console.error("Shopify Flow execution error:", err);
     return new Response(
-      JSON.stringify({ success: false, error: err.message || "Failed to execute Flow action" }),
+      JSON.stringify({ success: false, error: "Failed to execute Flow action" }),
       { status: 500, headers: corsHeaders }
     );
   }

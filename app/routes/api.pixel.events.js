@@ -1,4 +1,5 @@
 import prisma from "../db.server";
+import { isRateLimited, getClientIp } from "../services/rate-limit.server";
 
 /**
  * Ingestion endpoint for telemetry beacons emitted by the native Shopify Web
@@ -19,12 +20,18 @@ const CORS_HEADERS = {
 
 const MYSHOPIFY_DOMAIN = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i;
 const RAW_BODY_CAP = 16000; // characters kept in PixelEvent.raw
+const MAX_REQUEST_BYTES = 32 * 1024; // hard cap on the beacon body itself
 const KNOWN_STANDARD_EVENTS = new Set([
   "checkout_completed",
   "checkout_started",
   "cart_updated",
   "product_viewed",
 ]);
+
+// This is telemetry ingestion (write-only, already shop-validated), so a
+// generous per-shop+IP cap is enough to stop abuse without an external
+// rate-limiting service.
+const PIXEL_RATE_LIMIT = { windowMs: 60_000, max: 120 };
 
 function jsonResponse(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
@@ -75,10 +82,18 @@ export const action = async ({ request }) => {
     return jsonResponse({ ok: false, error: "Method not allowed" }, 405);
   }
 
+  const contentLength = Number(request.headers.get("content-length") || 0);
+  if (contentLength > MAX_REQUEST_BYTES) {
+    return jsonResponse({ ok: false, error: "Payload too large" }, 413);
+  }
+
   let payload;
   try {
     const rawText = await request.text();
     if (!rawText) return jsonResponse({ ok: false, error: "Empty body" }, 400);
+    if (rawText.length > MAX_REQUEST_BYTES) {
+      return jsonResponse({ ok: false, error: "Payload too large" }, 413);
+    }
     payload = JSON.parse(rawText);
   } catch {
     return jsonResponse({ ok: false, error: "Invalid JSON" }, 400);
@@ -87,6 +102,10 @@ export const action = async ({ request }) => {
   const shop = await resolveShop(payload.shop);
   if (!shop) {
     return jsonResponse({ ok: false, error: "Unrecognized shop origin" }, 403);
+  }
+
+  if (isRateLimited(`pixel:${shop}:${getClientIp(request)}`, PIXEL_RATE_LIMIT)) {
+    return jsonResponse({ ok: false, error: "Rate limit exceeded" }, 429);
   }
 
   const eventName = String(payload.event || "").trim();

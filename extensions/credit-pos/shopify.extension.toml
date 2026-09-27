@@ -1,4 +1,4 @@
-api_version = "2025-04"
+api_version = "2026-07"
 
 [[extensions]]
 type = "pos_ui_extension"
@@ -17,3 +17,6 @@ uid = "2700869e-d6a7-f20f-9330-d03688726c2da71d0c78"
   [[extensions.targeting]]
   module = "./src/CustomerAction.jsx"
   target = "pos.customer-details.action.render"
+
+[extensions.capabilities]
+network_access = true

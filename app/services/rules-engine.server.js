@@ -171,6 +171,7 @@ export async function processOrderForCredit({ admin, shop, order }) {
             notify: settings.autoNotifyCustomer,
             source: "REFERRAL",
             note: `Referral reward from ${customerName || customerEmail} (${matchedRefCode})`,
+            idempotencyKey: `referral:${matchedRefCode.toUpperCase()}:${orderId}`,
           });
 
           await prisma.referral.update({
@@ -210,59 +211,55 @@ export async function processOrderForCredit({ admin, shop, order }) {
     notify: settings.autoNotifyCustomer,
     source: appliedRules.length > 0 ? "RULE_AWARD" : "CASHBACK",
     note: finalNote,
+    idempotencyKey: `order:${orderId}`,
+    // Amount here is computed server-side from a verified webhook's order
+    // total plus merchant-configured rules, not user input — use a high
+    // sanity ceiling rather than the generic per-source cap.
+    maxAmount: 100000,
   });
 
   // Sync customer loyalty metafields for real-time storefront display
   try {
-    const session = await prisma.session.findFirst({ where: { shop } });
-    if (session) {
-      const newTotalSpent = customerTotalSpent + orderTotal;
-      const newOrdersCount = customerOrdersCount + 1;
-      const newTier = await getCustomerTier(shop, newTotalSpent);
+    const newTotalSpent = customerTotalSpent + orderTotal;
+    const newOrdersCount = customerOrdersCount + 1;
+    const newTier = await getCustomerTier(shop, newTotalSpent);
 
-      await fetch(`https://${shop}/admin/api/2024-07/graphql.json`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Shopify-Access-Token": session.accessToken,
-        },
-        body: JSON.stringify({
-          query: `
-            mutation customerUpdate($input: CustomerInput!) {
-              customerUpdate(input: $input) {
-                customer { id }
-                userErrors { field message }
-              }
-            }
-          `,
-          variables: {
-            input: {
-              id: customerId,
-              metafields: [
-                {
-                  namespace: "credit_app",
-                  key: "total_spent",
-                  type: "number_decimal",
-                  value: newTotalSpent.toFixed(2),
-                },
-                {
-                  namespace: "credit_app",
-                  key: "orders_count",
-                  type: "number_integer",
-                  value: String(newOrdersCount),
-                },
-                {
-                  namespace: "credit_app",
-                  key: "vip_tier",
-                  type: "single_line_text_field",
-                  value: newTier?.name || "Bronze",
-                },
-              ],
-            },
+    await admin.graphql(
+      `#graphql
+      mutation customerUpdate($input: CustomerInput!) {
+        customerUpdate(input: $input) {
+          customer { id }
+          userErrors { field message }
+        }
+      }`,
+      {
+        variables: {
+          input: {
+            id: customerId,
+            metafields: [
+              {
+                namespace: "credit_app",
+                key: "total_spent",
+                type: "number_decimal",
+                value: newTotalSpent.toFixed(2),
+              },
+              {
+                namespace: "credit_app",
+                key: "orders_count",
+                type: "number_integer",
+                value: String(newOrdersCount),
+              },
+              {
+                namespace: "credit_app",
+                key: "vip_tier",
+                type: "single_line_text_field",
+                value: newTier?.name || "Bronze",
+              },
+            ],
           },
-        }),
-      });
-    }
+        },
+      }
+    );
   } catch (err) {
     console.error("Failed to sync customer loyalty metafields:", err);
   }

@@ -333,8 +333,9 @@ export default function NotificationsPage() {
                     </p>
 
                     <div style={{ margin: "20px 0" }}>
-                      <a
-                        href="#"
+                      {/* Preview only — represents the CTA button as it will appear in the outgoing email, not a real link in this page. */}
+                      <button
+                        type="button"
                         style={{
                           display: "inline-block",
                           background: brandColor,
@@ -345,10 +346,12 @@ export default function NotificationsPage() {
                           fontSize: "14px",
                           fontWeight: 700,
                           boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                          border: "none",
+                          cursor: "default",
                         }}
                       >
                         {currentTpl.cta}
-                      </a>
+                      </button>
                     </div>
 
                     <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "16px", marginTop: "24px", fontSize: "11px", color: "#94a3b8" }}>

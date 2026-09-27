@@ -41,12 +41,14 @@
     // 2. Real-time Customer Tier & Spend Hydration (Stale-While-Revalidate)
     const vipWidget = document.querySelector('[data-vip-widget]');
     if (vipWidget && vipWidget.dataset.customerId) {
-      const customerId = vipWidget.dataset.customerId;
-      const shop = window.Shopify ? window.Shopify.shop : 'pdf-store-15eu7f4v.myshopify.com';
       const currency = vipWidget.dataset.currencySymbol || '$';
 
-      // Perform background silent re-validation without blocking FCP/LCP
-      fetch(`https://credit-shopify-app.onrender.com/api/storefront/tier?shop=${encodeURIComponent(shop)}&customerId=${encodeURIComponent(customerId)}`)
+      // Perform background silent re-validation without blocking FCP/LCP.
+      // Routed through the Shopify App Proxy (see shopify.app.toml), which
+      // signs `logged_in_customer_id` server-side — the backend uses that
+      // rather than any client-supplied id, so this can't be used to read
+      // another customer's balance by editing the DOM/query string.
+      fetch('/apps/credit/api/storefront/tier')
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
           if (!data || !data.customer) return;
@@ -207,7 +209,9 @@
             body: JSON.stringify({ attributes: { 'referral_code': refCode } })
           }).catch(() => {});
         }
-      } catch (e) {}
+      } catch (e) {
+        // localStorage/URL parsing can fail in locked-down browser contexts; referral capture is best-effort.
+      }
     });
   }
 

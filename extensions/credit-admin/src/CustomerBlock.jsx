@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   reactExtension,
   AdminBlock,
@@ -11,11 +11,47 @@ import {
   useApi,
 } from "@shopify/ui-extensions-react/admin";
 
+const APP_URL = "https://credit-shopify-app.onrender.com";
+
 function CustomerDetailsBlock() {
   const api = useApi();
-  const [balance, setBalance] = useState("45.00");
-  const [tier, setTier] = useState("Gold VIP");
-  const [cashbackRate, setCashbackRate] = useState("12%");
+  const [credit, setCredit] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadBalance() {
+      try {
+        const customerId = api?.data?.selected?.[0]?.id;
+        if (!customerId) return;
+
+        const token = await api.idToken();
+        const response = await fetch(
+          `${APP_URL}/api/admin/customer-credit?customerId=${encodeURIComponent(customerId)}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const result = await response.json();
+        if (!cancelled && result.success) {
+          setCredit(result.customer);
+        }
+      } catch (err) {
+        console.error("Failed to load store credit balance:", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadBalance();
+    return () => {
+      cancelled = true;
+    };
+  }, [api]);
+
+  const balance = credit?.balance ?? "0.00";
+  const currency = credit?.currency ?? "USD";
+  const tier = credit?.tierName ?? "Bronze VIP";
+  const cashbackRate = credit?.cashbackRate ?? 5.0;
 
   return (
     <AdminBlock title="Store Credit & VIP Rewards">
@@ -24,7 +60,7 @@ function CustomerDetailsBlock() {
           <BlockStack gap="none">
             <Text tone="subdued">Available Store Credit</Text>
             <Heading size="medium" tone="success">
-              ${balance} USD
+              {loading ? "…" : `${currency} ${parseFloat(balance).toFixed(2)}`}
             </Heading>
           </BlockStack>
           <Badge tone="success">Active Balance</Badge>
@@ -33,9 +69,8 @@ function CustomerDetailsBlock() {
         <InlineStack inlineAlignment="space-between" blockAlignment="center">
           <BlockStack gap="none">
             <Text tone="subdued">VIP Status Level</Text>
-            <Text fontWeight="bold">🥇 {tier} ({cashbackRate} Cashback)</Text>
+            <Text fontWeight="bold">🥇 {tier} ({cashbackRate}% Cashback)</Text>
           </BlockStack>
-          <Badge tone="info">Top 5% Spender</Badge>
         </InlineStack>
 
         <InlineStack inlineAlignment="end">

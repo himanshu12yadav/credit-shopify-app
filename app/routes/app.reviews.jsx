@@ -3,11 +3,13 @@ import { useLoaderData, useFetcher } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { getOrCreateExternalApiKey } from "../services/api-keys.server";
 import { HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   const shop = session.shop;
+  const externalApiKey = await getOrCreateExternalApiKey(shop);
 
   const reviewRewards = await prisma.creditLedger.findMany({
     where: { shop, source: "REVIEW_REWARD" },
@@ -22,7 +24,11 @@ export const loader = async ({ request }) => {
     reviewRewards,
     totalCount: reviewRewards.length,
     totalAwarded: totalAwarded.toFixed(2),
-    webhookUrl: `https://${shop}/apps/credit-rewards/api/reviews/webhook`,
+    // Review platforms (Loox/Judge.me/Yotpo) call this server-to-server, not
+    // through the shopper's browser, so it's a direct URL authenticated with
+    // the shop's external API key — not an App Proxy path.
+    webhookUrl: "https://credit-shopify-app.onrender.com/api/reviews/webhook",
+    externalApiKey,
   };
 };
 
@@ -44,9 +50,9 @@ export const action = async ({ request }) => {
     await prisma.creditLedger.create({
       data: {
         shop,
-        customerId: "gid://shopify/Customer/26024363524177",
-        customerEmail: "himanshuyadav.12jan@gmail.com",
-        customerName: "Himanshu Yadav",
+        customerId: "gid://shopify/Customer/0000000000",
+        customerEmail: "sample.customer@example.com",
+        customerName: "Sample Customer",
         amount,
         currency: "USD",
         action: "CREDIT",
@@ -63,7 +69,7 @@ export const action = async ({ request }) => {
 };
 
 export default function ReviewRewardsStudio() {
-  const { reviewRewards, totalCount, totalAwarded, webhookUrl } = useLoaderData();
+  const { reviewRewards, totalCount, totalAwarded, webhookUrl, externalApiKey } = useLoaderData();
   const fetcher = useFetcher();
   const shopify = useAppBridge();
   const [textAmount, setTextAmount] = useState("3.00");
@@ -202,6 +208,9 @@ export default function ReviewRewardsStudio() {
                 </s-stack>
                 <s-text tone="neutral" color="subdued">
                   <code>{webhookUrl}</code>
+                </s-text>
+                <s-text tone="neutral" color="subdued">
+                  {"Required header: "}<code>{`Authorization: Bearer ${externalApiKey}`}</code>
                 </s-text>
               </s-stack>
             </s-box>

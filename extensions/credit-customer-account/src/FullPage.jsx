@@ -14,34 +14,71 @@ import {
   useApi,
 } from "@shopify/ui-extensions-react/customer-account";
 
+const APP_URL = "https://credit-shopify-app.onrender.com";
+
 function FullPage() {
   const api = useApi();
-  const [loading, setLoading] = useState(false);
-  const [wallet, setWallet] = useState({
-    balance: "45.00",
-    currency: "USD",
-    tier: {
-      name: "Gold VIP",
-      cashbackRate: 12.0,
-      nextTierName: "Platinum VIP",
-      spendToNextTier: "155.00",
-    },
-    transactions: [
-      { id: "tx-1", action: "CREDIT", amount: 15.0, source: "CASHBACK", note: "Cashback from Order #1002", createdAt: "2026-09-07" },
-      { id: "tx-2", action: "CREDIT", amount: 20.0, source: "CAMPAIGN", note: "Holiday VIP Drop", createdAt: "2026-09-05" },
-      { id: "tx-3", action: "CREDIT", amount: 10.0, source: "RETURN_BONUS", note: "+20% Store Credit Return Bonus", createdAt: "2026-09-01" },
-    ],
-  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [wallet, setWallet] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadWallet() {
+      try {
+        const token = await api.sessionToken.get();
+        const resp = await fetch(`${APP_URL}/api/customer-account/wallet`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await resp.json();
+        if (!cancelled) {
+          if (data.success) {
+            setWallet(data.wallet);
+          } else {
+            setError(data.error || "Failed to load your store credit wallet");
+          }
+        }
+      } catch (err) {
+        if (!cancelled) setError(err.message || "Failed to load your store credit wallet");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadWallet();
+    return () => {
+      cancelled = true;
+    };
+  }, [api]);
+
+  if (loading) {
+    return (
+      <Page title="My Store Credit & VIP Rewards">
+        <BlockStack spacing="loose" inlineAlignment="center">
+          <Text appearance="subdued">Loading your wallet…</Text>
+        </BlockStack>
+      </Page>
+    );
+  }
+
+  if (error || !wallet) {
+    return (
+      <Page title="My Store Credit & VIP Rewards">
+        <Banner status="critical" title="Couldn't load your wallet">
+          {error || "Please try again shortly."}
+        </Banner>
+      </Page>
+    );
+  }
 
   return (
     <Page title="My Store Credit & VIP Rewards">
       <BlockStack spacing="loose">
-        {/* Banner Alert */}
         <Banner status="info" title="Store Credit Ready at Checkout">
           Your store credit automatically appears in your wallet and applies at 1-click checkout alongside discount codes!
         </Banner>
 
-        {/* Hero Balance Card */}
         <Card padding>
           <BlockStack spacing="base">
             <InlineStack inlineAlignment="space-between" blockAlignment="center">
@@ -56,25 +93,17 @@ function FullPage() {
 
             <Divider />
 
-            {/* Quick Mobile Wallet Pass Action */}
             <InlineStack spacing="base" blockAlignment="center">
-              <Button
-                kind="secondary"
-                to="https://credit-shopify-app.onrender.com/api/storefront/wallet-pass?format=apple"
-              >
+              <Button kind="secondary" to={wallet.walletPassAppleUrl}>
                 📲 Add to Apple Wallet
               </Button>
-              <Button
-                kind="secondary"
-                to="https://credit-shopify-app.onrender.com/api/storefront/wallet-pass?format=google"
-              >
+              <Button kind="secondary" to={wallet.walletPassGoogleUrl}>
                 🤖 Save to Google Wallet
               </Button>
             </InlineStack>
           </BlockStack>
         </Card>
 
-        {/* VIP Loyalty Tier Card */}
         <Card padding>
           <BlockStack spacing="base">
             <InlineStack inlineAlignment="space-between" blockAlignment="center">
@@ -89,32 +118,35 @@ function FullPage() {
             {wallet.tier.nextTierName && (
               <BlockStack spacing="tight">
                 <Text size="small" appearance="subdued">
-                  Spend ${wallet.tier.spendToNextTier} more to unlock {wallet.tier.nextTierName} & 15% cashback!
+                  Spend ${wallet.tier.spendToNextTier} more to unlock {wallet.tier.nextTierName}!
                 </Text>
               </BlockStack>
             )}
           </BlockStack>
         </Card>
 
-        {/* Recent Transaction Ledger */}
         <Card padding>
           <BlockStack spacing="base">
             <Heading level={2}>Recent Rewards Ledger</Heading>
             <Divider />
 
-            <BlockStack spacing="base">
-              {wallet.transactions.map((tx) => (
-                <InlineStack key={tx.id} inlineAlignment="space-between" blockAlignment="center">
-                  <BlockStack spacing="none">
-                    <Text emphasis="bold">{tx.note}</Text>
-                    <Text size="small" appearance="subdued">{tx.source} • {tx.createdAt}</Text>
-                  </BlockStack>
-                  <Text emphasis="bold" appearance="success">
-                    +${tx.amount.toFixed(2)} USD
-                  </Text>
-                </InlineStack>
-              ))}
-            </BlockStack>
+            {wallet.transactions.length === 0 ? (
+              <Text appearance="subdued">No store credit activity yet.</Text>
+            ) : (
+              <BlockStack spacing="base">
+                {wallet.transactions.map((tx) => (
+                  <InlineStack key={tx.id} inlineAlignment="space-between" blockAlignment="center">
+                    <BlockStack spacing="none">
+                      <Text emphasis="bold">{tx.note}</Text>
+                      <Text size="small" appearance="subdued">{tx.source} • {new Date(tx.createdAt).toLocaleDateString()}</Text>
+                    </BlockStack>
+                    <Text emphasis="bold" appearance={tx.action === "DEBIT" ? "critical" : "success"}>
+                      {tx.action === "DEBIT" ? "-" : "+"}${Math.abs(tx.amount).toFixed(2)} USD
+                    </Text>
+                  </InlineStack>
+                ))}
+              </BlockStack>
+            )}
           </BlockStack>
         </Card>
       </BlockStack>

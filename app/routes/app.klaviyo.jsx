@@ -16,7 +16,7 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  await authenticate.admin(request);
   const formData = await request.formData();
   const intent = formData.get("intent");
 
@@ -31,7 +31,7 @@ export const action = async ({ request }) => {
         : "VIP Tier Upgraded";
 
     const payload = formatKlaviyoEvent(eventName, {
-      email: "himanshuyadav.12jan@gmail.com",
+      email: "sample.customer@example.com",
       amount: 15.0,
       balance: 45.0,
       note: "Earned 5% cashback on Order #1002",

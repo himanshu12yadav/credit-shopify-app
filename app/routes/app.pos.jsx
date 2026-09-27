@@ -30,12 +30,12 @@ export const loader = async ({ request }) => {
 };
 
 export default function PosPage() {
-  const { shop, recentPosTransactions, stats } = useLoaderData();
+  const { stats } = useLoaderData();
 
   // POS Terminal Simulator State
   const [selectedCustomer, setSelectedCustomer] = useState({
-    name: "Himanshu Yadav",
-    email: "himanshuyadav.12jan@gmail.com",
+    name: "Sample Customer",
+    email: "sample.customer@example.com",
     tier: "Gold VIP (12% Cashback)",
     balance: 45.0,
   });

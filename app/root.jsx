@@ -4,7 +4,7 @@ import { initPostHog } from "./services/posthog.client";
 
 export const loader = async () => {
   return {
-    posthogKey: process.env.POSTHOG_API_KEY || "phc_kJhukHhKhpy7L3bFGqPHHsuC2wDBVAj4LfmFDULhEsHG",
+    posthogKey: process.env.POSTHOG_API_KEY || null,
     posthogHost: process.env.POSTHOG_HOST || "https://us.i.posthog.com",
   };
 };

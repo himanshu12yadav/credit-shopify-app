@@ -191,25 +191,25 @@
       e.preventDefault();
       var name = document.getElementById("credit-scratch-name").value.trim();
       var email = document.getElementById("credit-scratch-email").value.trim();
-      var shop = document.getElementById("credit-scratch-card-wrapper").getAttribute("data-shop");
 
       status.textContent = "Depositing credit to your wallet...";
       status.style.color = "#4f46e5";
 
-      fetch("/apps/credit-rewards/api/storefront/scratch-card", {
+      fetch("/apps/credit/api/storefront/scratch-card", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          shop: shop,
           name: name,
-          email: email,
-          prizeAmount: prize
+          email: email
         })
       })
       .then(function(res) { return res.json(); })
       .then(function(data) {
         if (data.success) {
-          awardedAmountEl.textContent = "$" + prize.toFixed(2);
+          // The amount actually credited is decided server-side; use it
+          // rather than the client-side reveal animation's placeholder tier.
+          var awarded = typeof data.prizeAmount === "number" ? data.prizeAmount : prize;
+          awardedAmountEl.textContent = "$" + awarded.toFixed(2);
           gameView.style.display = "none";
           successView.style.display = "block";
         } else {

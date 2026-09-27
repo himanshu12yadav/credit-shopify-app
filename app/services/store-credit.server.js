@@ -1,4 +1,5 @@
 import { prisma, prismaRead } from "../db.server";
+import { assertValidCreditAmount, isDuplicateIdempotencyError } from "./credit-validation.server";
 
 /**
  * GraphQL Queries and Mutations for Shopify Native Store Credit
@@ -123,15 +124,30 @@ export async function creditCustomer({
   amount,
   currencyCode = "USD",
   expiresAt = null,
-  notify = true,
+  notify = true, // eslint-disable-line no-unused-vars -- accepted for callers; customer notification isn't implemented yet
   source = "MANUAL",
   ruleId = null,
   note = "Store credit issued",
   metadata = null,
+  idempotencyKey = null,
+  maxAmount = null,
 }) {
-  const numericAmount = parseFloat(amount);
-  if (isNaN(numericAmount) || numericAmount <= 0) {
-    throw new Error("Credit amount must be greater than 0");
+  const numericAmount = assertValidCreditAmount(amount, { max: maxAmount, source });
+
+  // If this exact issuance was already recorded (webhook redelivery, client
+  // retry, etc.), return the existing ledger entry instead of crediting twice.
+  if (idempotencyKey) {
+    const existing = await prisma.creditLedger.findUnique({ where: { idempotencyKey } });
+    if (existing) {
+      return {
+        success: existing.status !== "FAILED",
+        ledgerEntry: existing,
+        shopifyTxId: existing.shopifyTransactionId,
+        shopifyAccount: null,
+        apiError: null,
+        duplicate: true,
+      };
+    }
   }
 
   const formattedAmount = numericAmount.toFixed(2);
@@ -173,25 +189,42 @@ export async function creditCustomer({
   }
 
   // Record in audit ledger
-  const ledgerEntry = await prisma.creditLedger.create({
-    data: {
-      shop,
-      customerId,
-      customerEmail: customerEmail || null,
-      customerName: customerName || null,
-      orderId: orderId ? String(orderId) : null,
-      amount: numericAmount,
-      currency: currencyCode.toUpperCase(),
-      action: "CREDIT",
-      source,
-      ruleId: ruleId || null,
-      shopifyTransactionId: shopifyTxId,
-      note: apiError ? `${note} (Notice: ${apiError})` : note,
-      expiresAt: expiresAt ? new Date(expiresAt) : null,
-      metadata: metadata ? (typeof metadata === "string" ? metadata : JSON.stringify(metadata)) : null,
-      status,
-    },
-  });
+  let ledgerEntry;
+  try {
+    ledgerEntry = await prisma.creditLedger.create({
+      data: {
+        shop,
+        customerId,
+        customerEmail: customerEmail || null,
+        customerName: customerName || null,
+        orderId: orderId ? String(orderId) : null,
+        amount: numericAmount,
+        currency: currencyCode.toUpperCase(),
+        action: "CREDIT",
+        source,
+        ruleId: ruleId || null,
+        shopifyTransactionId: shopifyTxId,
+        note: apiError ? `${note} (Notice: ${apiError})` : note,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        metadata: metadata ? (typeof metadata === "string" ? metadata : JSON.stringify(metadata)) : null,
+        status,
+        idempotencyKey: idempotencyKey || null,
+      },
+    });
+  } catch (err) {
+    if (isDuplicateIdempotencyError(err)) {
+      const existing = await prisma.creditLedger.findUnique({ where: { idempotencyKey } });
+      return {
+        success: existing?.status !== "FAILED",
+        ledgerEntry: existing,
+        shopifyTxId: existing?.shopifyTransactionId || shopifyTxId,
+        shopifyAccount,
+        apiError: null,
+        duplicate: true,
+      };
+    }
+    throw err;
+  }
 
   return {
     success: status !== "FAILED",
@@ -215,11 +248,9 @@ export async function debitCustomer({
   currencyCode = "USD",
   source = "MANUAL",
   note = "Manual balance adjustment",
+  maxAmount = null,
 }) {
-  const numericAmount = parseFloat(amount);
-  if (isNaN(numericAmount) || numericAmount <= 0) {
-    throw new Error("Debit amount must be greater than 0");
-  }
+  const numericAmount = assertValidCreditAmount(amount, { max: maxAmount, source });
 
   const formattedAmount = numericAmount.toFixed(2);
   let shopifyTxId = null;

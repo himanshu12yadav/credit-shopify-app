@@ -4,11 +4,13 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import { searchCustomers, creditCustomer } from "../services/store-credit.server";
+import { getOrCreateExternalApiKey } from "../services/api-keys.server";
 import { HubSubNav, HubBreadcrumb } from "../components/HubNav";
 
 export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
   const shop = session.shop;
+  const externalApiKey = await getOrCreateExternalApiKey(shop);
 
   const flowEntries = await prisma.creditLedger.findMany({
     where: { shop, source: "FLOW_ACTION" },
@@ -44,6 +46,7 @@ export const loader = async ({ request }) => {
     shop,
     flowEntries,
     customers: customers.slice(0, 15),
+    externalApiKey,
     stats: {
       totalDisbursed: totalDisbursed.toFixed(2),
       executionCount: flowEntries.length,
@@ -95,7 +98,7 @@ export const action = async ({ request }) => {
 };
 
 export default function FlowPage() {
-  const { shop, flowEntries, customers, stats } = useLoaderData();
+  const { flowEntries, customers, stats, externalApiKey } = useLoaderData();
   const fetcher = useFetcher();
   const shopify = useAppBridge();
 
@@ -329,11 +332,12 @@ export default function FlowPage() {
               }}
             >
               <div style={{ color: "#38bdf8", fontWeight: 700 }}># Flow Action Webhook Endpoint:</div>
-              <div style={{ color: "#a5f3fc" }}>POST /api/flow/action/issue-credit</div>
-              <div style={{ color: "#94a3b8", marginTop: "6px" }}>// Sample Flow JSON Payload:</div>
+              <div style={{ color: "#a5f3fc" }}>POST https://credit-shopify-app.onrender.com/api/flow/action/issue-credit</div>
+              <div style={{ color: "#94a3b8", marginTop: "6px" }}>{"// Required header — add it as a custom header on your Flow “Send an HTTP request” step (same key as the Appeasements page; regenerate it there if it leaks):"}</div>
+              <div style={{ color: "#f8fafc" }}>{`Authorization: Bearer ${externalApiKey}`}</div>
+              <div style={{ color: "#94a3b8", marginTop: "6px" }}>{"// Sample Flow JSON Payload:"}</div>
               <pre style={{ margin: 0, fontSize: "11px", color: "#f8fafc" }}>
 {`{
-  "shop": "${shop}",
   "customerEmail": "shopper@domain.com",
   "amount": 5.00,
   "triggerName": "5-Star Review",

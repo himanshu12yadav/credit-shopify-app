@@ -7,12 +7,18 @@ import {
   Text,
   Button,
   TextField,
-  useApi,
 } from "@shopify/ui-extensions-react/checkout";
 
+// NOTE: this block currently shows a static placeholder balance and does not
+// call any Checkout API to actually apply store credit to the order total —
+// native Shopify Store Credit Accounts are applied automatically by Shopify
+// at checkout, so wiring this up for real requires deciding what, if
+// anything, this block should add beyond that (e.g. a read-only balance
+// display) rather than implying manual control that doesn't exist today.
+const PLACEHOLDER_BALANCE = "45.00";
+
 function CheckoutExtension() {
-  const api = useApi();
-  const [balance, setBalance] = useState("45.00");
+  const balance = PLACEHOLDER_BALANCE;
   const [applied, setApplied] = useState(false);
   const [customAmount, setCustomAmount] = useState("");
   const [errorMsg, setErrorMsg] = useState("");

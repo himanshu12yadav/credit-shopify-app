@@ -1,214 +1,152 @@
+import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { creditCustomer } from "../services/store-credit.server";
+import { CreditValidationError } from "../services/credit-validation.server";
+import { isRateLimited, getClientIp } from "../services/rate-limit.server";
+
+// Mounted behind the Shopify App Proxy (extensions/credit-storefront/blocks/
+// scratch-card-modal.liquid posts to /apps/credit/api/storefront/scratch-card).
+// The prize tier is picked server-side — never trust a client-supplied
+// prizeAmount, since the scratch reveal is purely cosmetic client JS.
+const PRIZE_TIERS = [
+  { threshold: 0.05, amount: 50 },
+  { threshold: 0.2, amount: 25 },
+  { threshold: 0.65, amount: 10 },
+  { threshold: 1, amount: 5 },
+];
+
+function rollPrize() {
+  const rand = Math.random();
+  let cumulative = 0;
+  for (const tier of PRIZE_TIERS) {
+    cumulative = tier.threshold;
+    if (rand < cumulative) return tier.amount;
+  }
+  return PRIZE_TIERS[PRIZE_TIERS.length - 1].amount;
+}
+
+const RATE_LIMIT = { windowMs: 60_000, max: 5 };
+
+const FIND_CUSTOMER_QUERY = `#graphql
+  query findCust($q: String!) {
+    customers(first: 1, query: $q) {
+      nodes {
+        id
+        email
+        displayName
+      }
+    }
+  }
+`;
+
+const CREATE_CUSTOMER_MUTATION = `#graphql
+  mutation custCreate($input: CustomerInput!) {
+    customerCreate(input: $input) {
+      customer {
+        id
+      }
+      userErrors {
+        message
+      }
+    }
+  }
+`;
 
 export const action = async ({ request }) => {
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Content-Type": "application/json",
-  };
+  const { session, admin } = await authenticate.public.appProxy(request);
 
-  if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders });
+  if (!session || !admin) {
+    return Response.json({ success: false, error: "Shop session not active" }, { status: 401 });
+  }
+  const shop = session.shop;
+
+  const clientIp = getClientIp(request);
+  if (isRateLimited(`scratch-card:${shop}:${clientIp}`, RATE_LIMIT)) {
+    return Response.json({ success: false, error: "Too many attempts, please try again later" }, { status: 429 });
   }
 
   try {
     const body = await request.json();
-    const { shop, name, email, prizeAmount } = body;
+    const { name, email } = body;
 
-    if (!shop || !email || !prizeAmount) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Missing required fields" }),
-        { status: 400, headers: corsHeaders }
-      );
+    if (!email) {
+      return Response.json({ success: false, error: "Missing required fields" }, { status: 400 });
     }
 
-    const session = await prisma.session.findFirst({ where: { shop } });
-    if (!session) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Shop session not active" }),
-        { status: 500, headers: corsHeaders }
-      );
-    }
+    const normalizedEmail = String(email).toLowerCase();
 
-    // Abuse prevention: Check if this email already claimed a scratch card in the last 30 days
+    // Abuse prevention: one claim per email per 30 days, plus a per-IP rate
+    // limit above so a script can't just cycle through disposable emails.
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const existingClaim = await prisma.creditLedger.findFirst({
-      where: {
-        shop,
-        customerEmail: email.toLowerCase(),
-        source: "SCRATCH_CARD",
-        createdAt: { gte: thirtyDaysAgo },
-      },
+      where: { shop, customerEmail: normalizedEmail, source: "SCRATCH_CARD", createdAt: { gte: thirtyDaysAgo } },
     });
 
     if (existingClaim) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "You have already claimed a scratch card prize this month! Check back soon.",
-        }),
-        { status: 429, headers: corsHeaders }
+      return Response.json(
+        { success: false, error: "You have already claimed a scratch card prize this month! Check back soon." },
+        { status: 429 }
       );
     }
 
-    // Look up or create customer in Shopify
-    const queryCust = `
-      query findCust($q: String!) {
-        customers(first: 1, query: $q) {
-          nodes {
-            id
-            email
-            displayName
-          }
-        }
-      }
-    `;
-
-    const custResp = await fetch(`https://${shop}/admin/api/2024-07/graphql.json`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Access-Token": session.accessToken,
-      },
-      body: JSON.stringify({
-        query: queryCust,
-        variables: { q: `email:${email.toLowerCase()}` },
-      }),
+    const findResp = await admin.graphql(FIND_CUSTOMER_QUERY, {
+      variables: { q: `email:${normalizedEmail}` },
     });
-
-    const custJson = await custResp.json();
-    let targetCustomerId = custJson.data?.customers?.nodes?.[0]?.id;
+    const findJson = await findResp.json();
+    let targetCustomerId = findJson.data?.customers?.nodes?.[0]?.id;
 
     if (!targetCustomerId) {
-      // Create new customer
-      const createCustMutation = `
-        mutation custCreate($input: CustomerInput!) {
-          customerCreate(input: $input) {
-            customer {
-              id
-            }
-            userErrors {
-              message
-            }
-          }
-        }
-      `;
-
-      const createResp = await fetch(`https://${shop}/admin/api/2024-07/graphql.json`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Shopify-Access-Token": session.accessToken,
+      const createResp = await admin.graphql(CREATE_CUSTOMER_MUTATION, {
+        variables: {
+          input: { firstName: name || "Customer", email: normalizedEmail, tags: ["scratch-card-lead", "store-credit-recipient"] },
         },
-        body: JSON.stringify({
-          query: createCustMutation,
-          variables: {
-            input: {
-              firstName: name || "Customer",
-              email: email.toLowerCase(),
-              tags: ["scratch-card-lead", "store-credit-recipient"],
-            },
-          },
-        }),
       });
-
       const createJson = await createResp.json();
       targetCustomerId = createJson.data?.customerCreate?.customer?.id;
     }
 
     if (!targetCustomerId) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Could not create customer account" }),
-        { status: 500, headers: corsHeaders }
-      );
+      return Response.json({ success: false, error: "Could not create customer account" }, { status: 500 });
     }
 
-    // Expiry: 30 days
+    const prizeAmount = rollPrize();
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
 
-    // Issue Credit via GraphQL
-    const creditMutation = `
-      mutation scratchCredit($id: ID!, $creditInput: StoreCreditAccountCreditInput!) {
-        storeCreditAccountCredit(id: $id, creditInput: $creditInput) {
-          storeCreditAccountTransaction {
-            id
-            account {
-              balance {
-                amount
-              }
-            }
-          }
-          userErrors {
-            message
-          }
-        }
-      }
-    `;
-
-    const creditResp = await fetch(`https://${shop}/admin/api/2024-07/graphql.json`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Access-Token": session.accessToken,
-      },
-      body: JSON.stringify({
-        query: creditMutation,
-        variables: {
-          id: targetCustomerId,
-          creditInput: {
-            creditAmount: {
-              amount: parseFloat(prizeAmount).toFixed(2),
-              currencyCode: "USD",
-            },
-            expiresAt: expiresAt.toISOString(),
-          },
-        },
-      }),
+    const result = await creditCustomer({
+      admin,
+      shop,
+      customerId: targetCustomerId,
+      customerEmail: normalizedEmail,
+      customerName: name || "Shopper",
+      amount: prizeAmount,
+      currencyCode: "USD",
+      expiresAt,
+      source: "SCRATCH_CARD",
+      note: `🎰 Won $${prizeAmount.toFixed(2)} Store Credit on Mystery Scratch Card`,
+      idempotencyKey: `scratchcard:${shop}:${normalizedEmail}:${new Date().toISOString().slice(0, 10)}`,
     });
 
-    const creditJson = await creditResp.json();
-    const tx = creditJson.data?.storeCreditAccountCredit?.storeCreditAccountTransaction;
+    if (!result.success) {
+      return Response.json({ success: false, error: result.apiError || "Failed to issue prize" }, { status: 502 });
+    }
 
-    // Log to Prisma ledger
-    await prisma.creditLedger.create({
-      data: {
-        shop,
-        customerId: targetCustomerId,
-        customerEmail: email.toLowerCase(),
-        customerName: name || "Shopper",
-        amount: parseFloat(prizeAmount),
-        currency: "USD",
-        action: "CREDIT",
-        source: "SCRATCH_CARD",
-        shopifyTransactionId: tx?.id,
-        note: `🎰 Won $${parseFloat(prizeAmount).toFixed(2)} Store Credit on Mystery Scratch Card`,
-        expiresAt,
-        status: "COMPLETED",
-      },
+    return Response.json({
+      success: true,
+      message: `Successfully deposited $${result.ledgerEntry.amount.toFixed(2)} to your wallet!`,
+      prizeAmount: result.ledgerEntry.amount,
     });
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: `Successfully deposited $${parseFloat(prizeAmount).toFixed(2)} to your wallet!`,
-        prizeAmount,
-      }),
-      { status: 200, headers: corsHeaders }
-    );
   } catch (err) {
-    return new Response(
-      JSON.stringify({ success: false, error: err.message }),
-      { status: 500, headers: corsHeaders }
-    );
+    if (err instanceof CreditValidationError) {
+      return Response.json({ success: false, error: err.message }, { status: 400 });
+    }
+    console.error("Scratch card processing error:", err);
+    return Response.json({ success: false, error: "Failed to process scratch card claim" }, { status: 500 });
   }
 };
 
 export const loader = async () => {
-  return new Response(JSON.stringify({ status: "ready" }), {
-    headers: { "Content-Type": "application/json" },
-  });
+  return Response.json({ status: "ready" });
 };

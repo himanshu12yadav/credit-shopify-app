@@ -10,20 +10,47 @@ import {
   useApi,
 } from "@shopify/ui-extensions-react/admin";
 
+const APP_URL = "https://credit-shopify-app.onrender.com";
+
 function CustomerDetailsAction() {
   const api = useApi();
   const [amount, setAmount] = useState("10.00");
   const [reason, setReason] = useState("Shipping Delay (+$10)");
   const [issued, setIssued] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleIssue = async () => {
     setLoading(true);
-    // Simulates or calls API to issue credit
-    setTimeout(() => {
-      setLoading(false);
+    setError(null);
+
+    try {
+      const customerId = api?.data?.selected?.[0]?.id;
+      if (!customerId) {
+        throw new Error("No customer selected");
+      }
+
+      const token = await api.idToken();
+      const response = await fetch(`${APP_URL}/api/admin/customer-credit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ customerId, amount, reason }),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Failed to issue credit");
+      }
+
       setIssued(true);
-    }, 600);
+    } catch (err) {
+      setError(err.message || "Failed to issue credit");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -46,14 +73,19 @@ function CustomerDetailsAction() {
       }
     >
       <BlockStack gap>
+        {error && (
+          <Banner tone="critical" title="Could not issue credit">
+            {error}
+          </Banner>
+        )}
         {issued ? (
           <Banner tone="success" title="Store Credit Added Successfully">
-            ${amount} USD store credit has been credited directly to the customer's wallet and recorded in the audit ledger.
+            {`$${amount} USD store credit has been credited directly to the customer’s wallet and recorded in the audit ledger.`}
           </Banner>
         ) : (
           <BlockStack gap>
             <Text>
-              Select an appeasement reason or quick amount to immediately credit this buyer's account without leaving Shopify Admin:
+              {"Select an appeasement reason or quick amount to immediately credit this buyer’s account without leaving Shopify Admin:"}
             </Text>
 
             <InlineStack gap>

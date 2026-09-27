@@ -123,7 +123,7 @@ export default function ExpiryCockpitPage() {
 
   const [selectedExpiry, setSelectedExpiry] = useState(String(settings.defaultExpiryDays || 90));
   const [simulatorMode, setSimulatorMode] = useState("email");
-  const [simCustomer, setSimCustomer] = useState("Himanshu Yadav");
+  const [simCustomer, setSimCustomer] = useState("Sample Customer");
   const [simAmount, setSimAmount] = useState("89.99");
   const [simDays, setSimDays] = useState("7");
 

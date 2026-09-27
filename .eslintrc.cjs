@@ -19,7 +19,13 @@ module.exports = {
     commonjs: true,
     es6: true,
   },
-  ignorePatterns: ["!**/.server", "!**/.client"],
+  ignorePatterns: ["!**/.server", "!**/.client", "scratch/**", "build/**"],
+  rules: {
+    // Extensions/routes across this repo import React only for JSX (the
+    // automatic JSX runtime doesn't require it in scope); flagging that as
+    // unused is a false positive, not a real dead-code issue.
+    "no-unused-vars": ["error", { varsIgnorePattern: "^React$" }],
+  },
 
   // Base config
   extends: ["eslint:recommended"],
@@ -50,6 +56,10 @@ module.exports = {
       },
       rules: {
         "react/no-unknown-property": ["error", { ignore: ["variant"] }],
+        // Plain apostrophes/quotes in JSX text are valid and safe; this repo
+        // writes a lot of merchant-facing copy and prefers readable source
+        // over HTML entity codes for straight punctuation.
+        "react/no-unescaped-entities": "off",
       },
     },
 
@@ -91,6 +101,9 @@ module.exports = {
     },
   ],
   globals: {
-    shopify: "readonly"
+    shopify: "readonly",
+    // React Router loaders/actions run server-side even in route files that
+    // aren't named *.server.js, so `process` is legitimately available there.
+    process: "readonly",
   },
 };

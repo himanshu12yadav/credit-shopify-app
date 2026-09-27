@@ -39,8 +39,12 @@ export const DEFAULT_TIERS = [
  * Fetch all VIP tiers for a shop, seeding defaults if none exist
  */
 export async function getVipTiers(shop) {
+  if (!shop) {
+    throw new Error("getVipTiers requires a shop");
+  }
+
   let tiers = await prisma.vipTier.findMany({
-    where: { shop: shop || "pdf-store-15eu7f4v.myshopify.com" },
+    where: { shop },
     orderBy: { minSpend: "asc" },
   });
 
@@ -48,15 +52,12 @@ export async function getVipTiers(shop) {
     // Seed default tiers
     for (const t of DEFAULT_TIERS) {
       await prisma.vipTier.create({
-        data: {
-          shop: shop || "pdf-store-15eu7f4v.myshopify.com",
-          ...t,
-        },
+        data: { shop, ...t },
       });
     }
 
     tiers = await prisma.vipTier.findMany({
-      where: { shop: shop || "pdf-store-15eu7f4v.myshopify.com" },
+      where: { shop },
       orderBy: { minSpend: "asc" },
     });
   }

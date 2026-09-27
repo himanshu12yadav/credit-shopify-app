@@ -27,3 +27,7 @@ database.sqlite
 .react-router/
 .trigger
 .neon
+
+# Local agent tooling/scratch state
+.agents/
+.superpowers/
